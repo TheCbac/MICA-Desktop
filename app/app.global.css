@@ -1,0 +1,9 @@
+body {
+  font-family: sans-serif;
+  background-image: linear-gradient(to bottom, #7A899C, #325DA5 100%);
+  background-attachment: fixed;
+
+  height: 100vh;
+  font-size: 14px;
+  overflow-y: hidden;
+}
