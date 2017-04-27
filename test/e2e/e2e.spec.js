@@ -39,7 +39,7 @@ describe('main window', function spec() {
     const title = await browserWindow.getTitle();
     expect(title).toBe('micaReactElectron');
   });
-  it('shouldn\'t have any logs in the console of the main window', async () =>{
+  it('shouldn\'t have any logs in the console of the main window', async () => {
     const { client } = this.app;
     const logs = await client.getRenderProcessLogs();
     /* Print renderer process logs */
@@ -49,5 +49,10 @@ describe('main window', function spec() {
       console.log(log.level);
     });
     expect(logs).toHaveLength(0);
+  });
+  it('should default to \'/\'', async () => {
+    const { client } = this.app;
+    const route = await client.getUrl();
+    expect(route).toBe('HomePage');
   });
 });

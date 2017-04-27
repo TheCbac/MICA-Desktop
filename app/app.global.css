@@ -1,6 +1,8 @@
+@import "~bootstrap/dist/css/bootstrap.css";
 body {
   font-family: sans-serif;
-  background-image: linear-gradient(to bottom, #7A899C, #325DA5 100%);
+  background-color: #232c39;
+  background-image: linear-gradient(45deg, rgba(0, 216, 255, 0.5) 10%, rgba(0, 1, 127, 0.7));
   background-attachment: fixed;
 
   height: 100vh;
