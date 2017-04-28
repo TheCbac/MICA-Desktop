@@ -14,6 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "noble": "^1.8.1"
   },
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.32.1"

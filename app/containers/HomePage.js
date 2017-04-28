@@ -9,12 +9,25 @@
 *
 **********************************************************/
 import React, { Component } from 'react';
-import Home from '../components/Home';
+import { Grid, Col, Row } from 'react-bootstrap';
+import Noble from 'noble';
+import ScanForDevices from '../components/ScanForDevices';
+
 
 export default class HomePage extends Component {
+  constructor() {
+    super();
+    console.log(Noble.state);
+  }
   render() {
     return (
-      <Home />
+      <Grid>
+        <Row>
+          <Col md={4} mdOffset={1}>
+            <ScanForDevices />
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }
