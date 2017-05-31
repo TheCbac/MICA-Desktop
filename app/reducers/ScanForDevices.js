@@ -31,6 +31,7 @@ export default function ScanForDevices(state: scanStateType = defaultState, acti
       /* Copy and return the new state object */
       return { ...state, scanningMethod: action.method };
 
+
     default:
       return state;
   }
