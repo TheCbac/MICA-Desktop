@@ -38,3 +38,15 @@ Bootstrap - https://github.com/react-bootstrap/react-bootstrap
 ## Noble
 Installing noble in the app/ package. Rebuild for current version: 
 `$ npm rebuild --runtime=electron --target=1.6.5 --disturl=https://atom.io/download/atom-shell --abi=53`
+
+
+## TODO: Long term
+* Write operating system for MICA Cube
+	* Dynamically load programs from MICA app
+	* Use programs to solve problems/challenges
+	* Operating system purposely exposes security flaws in lower level cubes
+	* Users patch security flaws as they level up
+* Programs are used to complete challenges on the cube	
+	* Software tasks interact with the OS/another program
+	* Electrical tasks interact with the embedded hardware
+	* Mechanical tasks are accomplished through the MICA cube controlling a machine or robot

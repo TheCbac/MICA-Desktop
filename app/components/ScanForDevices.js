@@ -22,6 +22,7 @@ export default class ScanForDevices extends Component {
   };
   /* Returns the color for the button */
   getColor(name: 'usb' | 'ble') {
+    /* Act for the active method */
     if (name === this.props.scanningMethod) {
       return this.props.methodEnabled ? 'success' : 'danger';
     }
