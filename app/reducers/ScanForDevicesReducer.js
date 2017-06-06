@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: reducers/ScanForDevices.js
+* File: reducers/ScanForDevicesReducer.js
 *
 * Brief: Reducer for the storing scan page
 *
@@ -9,6 +9,7 @@
 *
 **********************************************************/
 import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevicesActions';
+import type { Action } from '../types/actionTypes';
 
 export type scanStateType = {
   scanningMethod: 'usb' | 'ble',
@@ -17,7 +18,7 @@ export type scanStateType = {
 /* Defines the type for the action */
 type actionType = {
   type: string,
-  method: ?string
+  payload: ?string
 };
 
 const defaultState = {
@@ -25,12 +26,14 @@ const defaultState = {
   methodEnabled: false
 };
 
-export default function ScanForDevices(state: scanStateType = defaultState, action: actionType) {
+export default function ScanForDevices(state: scanStateType = defaultState, action: Action) {
   switch (action.type) {
     case CHANGE_SCAN_METHOD:
       /* Copy and return the new state object */
-      return { ...state, scanningMethod: action.method };
+      return { ...state, scanningMethod: action.payload };
     default:
       return state;
   }
 }
+
+/* [] - END OF FILE */

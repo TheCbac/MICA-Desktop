@@ -52,3 +52,5 @@ export default class ScanForDevices extends Component {
     );
   }
 }
+
+/* [] - END OF FILE */

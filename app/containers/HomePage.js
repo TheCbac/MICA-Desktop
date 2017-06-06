@@ -11,8 +11,8 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ScanForDevices from '../components/ScanForDevicesComponent';
-import * as ScanActions from '../actions/ScanForDevicesActions';
-// import { changeScanMethod } from '../actions/ScanForDevicesActions';
+// import * as ScanActions from '../actions/ScanForDevicesActions';
+import { changeScanMethod } from '../actions/ScanForDevicesActions';
 
 
 function mapStateToProps(state) {
@@ -22,10 +22,12 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch: *) {
-  return bindActionCreators(ScanActions, dispatch);
-}
+// function mapDispatchToProps(dispatch: *) {
+//   return bindActionCreators(ScanActions, dispatch);
+// }
 
-// const mapDispatchToProps = (dispatch: *) => bindActionCreators({ changeScanMethod }, dispatch);
+const mapDispatchToProps = (dispatch: *) => bindActionCreators({ changeScanMethod }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScanForDevices);
+
+/* [] - END OF FILE */

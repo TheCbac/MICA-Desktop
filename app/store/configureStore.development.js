@@ -4,15 +4,15 @@ import { hashHistory } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, push } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
-import rootReducer from '../reducers';
+import rootReducer from '../reducers/index';
 import * as ScanActions from '../actions/ScanForDevicesActions';
 import type { scanStateType } from '../reducers/ScanForDevicesReducer';
-
+import type { Store } from '../types/storeType';
 
 
 const history = createBrowserHistory();
 
-const configureStore = (initialState: ?scanStateType) => {
+const configureStore = (initialState: ?scanStateType): Store => {
   // Redux Configuration
   const middleware = [];
   const enhancers = [];

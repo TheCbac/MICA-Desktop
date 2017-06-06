@@ -8,12 +8,15 @@
 * Date: 2017.04.28
 *
 **********************************************************/
+import type { Action } from '../types/actionTypes';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
-
-export function changeScanMethod(newMethod: 'ble' | 'usb') {
+/* Action method for changing active method */
+export function changeScanMethod(newMethod: 'ble' | 'usb'): Action {
   return {
     type: CHANGE_SCAN_METHOD,
-    method: newMethod
+    payload: newMethod
   };
 }
+
+/* [] - END OF FILE */
