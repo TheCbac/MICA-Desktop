@@ -7,12 +7,11 @@ import { createLogger } from 'redux-logger';
 import rootReducer from '../reducers/index';
 import * as ScanActions from '../actions/ScanForDevicesActions';
 import type { scanStateType } from '../reducers/ScanForDevicesReducer';
-import type { Store } from '../types/storeType';
 
 
 const history = createBrowserHistory();
 
-const configureStore = (initialState: ?scanStateType): Store => {
+const configureStore = (initialState: ?scanStateType) => {
   // Redux Configuration
   const middleware = [];
   const enhancers = [];
