@@ -9,7 +9,8 @@
 *
 **********************************************************/
 type initAction = {
-  type: string
+  type: string,
+  payload: ?string
 };
 
 type routerLocationAction = {
