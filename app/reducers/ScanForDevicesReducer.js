@@ -9,13 +9,12 @@
 *
 **********************************************************/
 import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevicesActions';
-import type actionType from '../types/actionTypes';
+import type { actionType, scanTypes } from '../types/actionTypes';
 
 export type scanStateType = {
-  scanningMethod: 'usb' | 'ble',
+  scanningMethod: scanTypes,
   methodEnabled: boolean
 };
-
 
 const defaultState = {
   scanningMethod: 'ble',

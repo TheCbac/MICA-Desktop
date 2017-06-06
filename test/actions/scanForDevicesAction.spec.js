@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: test/ScanForDevicesActions.spec.js
+* File: test/actions/ScanForDevicesActions.spec.js
 *
 * Brief: Testing of the scan for device actions
 *

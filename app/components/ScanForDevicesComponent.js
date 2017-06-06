@@ -11,17 +11,17 @@
 **********************************************************/
 import React, { Component } from 'react';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
-
+import type { actionType, scanTypes } from '../types/actionTypes';
 
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
-    scanningMethod: 'usb' | 'ble',
+    scanningMethod: scanTypes,
     methodEnabled: boolean,
-    changeScanMethod: () => void
+    changeScanMethod: (scanTypes) => actionType
   };
   /* Returns the color for the button */
-  getColor(name: 'usb' | 'ble') {
+  getColor(name: scanTypes) {
     /* Act for the active method */
     if (name === this.props.scanningMethod) {
       return this.props.methodEnabled ? 'success' : 'danger';
@@ -29,7 +29,7 @@ export default class ScanForDevices extends Component {
     return 'default';
   }
   /* Sets the active state */
-  isActive(name: 'usb' | 'ble') {
+  isActive(name: scanTypes) {
     if (name === this.props.scanningMethod) {
       return true;
     }
