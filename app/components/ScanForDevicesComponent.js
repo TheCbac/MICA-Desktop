@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: components/ScanForDevices.js
+* File: components/ScanForDevicesComponent.js
 *
 * Brief: Component for starting scan, and choosing scan
 *     method.

@@ -8,7 +8,7 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevices';
+import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevicesActions';
 
 export type scanStateType = {
   scanningMethod: 'usb' | 'ble',
@@ -30,8 +30,6 @@ export default function ScanForDevices(state: scanStateType = defaultState, acti
     case CHANGE_SCAN_METHOD:
       /* Copy and return the new state object */
       return { ...state, scanningMethod: action.method };
-
-
     default:
       return state;
   }

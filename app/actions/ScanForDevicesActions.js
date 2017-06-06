@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: actions/ScanForDevices.js
+* File: actions/ScanForDevicesActions.js
 *
 * Brief: Actions for the scanning devices
 *

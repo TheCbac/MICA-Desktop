@@ -155,7 +155,6 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jest": "^19.0.1",
     "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-prettier": "^2.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^6.10.3",
     "express": "^4.15.2",
@@ -213,12 +212,5 @@
     "node": ">=6.x",
     "npm": ">=3.x",
     "yarn": "0.21.3"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --max-warnings 0 --fix --ignore-pattern !.*",
-      "git add",
-      "jest --bail --findRelatedTests"
-    ]
   }
 }
