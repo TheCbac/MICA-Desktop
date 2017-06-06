@@ -12,17 +12,10 @@ import { combineReducers } from 'redux';
 import { routerReducer as router } from 'react-router-redux';
 import ScanForDevices from './ScanForDevicesReducer';
 
-// const rootReducer = combineReducers({
-//   ScanForDevices,
-//   router,
-// });
-const reducers = {
+const rootReducer = combineReducers({
   ScanForDevices,
   router,
-};
+});
 
-export type Reducers = typeof reducers;
-
-export default combineReducers(reducers);
-
+export default rootReducer;
 /* [] - END OF FILE */

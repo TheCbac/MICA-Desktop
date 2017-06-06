@@ -9,24 +9,20 @@
 *
 **********************************************************/
 import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevicesActions';
-import type { Action } from '../types/actionTypes';
+import type actionType from '../types/actionTypes';
 
 export type scanStateType = {
   scanningMethod: 'usb' | 'ble',
   methodEnabled: boolean
 };
-/* Defines the type for the action */
-type actionType = {
-  type: string,
-  payload: ?string
-};
+
 
 const defaultState = {
   scanningMethod: 'ble',
   methodEnabled: false
 };
 
-export default function ScanForDevices(state: scanStateType = defaultState, action: Action) {
+export default function ScanForDevices(state: scanStateType = defaultState, action: actionType) {
   switch (action.type) {
     case CHANGE_SCAN_METHOD:
       /* Copy and return the new state object */
