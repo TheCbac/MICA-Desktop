@@ -8,7 +8,7 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-import type { changeScanActionType, scanTypes } from '../types/actionTypes';
+import type { enableScanActionType, changeScanActionType, scanTypes } from '../types/actionTypes';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
@@ -24,12 +24,12 @@ export function changeScanMethod(method: scanTypes): changeScanActionType {
 }
 
 /* Enable the method */
-export function enableScanMethod(method: scanTypes, enabled: boolean) {
+export function enableScanMethod(method: scanTypes, enable: boolean): enableScanActionType {
   return {
     type: ENABLE_SCAN_METHOD,
     payload: {
       method,
-      enabled
+      enable
     }
   };
 }

@@ -12,7 +12,7 @@
 import * as actions from '../../app/actions/ScanForDevicesActions';
 
 describe('ScanForDevicesActions', () => {
-  it('changeScanMethod should create an increment action', () => {
+  it('changeScanMethod should create a change scan action', () => {
     /* BLE */
     let act = actions.changeScanMethod('ble');
     expect(act.type).toEqual(actions.CHANGE_SCAN_METHOD);
@@ -21,6 +21,34 @@ describe('ScanForDevicesActions', () => {
     act = actions.changeScanMethod('usb');
     expect(act.type).toEqual(actions.CHANGE_SCAN_METHOD);
     expect(act.payload.method).toEqual('usb');
+  });
+  it('enableScanMethod should create an enable scan action', () => {
+    /* BLE */
+    let act = actions.enableScanMethod('ble', true);
+    expect(act.type).toEqual(actions.ENABLE_SCAN_METHOD);
+    expect(act.payload).toEqual({
+      method: 'ble',
+      enable: true
+    });
+    act = actions.enableScanMethod('ble', false);
+    expect(act.type).toEqual(actions.ENABLE_SCAN_METHOD);
+    expect(act.payload).toEqual({
+      method: 'ble',
+      enable: false
+    });
+    /* USB */
+    act = actions.enableScanMethod('usb', true);
+    expect(act.type).toEqual(actions.ENABLE_SCAN_METHOD);
+    expect(act.payload).toEqual({
+      method: 'usb',
+      enable: true
+    });
+    act = actions.enableScanMethod('usb', false);
+    expect(act.type).toEqual(actions.ENABLE_SCAN_METHOD);
+    expect(act.payload).toEqual({
+      method: 'usb',
+      enable: false
+    });
   });
 });
 /* [] - END OF FILE */

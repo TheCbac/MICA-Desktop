@@ -18,6 +18,14 @@ export type changeScanActionType = {
     method: scanTypes
   }
 };
+/* Setting the scan active or not */
+export type enableScanActionType = {
+  type: 'ENABLE_SCAN_METHOD',
+  payload: {
+    method: scanTypes,
+    enable: boolean
+  }
+};
 
 /* State Type */
 export type scanStateType = {
