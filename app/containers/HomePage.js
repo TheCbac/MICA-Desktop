@@ -30,7 +30,7 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
 export default connect(mapStateToProps, mapDispatchToProps)(ScanForDevices);
 
 /* Noble callback */
-Noble.on('stateChange', (state) => {
+Noble.on('stateChange', (state: string) => {
   let enabled = false;
   if (state === 'poweredOn') {
     enabled = true;

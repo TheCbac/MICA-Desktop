@@ -15,7 +15,8 @@ export type scanTypes = 'usb' | 'ble';
 export type changeScanActionType = {
   type: 'CHANGE_SCAN_METHOD',
   payload: {
-    method: scanTypes
+    method: scanTypes,
+    enable: boolean
   }
 };
 /* Setting the scan active or not */

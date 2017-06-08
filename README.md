@@ -35,10 +35,28 @@ Table - https://github.com/glittershark/reactable
 
 Bootstrap - https://github.com/react-bootstrap/react-bootstrap
 
+## Electron
+updating to 1.6.7 was done by
+`$ yarn install`
+
 ## Noble
 Installing noble in the app/ package. Rebuild for current version: 
 `$ npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=50`
 
+`$ npm rebuild --runtime=electron --target=1.6.6 --disturl=https://atom.io/download/atom-shell --abi=51`
+
+`$ npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51`
+
+npm rebuild jest --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=53
+
+
+### xpc-connection
+ Issues during testing of xpc-connection
+ bash
+ ```
+ $ cd app/
+ $ npm rebuild xpc-connection
+ ```
 
 ## TODO: Long term
 * Write operating system for MICA Cube

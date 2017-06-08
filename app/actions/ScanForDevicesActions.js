@@ -10,15 +10,29 @@
 **********************************************************/
 import type { enableScanActionType, changeScanActionType, scanTypes } from '../types/actionTypes';
 
+
+let Noble;
+try {
+  Noble = require('noble');
+} catch (e) {
+  Noble = { state: false };
+}
+
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 
 /* Action method for changing active method */
 export function changeScanMethod(method: scanTypes): changeScanActionType {
+  /* Check the state on switch */
+  let enable = false;
+  if (method === 'ble') {
+    enable = Noble.state === 'poweredOn';
+  }
   return {
     type: CHANGE_SCAN_METHOD,
     payload: {
-      method
+      method,
+      enable
     }
   };
 }

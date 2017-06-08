@@ -26,7 +26,8 @@ const scanForDeviceHandlers = {
     state: scanStateType = defaultState,
     action: changeScanActionType): scanStateType {
     /* Copy and return the new state object */
-    return { ...state, method: action.payload.method };
+    // return { ...state, method: action.payload.method };
+    return { method: action.payload.method, enabled: action.payload.enable };
   },
   ENABLE_SCAN_METHOD(
     state: scanStateType,

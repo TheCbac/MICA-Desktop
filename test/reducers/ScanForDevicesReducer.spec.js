@@ -24,7 +24,8 @@ describe('ScanForDevicesReducer', () => {
       const state1 = scanForDevicesReducer(undefined, {
         type: CHANGE_SCAN_METHOD,
         payload: {
-          method: 'usb'
+          method: 'usb',
+          enable: false
         }
       });
       expect(state1).toEqual({
@@ -34,7 +35,8 @@ describe('ScanForDevicesReducer', () => {
       const state2 = scanForDevicesReducer(undefined, {
         type: CHANGE_SCAN_METHOD,
         payload: {
-          method: 'ble'
+          method: 'ble',
+          enable: false
         }
       });
       expect(state2).toEqual({

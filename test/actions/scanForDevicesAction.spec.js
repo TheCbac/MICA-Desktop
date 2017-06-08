@@ -9,7 +9,11 @@
 *
 **********************************************************/
 // import { spy } from 'sinon';
+// import scanActions from '../../app/actions/ScanForDevicesActions';
 import * as actions from '../../app/actions/ScanForDevicesActions';
+// import { __RewireAPI__ as scanActionRewire } from '../../app/actions/ScanForDevicesActions';
+
+// scanActions.__Rewrire__('Noble', { state: false });
 
 describe('ScanForDevicesActions', () => {
   it('changeScanMethod should create a change scan action', () => {

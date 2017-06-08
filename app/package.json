@@ -17,6 +17,7 @@
     "noble": "^1.8.1"
   },
   "devDependencies": {
+    "electron-rebuild": "^1.5.11",
     "eslint-plugin-flowtype": "^2.32.1"
   }
 }
