@@ -8,15 +8,15 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-import type { actionType, scanTypes } from '../types/actionTypes';
+import type { changeScanActionType, scanTypes } from '../types/actionTypes';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 
 /* Action method for changing active method */
-export function changeScanMethod(newMethod: scanTypes): actionType {
+export function changeScanMethod(newMethod: scanTypes): changeScanActionType {
   return {
     type: CHANGE_SCAN_METHOD,
-    payload: newMethod
+    scanningMethod: newMethod
   };
 }
 

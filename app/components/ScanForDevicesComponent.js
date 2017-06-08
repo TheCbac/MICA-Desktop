@@ -11,14 +11,14 @@
 **********************************************************/
 import React, { Component } from 'react';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
-import type { actionType, scanTypes } from '../types/actionTypes';
+import type { changeScanActionType, scanTypes } from '../types/actionTypes';
 
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
     scanningMethod: scanTypes,
     methodEnabled: boolean,
-    changeScanMethod: (scanTypes) => actionType
+    changeScanMethod: (scanTypes) => changeScanActionType
   };
   /* Returns the color for the button */
   getColor(name: scanTypes) {
