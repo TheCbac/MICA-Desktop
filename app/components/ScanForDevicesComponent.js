@@ -16,21 +16,21 @@ import type { changeScanActionType, scanTypes } from '../types/actionTypes';
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
-    scanningMethod: scanTypes,
-    methodEnabled: boolean,
+    method: scanTypes,
+    enabled: boolean,
     changeScanMethod: (scanTypes) => changeScanActionType
   };
   /* Returns the color for the button */
   getColor(name: scanTypes) {
     /* Act for the active method */
-    if (name === this.props.scanningMethod) {
-      return this.props.methodEnabled ? 'success' : 'danger';
+    if (name === this.props.method) {
+      return this.props.enabled ? 'success' : 'danger';
     }
     return 'default';
   }
   /* Sets the active state */
   isActive(name: scanTypes) {
-    if (name === this.props.scanningMethod) {
+    if (name === this.props.method) {
       return true;
     }
     return false;

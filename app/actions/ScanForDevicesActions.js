@@ -8,15 +8,36 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-import type { changeScanActionType, scanTypes } from '../types/actionTypes';
+import type { enableScanActionType, changeScanActionType, scanTypes } from '../types/actionTypes';
+import { Noble } from '../utils/nativeModules';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
+export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 
 /* Action method for changing active method */
-export function changeScanMethod(newMethod: scanTypes): changeScanActionType {
+export function changeScanMethod(method: scanTypes): changeScanActionType {
+  /* Check the state on switch */
+  let enable = false;
+  if (method === 'ble') {
+    enable = Noble.state === 'poweredOn';
+  }
   return {
     type: CHANGE_SCAN_METHOD,
-    scanningMethod: newMethod
+    payload: {
+      method,
+      enable
+    }
+  };
+}
+
+/* Enable the method */
+export function enableScanMethod(method: scanTypes, enable: boolean): enableScanActionType {
+  return {
+    type: ENABLE_SCAN_METHOD,
+    payload: {
+      method,
+      enable
+    }
   };
 }
 

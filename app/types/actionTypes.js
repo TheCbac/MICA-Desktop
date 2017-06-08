@@ -14,13 +14,24 @@ export type scanTypes = 'usb' | 'ble';
 /* Type for changing the scanning type */
 export type changeScanActionType = {
   type: 'CHANGE_SCAN_METHOD',
-  scanningMethod: scanTypes
+  payload: {
+    method: scanTypes,
+    enable: boolean
+  }
+};
+/* Setting the scan active or not */
+export type enableScanActionType = {
+  type: 'ENABLE_SCAN_METHOD',
+  payload: {
+    method: scanTypes,
+    enable: boolean
+  }
 };
 
 /* State Type */
 export type scanStateType = {
-  scanningMethod: scanTypes,
-  methodEnabled: boolean
+  method: scanTypes,
+  enabled: boolean
 };
 
 /* [] - END OF FILE */

@@ -8,32 +8,66 @@
 * Date: 2017.06.06
 *
 **********************************************************/
-import scanForDevices from '../../app/reducers/ScanForDevicesReducer';
-import { CHANGE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions';
+import scanForDevicesReducer from '../../app/reducers/ScanForDevicesReducer';
+import { CHANGE_SCAN_METHOD, ENABLE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions';
 
 describe('ScanForDevicesReducer', () => {
   it('should handle initial state', () => {
-    expect(scanForDevices(undefined, {})).toEqual({
-      scanningMethod: 'ble',
-      methodEnabled: false
+    expect(scanForDevicesReducer(undefined, {})).toEqual({
+      method: 'ble',
+      enabled: false
     });
   });
-  it('CHANGE_STATE_METHOD', () => {
-    const state1 = scanForDevices(undefined, {
-      type: CHANGE_SCAN_METHOD,
-      scanningMethod: 'usb'
+  /* Change the scanning method */
+  describe('CHANGE_SCAN_METHOD', () => {
+    it('Accepts valid actions', () => {
+      const state1 = scanForDevicesReducer(undefined, {
+        type: CHANGE_SCAN_METHOD,
+        payload: {
+          method: 'usb',
+          enable: false
+        }
+      });
+      expect(state1).toEqual({
+        method: 'usb',
+        enabled: false
+      });
+      const state2 = scanForDevicesReducer(undefined, {
+        type: CHANGE_SCAN_METHOD,
+        payload: {
+          method: 'ble',
+          enable: false
+        }
+      });
+      expect(state2).toEqual({
+        method: 'ble',
+        enabled: false
+      });
     });
-    expect(state1).toEqual({
-      scanningMethod: 'usb',
-      methodEnabled: false
+  });
+  /* Enable the scanning method */
+  describe('ENABLE_SCAN_METHOD', () => {
+    it('Does not alter state if methods don\'t match', () => {
+      const state0 = { method: 'ble', enabled: false };
+      const state1 = scanForDevicesReducer(state0, {
+        type: ENABLE_SCAN_METHOD,
+        payload: {
+          method: 'usb',
+          enable: true
+        }
+      });
+      expect(state1).toEqual(state0);
     });
-    const state2 = scanForDevices(undefined, {
-      type: CHANGE_SCAN_METHOD,
-      scanningMethod: 'ble'
-    });
-    expect(state2).toEqual({
-      scanningMethod: 'ble',
-      methodEnabled: false
+    it('Alters state if methods do match', () => {
+      const state0 = { method: 'ble', enabled: false };
+      const state1 = scanForDevicesReducer(state0, {
+        type: ENABLE_SCAN_METHOD,
+        payload: {
+          method: 'ble',
+          enable: true
+        }
+      });
+      expect(state1).toEqual({ ...state0, enabled: true });
     });
   });
 });
