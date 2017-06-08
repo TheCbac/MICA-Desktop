@@ -8,22 +8,19 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-type routeObject = {
-  pathname: string,
-  search: string,
-  hash: string,
-  state: ?string,
-  key: ?string
-};
-
-
-/* Defines the type for the action - seems like this doesn't do anything */
-export type actionType = {
-  type?: string,
-  payload?: ?string | routeObject
-};
-
-
 /* Different scan types available */
 export type scanTypes = 'usb' | 'ble';
+
+/* Type for changing the scanning type */
+export type changeScanActionType = {
+  type: 'CHANGE_SCAN_METHOD',
+  scanningMethod: scanTypes
+};
+
+/* State Type */
+export type scanStateType = {
+  scanningMethod: scanTypes,
+  methodEnabled: boolean
+};
+
 /* [] - END OF FILE */

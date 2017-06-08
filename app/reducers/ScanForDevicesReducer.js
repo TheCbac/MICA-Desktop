@@ -8,27 +8,22 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-import { CHANGE_SCAN_METHOD } from '../actions/ScanForDevicesActions';
-import type { actionType, scanTypes } from '../types/actionTypes';
-
-export type scanStateType = {
-  scanningMethod: scanTypes,
-  methodEnabled: boolean
-};
+import createReducer from './createReducer';
+import type { scanStateType, changeScanActionType } from '../types/actionTypes';
 
 const defaultState = {
   scanningMethod: 'ble',
   methodEnabled: false
 };
 
-export default function ScanForDevices(state: scanStateType = defaultState, action: actionType) {
-  switch (action.type) {
-    case CHANGE_SCAN_METHOD:
-      /* Copy and return the new state object */
-      return { ...state, scanningMethod: action.payload };
-    default:
-      return state;
+/* handler to create reducer from  */
+const scanForDeviceHandlers = {
+  CHANGE_SCAN_METHOD(state: scanStateType = defaultState, action: changeScanActionType) {
+    /* Copy and return the new state object */
+    return { ...state, scanningMethod: action.scanningMethod };
   }
-}
+};
+
+export default createReducer(defaultState, scanForDeviceHandlers);
 
 /* [] - END OF FILE */
