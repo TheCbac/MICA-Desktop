@@ -9,14 +9,7 @@
 *
 **********************************************************/
 import type { enableScanActionType, changeScanActionType, scanTypes } from '../types/actionTypes';
-
-
-let Noble;
-try {
-  Noble = require('noble');
-} catch (e) {
-  Noble = { state: false };
-}
+import { Noble } from '../utils/nativeModules';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
