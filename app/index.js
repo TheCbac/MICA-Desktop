@@ -1,3 +1,12 @@
+/* **********************************************************
+* File: index.js
+*
+* Brief: Top level file for the application
+*
+* Author: Craig Cheney
+* Date: 2017.06.08
+*
+**********************************************************/
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -25,3 +34,7 @@ if (module.hot) {
     );
   });
 }
+
+export default store;
+
+/* [] - END OF FILE */

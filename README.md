@@ -37,7 +37,7 @@ Bootstrap - https://github.com/react-bootstrap/react-bootstrap
 
 ## Noble
 Installing noble in the app/ package. Rebuild for current version: 
-`$ npm rebuild --runtime=electron --target=1.6.5 --disturl=https://atom.io/download/atom-shell --abi=53`
+`$ npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=50`
 
 
 ## TODO: Long term
