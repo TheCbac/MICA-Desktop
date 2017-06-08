@@ -11,7 +11,6 @@
 import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
-import renderer from 'react-test-renderer';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
 function setup() {
@@ -19,8 +18,8 @@ function setup() {
     changeScanMethod: spy()
   };
   const component = shallow(<ScanForDevices
-    scanningMethod={'ble'}
-    methodEnabled={false}
+    method={'ble'}
+    enabled={false}
     {...actions}
   />);
   return {
@@ -46,7 +45,7 @@ describe('ScanForDevicesComponent', () => {
     let { buttons } = setup();
     expect(buttons.at(0).prop('bsStyle')).toEqual('danger');
     /* Change to active */
-    component.setProps({ scanningMethod: 'usb' });
+    component.setProps({ method: 'usb' });
     /* Must refind buttons */
     buttons = component.find('Button');
     expect(buttons.at(0).prop('bsStyle')).toEqual('default');
@@ -57,7 +56,7 @@ describe('ScanForDevicesComponent', () => {
     let { buttons } = setup();
     expect(buttons.at(0).prop('bsStyle')).toEqual('danger');
     /* Change to active */
-    component.setProps({ methodEnabled: true });
+    component.setProps({ enabled: true });
     /* Must refind buttons */
     buttons = component.find('Button');
     expect(buttons.at(0).prop('bsStyle')).toEqual('success');

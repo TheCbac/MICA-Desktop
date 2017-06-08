@@ -11,12 +11,26 @@
 import type { changeScanActionType, scanTypes } from '../types/actionTypes';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
+export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 
 /* Action method for changing active method */
-export function changeScanMethod(newMethod: scanTypes): changeScanActionType {
+export function changeScanMethod(method: scanTypes): changeScanActionType {
   return {
     type: CHANGE_SCAN_METHOD,
-    scanningMethod: newMethod
+    payload: {
+      method
+    }
+  };
+}
+
+/* Enable the method */
+export function enableScanMethod(method: scanTypes, enabled: boolean) {
+  return {
+    type: ENABLE_SCAN_METHOD,
+    payload: {
+      method,
+      enabled
+    }
   };
 }
 

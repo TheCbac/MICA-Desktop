@@ -16,11 +16,11 @@ describe('ScanForDevicesActions', () => {
     /* BLE */
     let act = actions.changeScanMethod('ble');
     expect(act.type).toEqual(actions.CHANGE_SCAN_METHOD);
-    expect(act.scanningMethod).toEqual('ble');
+    expect(act.payload.method).toEqual('ble');
     /* USB */
     act = actions.changeScanMethod('usb');
     expect(act.type).toEqual(actions.CHANGE_SCAN_METHOD);
-    expect(act.scanningMethod).toEqual('usb');
+    expect(act.payload.method).toEqual('usb');
   });
 });
 /* [] - END OF FILE */

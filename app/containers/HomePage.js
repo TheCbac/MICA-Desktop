@@ -14,17 +14,13 @@ import ScanForDevices from '../components/ScanForDevicesComponent';
 // import * as ScanActions from '../actions/ScanForDevicesActions';
 import { changeScanMethod } from '../actions/ScanForDevicesActions';
 
-
+/* Pass the methods into the component */
 function mapStateToProps(state) {
   return {
-    scanningMethod: state.ScanForDevices.scanningMethod,
-    methodEnabled: state.ScanForDevices.methodEnabled
+    method: state.ScanForDevices.method,
+    enabled: state.ScanForDevices.enabled
   };
 }
-
-// function mapDispatchToProps(dispatch: *) {
-//   return bindActionCreators(ScanActions, dispatch);
-// }
 
 const mapDispatchToProps = (dispatch: *) => bindActionCreators({ changeScanMethod }, dispatch);
 

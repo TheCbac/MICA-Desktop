@@ -14,26 +14,30 @@ import { CHANGE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions';
 describe('ScanForDevicesReducer', () => {
   it('should handle initial state', () => {
     expect(scanForDevices(undefined, {})).toEqual({
-      scanningMethod: 'ble',
-      methodEnabled: false
+      method: 'ble',
+      enabled: false
     });
   });
   it('CHANGE_STATE_METHOD', () => {
     const state1 = scanForDevices(undefined, {
       type: CHANGE_SCAN_METHOD,
-      scanningMethod: 'usb'
+      payload: {
+        method: 'usb'
+      }
     });
     expect(state1).toEqual({
-      scanningMethod: 'usb',
-      methodEnabled: false
+      method: 'usb',
+      enabled: false
     });
     const state2 = scanForDevices(undefined, {
       type: CHANGE_SCAN_METHOD,
-      scanningMethod: 'ble'
+      payload: {
+        method: 'ble'
+      }
     });
     expect(state2).toEqual({
-      scanningMethod: 'ble',
-      methodEnabled: false
+      method: 'ble',
+      enabled: false
     });
   });
 });
