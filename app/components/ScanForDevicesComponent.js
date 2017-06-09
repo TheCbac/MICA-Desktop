@@ -10,18 +10,26 @@
 *
 **********************************************************/
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
-import type { changeScanActionType, scanTypes } from '../types/actionTypes';
+import type { scanTypes, changeScanActionType } from '../types/actionTypes';
+
+type methodBtnStyleType = 'success' | 'danger' | 'default';
+type scanBtnStyleType = {
+  color: 'primary' | 'danger',
+  text: 'Start' | 'Stop'
+};
 
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
     method: scanTypes,
     enabled: boolean,
+    scanning: boolean,
     changeScanMethod: (scanTypes) => changeScanActionType
   };
   /* Returns the color for the button */
-  getColor(name: scanTypes) {
+  getColor(name: scanTypes): methodBtnStyleType {
     /* Act for the active method */
     if (name === this.props.method) {
       return this.props.enabled ? 'success' : 'danger';
@@ -29,22 +37,50 @@ export default class ScanForDevices extends Component {
     return 'default';
   }
   /* Sets the active state */
-  isActive(name: scanTypes) {
+  isActive(name: scanTypes): boolean {
     if (name === this.props.method) {
       return true;
     }
     return false;
   }
+  /* Determines whether or not a scan is enabled */
+  getScanState(): scanBtnStyleType {
+    if (this.props.scanning) {
+      return { color: 'danger', text: 'Stop' };
+    }
+    return { color: 'primary', text: 'Start' };
+  }
   /* Render function */
   render() {
-    const { changeScanMethod } = this.props;
+    const { changeScanMethod, scanning, enabled } = this.props;
+    const scanBtnStyle = { marginLeft: '20px' };
+    /* Spin when scanning */
+    const spinner = scanning ? <FontAwesome name={'spinner'} spin /> : null;
     return (
-      <Grid>
+      <Grid fluid>
         <Row>
           <Col md={4} mdOffset={1}>
             <ButtonGroup>
-              <Button active={this.isActive('ble')} bsStyle={this.getColor('ble')} onClick={() => changeScanMethod('ble')}>BLE</Button>
-              <Button active={this.isActive('usb')} bsStyle={this.getColor('usb')} onClick={() => changeScanMethod('usb')}>USB</Button>
+              <Button
+                name={'bleMethodBtn'}
+                active={this.isActive('ble')}
+                bsStyle={this.getColor('ble')}
+                onClick={() => changeScanMethod('ble')}
+              >BLE</Button>
+              <Button
+                name={'usbMethodBtn'}
+                active={this.isActive('usb')}
+                bsStyle={this.getColor('usb')}
+                onClick={() => changeScanMethod('usb')}
+              >USB</Button>
+            </ButtonGroup>
+            <ButtonGroup >
+              <Button
+                name={'scanBtn'}
+                style={scanBtnStyle}
+                bsStyle={this.getScanState().color}
+                disabled={!enabled}
+              >{this.getScanState().text} Scan {spinner}</Button>
             </ButtonGroup>
           </Col>
         </Row>

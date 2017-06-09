@@ -11,6 +11,9 @@ All files for the app are in the `app/` directory.
  * At some point `index.js` is triggered, which loads the global css, load the root container, configures the app state through `configureStore` and sets up the hot swapping in development mode. 
  * `containers/Root.js` Sets up the router, and then loads all of the routes
 
+#### Font Awesome
+Using `font-awesome` and `react-fontawesome`. Must hook up stylesheet in app.global.css
+
  ### Page routing
 
  * `routes.js` is the first place where developers should need to make changes.

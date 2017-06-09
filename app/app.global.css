@@ -1,4 +1,5 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "~font-awesome/css/font-awesome.min.css";
 body {
   font-family: sans-serif;
   background-color: #232c39;

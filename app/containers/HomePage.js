@@ -18,7 +18,8 @@ import store from '../index';
 function mapStateToProps(state) {
   return {
     method: state.ScanForDevices.method,
-    enabled: state.ScanForDevices.enabled
+    enabled: state.ScanForDevices.enabled,
+    scanning: false
   };
 }
 
@@ -35,6 +36,7 @@ Noble.on('stateChange', (state: string) => {
   if (state === 'poweredOn') {
     enabled = true;
   }
+  /* Dispatch the action */
   store.dispatch(enableScanMethod('ble', enabled));
 });
 
