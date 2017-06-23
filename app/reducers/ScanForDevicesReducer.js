@@ -12,12 +12,14 @@ import createReducer from './createReducer';
 import type {
   scanStateType,
   changeScanActionType,
-  enableScanActionType
+  enableScanActionType,
+  scanStateActionType
 } from '../types/actionTypes';
 
 const defaultState = {
   method: 'ble',
-  enabled: false
+  enabled: false,
+  scanning: false
 };
 
 /* Handlers to create reducers  */
@@ -26,8 +28,7 @@ const scanForDeviceHandlers = {
     state: scanStateType = defaultState,
     action: changeScanActionType): scanStateType {
     /* Copy and return the new state object */
-    // return { ...state, method: action.payload.method };
-    return { method: action.payload.method, enabled: action.payload.enable };
+    return { ...state, method: action.payload.method, enabled: action.payload.enable };
   },
   ENABLE_SCAN_METHOD(
     state: scanStateType,
@@ -35,6 +36,15 @@ const scanForDeviceHandlers = {
     /* Change the state if the method matches the active method */
     if (action.payload.method === state.method) {
       return { ...state, enabled: action.payload.enable };
+    }
+    return { ...state };
+  },
+  CHANGE_SCAN_STATE(
+    state: scanStateType,
+    action: scanStateActionType): scanStateType {
+    /* Enable scanning is */
+    if (action.payload.method === state.method) {
+      return { ...state, scanning: action.payload.state };
     }
     return { ...state };
   }

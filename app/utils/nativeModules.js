@@ -17,6 +17,7 @@ let Noble;
 try {
   Noble = require('noble');
 } catch (e) {
+  /* Testing Environement */
   Noble = { state: 'poweredOff' };
 }
 export { Noble };

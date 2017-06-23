@@ -12,9 +12,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Noble from 'noble';
 import ScanForDevices from '../components/ScanForDevicesComponent';
-import { changeScanMethod, enableScanMethod } from '../actions/ScanForDevicesActions';
+import { changeScanMethod, enableScanMethod, startStopScan } from '../actions/ScanForDevicesActions';
 import store from '../index';
-/* Pass the methods into the component */
+/* Pass the state values into the props */
 function mapStateToProps(state) {
   return {
     method: state.ScanForDevices.method,
@@ -22,10 +22,11 @@ function mapStateToProps(state) {
     scanning: false
   };
 }
-
+/* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   changeScanMethod,
-  enableScanMethod
+  enableScanMethod,
+  startStopScan
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScanForDevices);
@@ -38,6 +39,10 @@ Noble.on('stateChange', (state: string) => {
   }
   /* Dispatch the action */
   store.dispatch(enableScanMethod('ble', enabled));
+});
+
+Noble.on('scanStart', () => {
+  console.log('NOBLE - Scan started');
 });
 
 /* [] - END OF FILE */

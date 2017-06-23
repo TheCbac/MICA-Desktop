@@ -26,7 +26,9 @@ export default class ScanForDevices extends Component {
     method: scanTypes,
     enabled: boolean,
     scanning: boolean,
-    changeScanMethod: (scanTypes) => changeScanActionType
+    changeScanMethod: (scanTypes) => changeScanActionType,
+    startStopScan: any
+    // startStopScan:  (boolean) => () => void, () => void) => void
   };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
@@ -52,7 +54,7 @@ export default class ScanForDevices extends Component {
   }
   /* Render function */
   render() {
-    const { changeScanMethod, scanning, enabled } = this.props;
+    const { changeScanMethod, scanning, enabled, startStopScan } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
     const spinner = scanning ? <FontAwesome name={'spinner'} spin /> : null;
@@ -80,6 +82,7 @@ export default class ScanForDevices extends Component {
                 style={scanBtnStyle}
                 bsStyle={this.getScanState().color}
                 disabled={!enabled}
+                onClick={() => startStopScan()}
               >{this.getScanState().text} Scan {spinner}</Button>
             </ButtonGroup>
           </Col>

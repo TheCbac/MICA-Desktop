@@ -28,10 +28,26 @@ export type enableScanActionType = {
   }
 };
 
-/* State Type */
+/* Start or stop the scan */
+export type scanStateActionType = {
+  type: 'CHANGE_SCAN_STATE',
+  payload: {
+    method: scanTypes,
+    state: boolean
+  }
+};
+
+/* State Type for the ScanForDevicesComponent */
 export type scanStateType = {
   method: scanTypes,
-  enabled: boolean
+  enabled: boolean,
+  scanning: boolean
+};
+
+/* State of the app  */
+export type stateType = {
+ ScanForDevices: scanStateType,
+ router: {}
 };
 
 /* [] - END OF FILE */
