@@ -62,7 +62,6 @@ export function startStopScan() {
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
     const scanState = getState().ScanForDevices;
-    console.log('startStopScan - state: ', scanState);
     /* Only scan if the current method is enabled */
     if (scanState.enabled) {
       switch (scanState.method) {
@@ -77,7 +76,7 @@ export function startStopScan() {
         case 'usb':
           break;
         default:
-          return;
+          break;
       }
       /* Dispatch the event */
       // dispatch(changeScanState(scanState.method, startScan));

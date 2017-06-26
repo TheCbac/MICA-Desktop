@@ -27,8 +27,7 @@ export default class ScanForDevices extends Component {
     enabled: boolean,
     scanning: boolean,
     changeScanMethod: (scanTypes) => changeScanActionType,
-    startStopScan: any
-    // startStopScan:  (boolean) => () => void, () => void) => void
+    startStopScan: () => mixed
   };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
