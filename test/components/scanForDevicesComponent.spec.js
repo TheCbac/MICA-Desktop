@@ -19,13 +19,15 @@ function setup(propsObj) {
     props = {
       method: 'ble',
       enabled: false,
-      scanning: false
+      scanning: false,
+      advertisingDevices: undefined
     };
   } else {
     props = { ...propsObj };
   }
   const actions = {
-    changeScanMethod: spy()
+    changeScanMethod: spy(),
+    startStopScan: spy()
   };
   const component = shallow(<ScanForDevices
     method={props.method}

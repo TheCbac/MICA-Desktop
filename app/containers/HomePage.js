@@ -24,7 +24,8 @@ function mapStateToProps(state) {
   return {
     method: state.ScanForDevices.method,
     enabled: state.ScanForDevices.enabled,
-    scanning: state.ScanForDevices.scanning
+    scanning: state.ScanForDevices.scanning,
+    advertisingDevices: undefined
   };
 }
 /* Action creators to be used in the component */
@@ -53,6 +54,11 @@ Noble.on('scanStart', () => {
 /* The Noble BLE Scan has stopped, update the state */
 Noble.on('scanStop', () => {
   store.dispatch(changeScanState('ble', false));
+});
+
+/* A peripheral was discovered */
+Noble.on('discover', (peripheral) => {
+  console.log('NOBLE - Discovered:', peripheral);
 });
 
 /* [] - END OF FILE */

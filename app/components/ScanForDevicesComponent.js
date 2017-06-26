@@ -12,6 +12,7 @@
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
+import ReactTable from 'react-table';
 import type { scanTypes, changeScanActionType } from '../types/actionTypes';
 
 type methodBtnStyleType = 'success' | 'danger' | 'default';
@@ -20,6 +21,13 @@ type scanBtnStyleType = {
   text: 'Start' | 'Stop'
 };
 
+type advertisingDeviceType = {
+  name: string,
+  id: string
+};
+
+type advertisingListType = Array<advertisingDeviceType>;
+
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
@@ -27,7 +35,8 @@ export default class ScanForDevices extends Component {
     enabled: boolean,
     scanning: boolean,
     changeScanMethod: (scanTypes) => changeScanActionType,
-    startStopScan: () => mixed
+    startStopScan: () => mixed,
+    advertisingDevices: ?advertisingListType
   };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
@@ -53,10 +62,45 @@ export default class ScanForDevices extends Component {
   }
   /* Render function */
   render() {
-    const { changeScanMethod, scanning, enabled, startStopScan } = this.props;
+    const {
+      changeScanMethod,
+      scanning,
+      enabled,
+      startStopScan,
+      advertisingDevices
+    } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
     const spinner = scanning ? <FontAwesome name={'spinner'} spin /> : null;
+    /* React Table */
+    const tableStyle = {
+      marginTop: '20px',
+      backgroundColor: 'white',
+      borderRadius: '5px',
+      border: '0px',
+      cursor: 'pointer',
+      textAlign: 'center'
+    };
+    // const data = [{
+    //   name: 'Cube5',
+    //   id: '111123214321432',
+    // }, {
+    //   name: 'Cube6',
+    //   id: '1111232143214dsfasd2',
+    // }, {
+    //   name: 'Cube7',
+    //   id: 'dslfadkflsamfdsa',
+    // }, {
+    //   name: 'Cube8',
+    //   id: 'asdaass232342423',
+    // }];
+    const advertisingColumns = [{
+      Header: 'Advertising Device',
+      accessor: 'name',
+    }, {
+      Header: 'ID',
+      accessor: 'id',
+    }];
     return (
       <Grid fluid>
         <Row>
@@ -84,6 +128,23 @@ export default class ScanForDevices extends Component {
                 onClick={() => startStopScan()}
               >{this.getScanState().text} Scan {spinner}</Button>
             </ButtonGroup>
+            <Row />
+            <ReactTable
+              name={'advertisingTable'}
+              data={advertisingDevices}
+              columns={advertisingColumns}
+              minRows={3}
+              noDataText={'No devices found'}
+              showPagination={false}
+              className={'-striped -highlight'}
+              style={tableStyle}
+              getTdProps={(state, rowInfo) => ({
+                onClick: () => {
+                  console.log('Click row: ', rowInfo);
+                }
+              })
+            }
+            />
           </Col>
         </Row>
       </Grid>

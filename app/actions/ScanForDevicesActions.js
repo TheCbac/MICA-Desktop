@@ -16,6 +16,7 @@ import type {
   scanTypes
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
+import { micaServiceUuid } from '../utils/mica/micaUuids';
 
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
@@ -68,7 +69,7 @@ export function startStopScan() {
         case 'ble':
         /* If not scanning start a scan */
           if (!scanState.scanning) {
-            Noble.startScanning();
+            Noble.startScanning([micaServiceUuid]);
           } else {
             Noble.stopScanning();
           }
@@ -78,8 +79,6 @@ export function startStopScan() {
         default:
           break;
       }
-      /* Dispatch the event */
-      // dispatch(changeScanState(scanState.method, startScan));
     }
   };
 }

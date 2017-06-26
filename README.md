@@ -34,9 +34,11 @@ Modals - https://github.com/marcio/react-skylight
 Graphs - https://github.com/esnet/react-timeseries-charts
 Grid system - https://github.com/jxnblk/rgx
 Window manager - https://github.com/stayradiated/reactwm
-Table - https://github.com/glittershark/reactable
+Table - https://github.com/tannerlinsley/react-table
+Tooltip - https://github.com/wwayne/react-tooltip
 
 Bootstrap - https://github.com/react-bootstrap/react-bootstrap
+
 
 ## Electron
 updating to 1.6.7 was done by
