@@ -39,6 +39,7 @@ A full list of scripts can be found in `/package.json`
  * `app.html` is then opened by `main.js`, which serves as the base HTML for the app.
  * At some point `index.js` is triggered, which loads the global css, loads the root container, configures the app state through `configureStore` and sets up the hot swapping in development mode. 
  * `containers/Root.js` Sets up the router, and then loads all of the routes
+ * The default state is passed in from `/reducers/index.js` from combine reducers
 
  ### Page routing
 
