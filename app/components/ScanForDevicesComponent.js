@@ -81,19 +81,19 @@ export default class ScanForDevices extends Component {
       cursor: 'pointer',
       textAlign: 'center'
     };
-    // const data = [{
-    //   name: 'Cube5',
-    //   id: '111123214321432',
-    // }, {
-    //   name: 'Cube6',
-    //   id: '1111232143214dsfasd2',
-    // }, {
-    //   name: 'Cube7',
-    //   id: 'dslfadkflsamfdsa',
-    // }, {
-    //   name: 'Cube8',
-    //   id: 'asdaass232342423',
-    // }];
+    const data = [{
+      name: 'Cube5',
+      id: '111123214321432',
+    }, {
+      name: 'Cube5',
+      id: '1111232143214dsfasd2',
+    }, {
+      name: 'Cube7',
+      id: 'dslfadkflsamfdsa',
+    }, {
+      name: 'Cube8',
+      id: 'asdaass232342423',
+    }];
     const advertisingColumns = [{
       Header: 'Advertising Device',
       accessor: 'name',
@@ -131,7 +131,8 @@ export default class ScanForDevices extends Component {
             <Row />
             <ReactTable
               name={'advertisingTable'}
-              data={advertisingDevices}
+              // data={advertisingDevices}
+              data={data}   // testing only
               columns={advertisingColumns}
               minRows={3}
               noDataText={'No devices found'}

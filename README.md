@@ -1,18 +1,44 @@
 # MICA react-electron
 
+The MICA desktop application is the best way to stream data from a MICA cube. The application is written almost exclusively in JavaScript, with just a sprinkling of HTML and CSS, using the [Electron Framework](https://electron.atom.io/). All frontend code is written with [React](https://facebook.github.io/react/), state management is handled by [Redux](http://redux.js.org/), and the application is tested using [Jest](https://facebook.github.io/jest/) and type checked with [Flow](https://flow.org/). This app is a fork of [electron-react-boilerplate](https://github.com/chentsulin/electron-react-boilerplate).
+
 ## App Structure
 
-All files for the app are in the `app/` directory. 
+All files for the app are in the `/app/` directory, while the electron files are in the top level folder `/`. Developers will modify the following folders to make changes to the application:
 
-### Setup
+```
+	app/
+
+		actions/  - Redux actions
+
+		components/ - React Components
+
+		containers/ - React Containers
+
+		reducers/ - Redux reducers
+
+		types/ - Flow types
+
+```
+
+Every file should have an accompanying test file named with the scheme `<fileName>.spec.js`. The test files reside in the top level `/test/` folder. 
+
+## Commands
+All commands are run from the top level folder unless otherwise stated. 
+
+* Starting the application: `$ npm run dev`
+* Testing: `$ npm run test`
+
+A full list of scripts can be found in `/package.json`
+
+## Theory of Operation
+
+### Boot up
 
  * The electron app is first created from `main.js`
- * `app.html` is then opened by `main, which serves as the base HTML for the app.
- * At some point `index.js` is triggered, which loads the global css, load the root container, configures the app state through `configureStore` and sets up the hot swapping in development mode. 
+ * `app.html` is then opened by `main.js`, which serves as the base HTML for the app.
+ * At some point `index.js` is triggered, which loads the global css, loads the root container, configures the app state through `configureStore` and sets up the hot swapping in development mode. 
  * `containers/Root.js` Sets up the router, and then loads all of the routes
-
-#### Font Awesome
-Using `font-awesome` and `react-fontawesome`. Must hook up stylesheet in app.global.css
 
  ### Page routing
 
@@ -20,13 +46,16 @@ Using `font-awesome` and `react-fontawesome`. Must hook up stylesheet in app.glo
  * Page containers are loaded in from `containers/`, and sync'ed with their appropriate path
 
  ### React 
- `
+ 
  * `containers/` has all of the page containers, which is where component props are mapped to the redux state, and where actions are passed into the component 
  * `components/` contains all of the react components
  * `actions/` is all of the redux actions and action creators. 
  * `reducers/` contains all of the action reducers, which specify how the action change the state. 
 
-## react components
+ ### External CSS
+Using `font-awesome` and `react-fontawesome`. Must hook up stylesheet in app.global.css
+
+## React components
 https://github.com/brillout/awesome-react-components#ui-layout
 
 Menu - https://github.com/alexkuz/react-dock 
@@ -46,13 +75,14 @@ updating to 1.6.7 was done by
 
 ## Noble
 Installing noble in the app/ package. Rebuild for current version: 
+
 `$ npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=50`
 
 `$ npm rebuild --runtime=electron --target=1.6.6 --disturl=https://atom.io/download/atom-shell --abi=51`
 
 `$ npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51`
 
-npm rebuild jest --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=53
+`$ npm rebuild jest --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=53`
 
 
 ### xpc-connection
