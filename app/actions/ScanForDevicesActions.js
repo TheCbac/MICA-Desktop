@@ -8,19 +8,25 @@
 * Date: 2017.04.28
 *
 **********************************************************/
+import type { stateType } from '../types/stateTypes';
+import type {
+  scanTypes,
+  noblePeripheralType
+} from '../types/paramTypes';
 import type {
   enableScanActionType,
   changeScanActionType,
   scanStateActionType,
-  stateType,
-  scanTypes
+  foundDeviceActionType,
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
 import { micaServiceUuid } from '../utils/mica/micaUuids';
 
+/* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
+export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 
 /* Action method for changing active method */
 export function changeScanMethod(method: scanTypes): changeScanActionType {
@@ -69,7 +75,7 @@ export function startStopScan() {
         case 'ble':
         /* If not scanning start a scan */
           if (!scanState.scanning) {
-            Noble.startScanning([micaServiceUuid]);
+            Noble.startScanning([micaServiceUuid], false);
           } else {
             Noble.stopScanning();
           }
@@ -79,6 +85,16 @@ export function startStopScan() {
         default:
           break;
       }
+    }
+  };
+}
+
+/* Action creator for when an advertising MICA device is discovered */
+export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
+  return {
+    type: FOUND_ADVERTISING_DEVICE,
+    payload: {
+      peripheral
     }
   };
 }

@@ -13,7 +13,8 @@ import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import type { scanTypes, changeScanActionType } from '../types/actionTypes';
+import type { scanTypes } from '../types/paramTypes';
+import type { changeScanActionType } from '../types/actionTypes';
 
 type methodBtnStyleType = 'success' | 'danger' | 'default';
 type scanBtnStyleType = {

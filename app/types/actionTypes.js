@@ -8,8 +8,10 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-/* Different scan types available */
-export type scanTypes = 'usb' | 'ble';
+import type {
+  scanTypes,
+  noblePeripheralType
+} from './paramTypes';
 
 /* Type for changing the scanning type */
 export type changeScanActionType = {
@@ -37,17 +39,12 @@ export type scanStateActionType = {
   }
 };
 
-/* State Type for the ScanForDevicesComponent */
-export type scanStateType = {
-  method: scanTypes,
-  enabled: boolean,
-  scanning: boolean
-};
-
-/* State of the app  */
-export type stateType = {
- ScanForDevices: scanStateType,
- router: {}
+/* A new advertising device was found */
+export type foundDeviceActionType = {
+  type: 'FOUND_ADVERTISING_DEVICE',
+  payload: {
+    peripheral: noblePeripheralType
+  }
 };
 
 /* [] - END OF FILE */

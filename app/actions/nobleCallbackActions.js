@@ -13,6 +13,7 @@ import Noble from 'noble';
 import {
   changeScanState,
   enableScanMethod,
+  foundAdvertisingDevice
 } from './ScanForDevicesActions';
 import store from '../index';
 
@@ -37,7 +38,7 @@ Noble.on('scanStop', () => {
 
 /* A peripheral was discovered */
 Noble.on('discover', (peripheral) => {
-  console.log('NOBLE - Discovered:', peripheral);
+  store.dispatch(foundAdvertisingDevice(peripheral));
 });
 
 
