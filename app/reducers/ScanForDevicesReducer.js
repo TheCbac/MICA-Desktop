@@ -5,17 +5,18 @@
 * Brief: Reducer for the storing scan page
 *
 * Author: Craig Cheney
-* Date: 2017.04.28
+* Date: 2017.07.10
 *
 **********************************************************/
 import createReducer from './createReducer';
+import type { scanStateType } from '../types/stateTypes';
 import type {
-  scanStateType,
   changeScanActionType,
   enableScanActionType,
   scanStateActionType
 } from '../types/actionTypes';
 
+/* Default state of the ScanForDevicesReducer */
 const defaultState = {
   method: 'ble',
   enabled: false,

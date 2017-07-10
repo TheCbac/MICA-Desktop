@@ -12,9 +12,9 @@
 import Noble from 'noble';
 import {
   changeScanState,
-  enableScanMethod,
-  foundAdvertisingDevice
+  enableScanMethod
 } from './ScanForDevicesActions';
+import { foundAdvertisingDevice } from './devicesActions';
 import store from '../index';
 
 /* Noble callback */

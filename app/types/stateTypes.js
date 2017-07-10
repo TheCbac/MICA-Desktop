@@ -27,7 +27,8 @@ export type devicesStateType = {
 
 /* State of the app  */
 export type stateType = {
- ScanForDevices: scanStateType,
+ scanForDevices: scanStateType,
+ devices: devicesStateType,
  router: {}
 };
 

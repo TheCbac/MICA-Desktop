@@ -9,24 +9,21 @@
 *
 **********************************************************/
 import type { stateType } from '../types/stateTypes';
-import type {
-  scanTypes,
-  noblePeripheralType
-} from '../types/paramTypes';
+import type { scanTypes } from '../types/paramTypes';
 import type {
   enableScanActionType,
   changeScanActionType,
   scanStateActionType,
-  foundDeviceActionType,
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
 import { micaServiceUuid } from '../utils/mica/micaUuids';
+import store from '../index';
+import { clearAdvertisingList } from './devicesActions';
 
 /* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
-export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 
 /* Action method for changing active method */
 export function changeScanMethod(method: scanTypes): changeScanActionType {
@@ -68,7 +65,7 @@ export function changeScanState(method: scanTypes, state: boolean): scanStateAct
 export function startStopScan() {
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
-    const scanState = getState().ScanForDevices;
+    const scanState = getState().scanForDevices;
     /* Only scan if the current method is enabled */
     if (scanState.enabled) {
       switch (scanState.method) {
@@ -76,6 +73,7 @@ export function startStopScan() {
         /* If not scanning start a scan */
           if (!scanState.scanning) {
             Noble.startScanning([micaServiceUuid], false);
+            store.dispatch(clearAdvertisingList());
           } else {
             Noble.stopScanning();
           }
@@ -85,16 +83,6 @@ export function startStopScan() {
         default:
           break;
       }
-    }
-  };
-}
-
-/* Action creator for when an advertising MICA device is discovered */
-export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
-  return {
-    type: FOUND_ADVERTISING_DEVICE,
-    payload: {
-      peripheral
     }
   };
 }

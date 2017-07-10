@@ -20,7 +20,7 @@ function setup(propsObj) {
       method: 'ble',
       enabled: false,
       scanning: false,
-      advertisingDevices: undefined
+      advertisingDevices: []
     };
   } else {
     props = { ...propsObj };

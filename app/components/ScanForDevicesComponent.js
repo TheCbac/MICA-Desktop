@@ -13,7 +13,7 @@ import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import type { scanTypes } from '../types/paramTypes';
+import type { scanTypes, noblePeripheralType } from '../types/paramTypes';
 import type { changeScanActionType } from '../types/actionTypes';
 
 type methodBtnStyleType = 'success' | 'danger' | 'default';
@@ -22,12 +22,12 @@ type scanBtnStyleType = {
   text: 'Start' | 'Stop'
 };
 
-type advertisingDeviceType = {
-  name: string,
-  id: string
-};
+// type advertisingDeviceType = {
+//   name: string,
+//   id: string
+// };
 
-type advertisingListType = Array<advertisingDeviceType>;
+// type advertisingListType = Array<advertisingDeviceType>;
 
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
@@ -37,7 +37,7 @@ export default class ScanForDevices extends Component {
     scanning: boolean,
     changeScanMethod: (scanTypes) => changeScanActionType,
     startStopScan: () => mixed,
-    advertisingDevices: ?advertisingListType
+    advertisingDevices: noblePeripheralType[],
   };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
@@ -68,7 +68,7 @@ export default class ScanForDevices extends Component {
       scanning,
       enabled,
       startStopScan,
-      advertisingDevices
+      advertisingDevices,
     } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
@@ -82,22 +82,22 @@ export default class ScanForDevices extends Component {
       cursor: 'pointer',
       textAlign: 'center'
     };
-    const data = [{
-      name: 'Cube5',
-      id: '111123214321432',
-    }, {
-      name: 'Cube5',
-      id: '1111232143214dsfasd2',
-    }, {
-      name: 'Cube7',
-      id: 'dslfadkflsamfdsa',
-    }, {
-      name: 'Cube8',
-      id: 'asdaass232342423',
-    }];
+    // const data = [{
+    //   name: 'Cube5',
+    //   id: '111123214321432',
+    // }, {
+    //   name: 'Cube5',
+    //   id: '1111232143214dsfasd2',
+    // }, {
+    //   name: 'Cube7',
+    //   id: 'dslfadkflsamfdsa',
+    // }, {
+    //   name: 'Cube8',
+    //   id: 'asdaass232342423',
+    // }];
     const advertisingColumns = [{
       Header: 'Advertising Device',
-      accessor: 'name',
+      accessor: 'advertisement.localName',
     }, {
       Header: 'ID',
       accessor: 'id',
@@ -132,8 +132,8 @@ export default class ScanForDevices extends Component {
             <Row />
             <ReactTable
               name={'advertisingTable'}
-              // data={advertisingDevices}
-              data={data}   // testing only
+              data={advertisingDevices}
+              // data={data}   // testing only
               columns={advertisingColumns}
               minRows={3}
               noDataText={'No devices found'}

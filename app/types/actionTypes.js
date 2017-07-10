@@ -39,6 +39,11 @@ export type scanStateActionType = {
   }
 };
 
+/* Clear the advertising device list */
+export type clearAdvertisingActionType = {
+  type: 'CLEAR_ADVERTISING_LIST'
+};
+
 /* A new advertising device was found */
 export type foundDeviceActionType = {
   type: 'FOUND_ADVERTISING_DEVICE',
