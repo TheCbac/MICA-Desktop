@@ -8,8 +8,10 @@
 * Date: 2017.04.28
 *
 **********************************************************/
-/* Different scan types available */
-export type scanTypes = 'usb' | 'ble';
+import type {
+  scanTypes,
+  noblePeripheralType
+} from './paramTypes';
 
 /* Type for changing the scanning type */
 export type changeScanActionType = {
@@ -28,10 +30,26 @@ export type enableScanActionType = {
   }
 };
 
-/* State Type */
-export type scanStateType = {
-  method: scanTypes,
-  enabled: boolean
+/* Start or stop the scan */
+export type scanStateActionType = {
+  type: 'CHANGE_SCAN_STATE',
+  payload: {
+    method: scanTypes,
+    state: boolean
+  }
+};
+
+/* Clear the advertising device list */
+export type clearAdvertisingActionType = {
+  type: 'CLEAR_ADVERTISING_LIST'
+};
+
+/* A new advertising device was found */
+export type foundDeviceActionType = {
+  type: 'FOUND_ADVERTISING_DEVICE',
+  payload: {
+    peripheral: noblePeripheralType
+  }
 };
 
 /* [] - END OF FILE */

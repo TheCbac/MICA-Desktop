@@ -10,32 +10,32 @@
 **********************************************************/
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Noble from 'noble';
-import ScanForDevices from '../components/ScanForDevicesComponent';
-import { changeScanMethod, enableScanMethod } from '../actions/ScanForDevicesActions';
-import store from '../index';
-/* Pass the methods into the component */
-function mapStateToProps(state) {
+import scanForDevices from '../components/ScanForDevicesComponent';
+import {
+  changeScanMethod,
+  enableScanMethod,
+  startStopScan
+} from '../actions/ScanForDevicesActions';
+import { foundAdvertisingDevice } from '../actions/devicesActions';
+import type { stateType } from '../types/stateTypes';
+
+/* Pass the state values into the props */
+function mapStateToProps(state: stateType) {
   return {
-    method: state.ScanForDevices.method,
-    enabled: state.ScanForDevices.enabled
+    method: state.scanForDevices.method,
+    enabled: state.scanForDevices.enabled,
+    scanning: state.scanForDevices.scanning,
+    advertisingDevices: state.devices.advertising
   };
 }
-
+/* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   changeScanMethod,
-  enableScanMethod
+  enableScanMethod,
+  startStopScan,
+  foundAdvertisingDevice
 }, dispatcher);
 
-export default connect(mapStateToProps, mapDispatchToProps)(ScanForDevices);
-
-/* Noble callback */
-Noble.on('stateChange', (state: string) => {
-  let enabled = false;
-  if (state === 'poweredOn') {
-    enabled = true;
-  }
-  store.dispatch(enableScanMethod('ble', enabled));
-});
+export default connect(mapStateToProps, mapDispatchToProps)(scanForDevices);
 
 /* [] - END OF FILE */
