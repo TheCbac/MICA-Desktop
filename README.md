@@ -94,6 +94,12 @@ Installing noble in the app/ package. Rebuild for current version:
  $ npm rebuild xpc-connection
  ```
 
+# Left off:
+* Just finished populating the advertisement list
+* Next: write unit tests for the advertisement list
+* Click to connect 
+* Maybe rethink how the list will work
+
 ## TODO: Long term
 * Write operating system for MICA Cube
 	* Dynamically load programs from MICA app
