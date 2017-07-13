@@ -9,7 +9,8 @@
 * Date: 2017.07.10
 *
 **********************************************************/
-import Noble from 'noble';
+// import Noble from 'noble';
+import { Noble } from '../utils/nativeModules';
 import {
   changeScanState,
   enableScanMethod
