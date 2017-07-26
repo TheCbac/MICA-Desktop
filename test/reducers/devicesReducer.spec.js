@@ -1,33 +1,74 @@
 // @flow
 /* eslint no-unused-vars: ["error", { "args": "none" }]*/
 /* **********************************************************
-* File: reducers/devicesReducer.js
+* File: test/reducers/devicesReducer.spec.js
 *
-* Brief: Reducer for interactive with devices
+* Brief: testing deviceReducer.js
 *
 * Author: George Whitfield
-* Date: 2017.07.25
+* Date: 2017.08.25
 *
 **********************************************************/
-import deviceHandlers from '../../app/reducers/devicesReducer';
-import createReducer from '../../app/reducers/devicesReducer';
-import type {
-  devicesStateType
-} from '../../app/types/stateTypes';
+import { deviceHandlers, defaultState } from '../../app/reducers/devicesReducer';
+// import { createReducer } from '../../app/reducers/devicesReducer';
 
-let testDevicesStateType = {
+const testDevicesStateType = {
   advertising: [2, 3, 4],
   connected: [5, 3, 5]
-}
+};
 
-describe('Testing deivceHandlers', () => {
-  it('Should not reassign orinal data', () => {
-    const myMock = jest.fn();
-    /* Listing out the logic for the test
-        1) define a new Clear_advertising_list
-        2) pass in example data
-        3) confirm whether or not the original data was changed
-    */
+const testDevicesActionType = {
+  type: 'CLEAR_ADVERTISING_LIST'
+};
+const testFoundDevicesActionType = {
+  payload: {
+    peripheral: {}
+  },
+  type: 'FOUND_ADVERTISING_DEVICE'
+};
 
+const clearAdvertisingList = deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
+const foundAvertisingDevice = deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
+
+// Need to figure out what the colon after the parenthesis means in devicesReducer.js.
+describe('Testing devicesReducer.js', () => {
+  describe('Testing deivceHandlers', () => {
+    describe('Testing CLEAR_ADVERTISING_LIST', () => {
+      it('Return the correct information', () => {
+        const blankAdvertising = {
+          advertising: []
+        };
+        expect(clearAdvertisingList).toEqual({
+          connected: testDevicesStateType.connected,
+          advertising: blankAdvertising.advertising
+        });
+      });
+    });
+    it('Does not throw an error', () => {
+      expect(() => {
+        deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
+      }).not.toThrow();
+    });
+    describe('Testing FOUND_ADVERTISING_DEVICE', () => {
+      it('Return the correct information', () => {
+        const newAdvertisingValue = testDevicesStateType.advertising.concat(testFoundDevicesActionType.payload.peripheral);
+        expect(foundAvertisingDevice).toEqual({
+          connected: testDevicesStateType.connected,
+          advertising: newAdvertisingValue
+        });
+      });
+      it('Does not throw an error', () => {
+        expect(() => {
+          deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
+        }).not.toThrow();
+      });
+    });
+  });
+  it('Has a defaultState with values set to blank arrays', () => {
+    expect(defaultState).toEqual({
+      advertising: [],
+      connected: []
+    });
   });
 });
+

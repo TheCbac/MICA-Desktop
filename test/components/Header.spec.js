@@ -12,19 +12,27 @@
 // $FlowFixMe
 import renderer from 'react-test-renderer';
 import React from 'react';
-// import { Navbar } from 'react-bootstrap';
-// import { shallow } from 'enzyme';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { shallow, mount } from 'enzyme';
 import Header from '../../app/components/Header';
 
+function setup(propsObj){
+  const component = mount(<Header 
+/>);
+return{
+  component
+};
 
-// console.log(Navbar.props);
-
+}
 /* Beginning of the test suite */
+
 describe('Header', () => {
   it('Should render everything the same as the snapshot file', () => {
-    const header = renderer.create(
-      <Header />
-    ).toJSON();
+    const header = renderer.create(<Header />).toJSON();
     expect(header).toMatchSnapshot();
   });
 });
+
+
+// There seems to be a problem where jest cannot render the Navbar because there are too many nested
+// components inside of it. Will look into that in the future.

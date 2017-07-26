@@ -16,7 +16,6 @@ import { IndexLinkContainer } from 'react-router-bootstrap';
 export default class Header extends Component {
   render() {
     return (
-      <div>
         <Navbar inverse collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
@@ -35,7 +34,6 @@ export default class Header extends Component {
             </Nav>
           </Navbar.Collapse>
         </Navbar>
-      </div>
     );
   }
 }

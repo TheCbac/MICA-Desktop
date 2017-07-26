@@ -11,7 +11,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <div id="root">
+      <div>
         <Header />
         {this.props.children}
         <Footer />

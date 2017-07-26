@@ -32,13 +32,13 @@ type scanBtnStyleType = {
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
-    method: scanTypes,
-    enabled: boolean,
-    scanning: boolean,
-    changeScanMethod: (scanTypes) => changeScanActionType,
-    startStopScan: () => mixed,
-    advertisingDevices: noblePeripheralType[],
-  };
+      method: scanTypes,
+      enabled: boolean,
+      scanning: boolean,
+      changeScanMethod: (scanTypes) => changeScanActionType,
+      startStopScan: () => mixed,
+      advertisingDevices: noblePeripheralType[],
+    };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
     /* Act for the active method */
@@ -103,55 +103,53 @@ export default class ScanForDevices extends Component {
       accessor: 'id',
     }];
     return (
-      <div>
-        <Grid fluid>
-          <Row>
-            <Col md={4} mdOffset={1}>
-              <ButtonGroup>
-                <Button
-                  name={'bleMethodBtn'}
-                  active={this.isActive('ble')}
-                  bsStyle={this.getColor('ble')}
-                  onClick={() => changeScanMethod('ble')}
-                >BLE</Button>
-                <Button
-                  name={'usbMethodBtn'}
-                  active={this.isActive('usb')}
-                  bsStyle={this.getColor('usb')}
-                  onClick={() => changeScanMethod('usb')}
-                >USB</Button>
-              </ButtonGroup>
-              <ButtonGroup >
-                <Button
-                  name={'scanBtn'}
-                  style={scanBtnStyle}
-                  bsStyle={this.getScanState().color}
-                  disabled={!enabled}
-                  onClick={() => startStopScan()}
-                >{this.getScanState().text} Scan {spinner}</Button>
-              </ButtonGroup>
-              <Row />
-              <ReactTable
-                name={'advertisingTable'}
-                data={advertisingDevices}
-                // data={data}   // testing only
-                columns={advertisingColumns}
-                minRows={3}
-                noDataText={'No devices found'}
-                showPagination={false}
-                className={'-striped -highlight'}
-                style={tableStyle}
-                getTdProps={(state, rowInfo) => ({
-                  onClick: () => {
-                    console.log('Click row: ', rowInfo);
-                  }
-                })
-              }
-              />
-            </Col>
-          </Row>
-        </Grid>
-      </div>
+      <Grid fluid>
+        <Row>
+          <Col md={4} mdOffset={1}>
+            <ButtonGroup>
+              <Button
+                name={'bleMethodBtn'}
+                active={this.isActive('ble')}
+                bsStyle={this.getColor('ble')}
+                onClick={() => changeScanMethod('ble')}
+              >BLE</Button>
+              <Button
+                name={'usbMethodBtn'}
+                active={this.isActive('usb')}
+                bsStyle={this.getColor('usb')}
+                onClick={() => changeScanMethod('usb')}
+              >USB</Button>
+            </ButtonGroup>
+            <ButtonGroup >
+              <Button
+                name={'scanBtn'}
+                style={scanBtnStyle}
+                bsStyle={this.getScanState().color}
+                disabled={!enabled}
+                onClick={() => startStopScan()}
+              >{this.getScanState().text} Scan {spinner}</Button>
+            </ButtonGroup>
+            <Row />
+            <ReactTable
+              name={'advertisingTable'}
+              data={advertisingDevices}
+              // data={data}   // testing only
+              columns={advertisingColumns}
+              minRows={3}
+              noDataText={'No devices found'}
+              showPagination={false}
+              className={'-striped -highlight'}
+              style={tableStyle}
+              getTdProps={(state, rowInfo) => ({
+                onClick: () => {
+                  console.log('Click row: ', rowInfo);
+                }
+              })
+            }
+            />
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }

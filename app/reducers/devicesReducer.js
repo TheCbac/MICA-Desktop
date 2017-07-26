@@ -20,13 +20,13 @@ import type {
 } from '../types/actionTypes';
 
 /* Default state of the devicesReducer */
-const defaultState = {
+export const defaultState = {
   advertising: [],
   connected: []
 };
 
 /* Handlers to create reducers  */
-const deviceHandlers = {
+export const deviceHandlers = {
   /* Clear the advertising list */
   CLEAR_ADVERTISING_LIST(
     state: devicesStateType,

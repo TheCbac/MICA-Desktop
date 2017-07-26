@@ -24,8 +24,8 @@ ReactDOM.render(
       <Root store={store} history={history} />
     </AppContainer>
   </div>,
-  // document.getElementById('root')
-  document.querySelector('body')
+  document.getElementById('root')
+  // document.querySelector('body')
 );
 
 if (module.hot) {
@@ -37,8 +37,8 @@ if (module.hot) {
           <NextRoot store={store} history={history} />
         </AppContainer>
       </div>,
-    //  document.getElementById('root')
-    document.querySelector('body')
+    document.getElementById('root')
+    // document.querySelector('body')
     );
   });
 }
