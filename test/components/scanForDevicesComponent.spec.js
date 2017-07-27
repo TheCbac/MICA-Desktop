@@ -38,7 +38,8 @@ function setup(propsObj) {
   return {
     component,
     actions,
-    buttons: component.find('Button')
+    buttons: component.find('Button'),
+    table: component.find('ReactTable')
   };
 }
 /* IDs of the buttons */
@@ -52,6 +53,19 @@ describe('ScanForDevicesComponent', () => {
     expect(buttons.at(bleId).prop('name')).toEqual('bleMethodBtn');
     expect(buttons.at(usbId).prop('name')).toEqual('usbMethodBtn');
     expect(buttons.at(scanId).prop('name')).toEqual('scanBtn');
+  });
+  it('ReactTable', () => {
+    const { table } = setup();
+    it('Should be named correctly', () => {
+      expect(table.at(0).prop('name')).toEqual('advertisingTable');
+    });
+    it('Should have the correct number of columns and rows', () => {
+      const { props } = setup();
+      expect(table.at(0).prop('rows')).toBe(3);
+      expect(table.at(0).prop('columns')).toEqual({
+        
+      });
+    });
   });
   /* BLE or USB */
   describe('Method selection', () => {

@@ -39,7 +39,7 @@ describe('Testing devicesActions.js', () => {
       }).not.toThrow();
     });
     it('Has a type of CLEAR_ADVERTISING_LIST', () => {
-      const clearAdvertisingListFunction = clearAdvertisingList('lemon');
+      const clearAdvertisingListFunction = clearAdvertisingList(testString);
       expect((clearAdvertisingListFunction).type).toEqual('CLEAR_ADVERTISING_LIST');
     });
   });
