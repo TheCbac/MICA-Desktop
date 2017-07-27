@@ -19,26 +19,20 @@ import './actions/nobleCallbackActions';
 const store = configureStore();
 
 ReactDOM.render(
-  <div id="root">
-    <AppContainer>
-      <Root store={store} history={history} />
-    </AppContainer>
-  </div>,
+  <AppContainer>
+    <Root store={store} history={history} />
+  </AppContainer>,
   document.getElementById('root')
-  // document.querySelector('body')
 );
 
 if (module.hot) {
   module.hot.accept('./containers/Root', () => {
     const NextRoot = require('./containers/Root'); // eslint-disable-line global-require
     ReactDOM.render(
-      <div id="root">
-        <AppContainer>
-          <NextRoot store={store} history={history} />
-        </AppContainer>
-      </div>,
+      <AppContainer>
+        <NextRoot store={store} history={history} />
+      </AppContainer>,
     document.getElementById('root')
-    // document.querySelector('body')
     );
   });
 }

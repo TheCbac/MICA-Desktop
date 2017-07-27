@@ -10,12 +10,8 @@
 *
 **********************************************************/
 // $FlowFixMe
+
 import React from 'react';
-import ReactDOM from 'react-dom';
-import renderer from 'react-test-renderer';
-import { Router, createMemoryHistory } from 'react-router';
-import TestUtils from 'react-addons-test-utils';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { shallow } from 'enzyme';
 import Header from '../../app/components/Header';
 
@@ -26,14 +22,7 @@ function setup() {
   };
 }
 
-function createNodeMock(element) {
-  if (element.type === 'Header') {
-    return {};
-  }
-  return null;
-}
-/* Beginning of the test suite */
-
+// Begin test
 describe('Header', () => {
   const { component } = setup();
   it('Navbar should have props inverse and collaseOnSelect', () => {
@@ -50,13 +39,10 @@ describe('Header', () => {
       expect(index.at(1).prop('to')).toEqual('/collectData');
     });
   });
-  it('Renders correctly', () => {
-    const options = { createNodeMock };
-    const head = renderer.create(<Header />, options);
-    expect(head).toMatchSnapshot();
+  it('Matches Snapshot', () => {
+    expect(component).toMatchSnapshot();
   });
 });
 
-
-// There seems to be a problem where jest cannot render the Navbar because there are too many nested
-// components inside of it. Will look into that in the future.
+// To create a new snapshot, you have to move the old snapshot file to the trash. Using ' npm test -- -u ' 
+// does not work.

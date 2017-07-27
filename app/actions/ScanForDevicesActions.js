@@ -17,7 +17,7 @@ import type {
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
 import { micaServiceUuid } from '../utils/mica/micaUuids';
-import store from '../index';
+import { configureStore } from '../store/configureStore';
 import { clearAdvertisingList } from './devicesActions';
 
 /* Action names */
@@ -73,7 +73,7 @@ export function startStopScan() {
         /* If not scanning start a scan */
           if (!scanState.scanning) {
             Noble.startScanning([micaServiceUuid], false);
-            store.dispatch(clearAdvertisingList());
+            configureStore().dispatch(clearAdvertisingList());
           } else {
             Noble.stopScanning();
           }
