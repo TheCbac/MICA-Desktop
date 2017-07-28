@@ -7,8 +7,6 @@
 * Date: 2017.06.08
 *
 **********************************************************/
-// import { render } from 'react-dom';
-
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';

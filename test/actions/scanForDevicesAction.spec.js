@@ -11,7 +11,6 @@
 **********************************************************/
 // $FlowFixMe
 import scanRewire, * as actions from '../../app/actions/ScanForDevicesActions';
-import React from 'react';
 
 describe('ScanForDevicesActions', () => {
   describe('changeScanMethod', () => {

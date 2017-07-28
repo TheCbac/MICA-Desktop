@@ -9,7 +9,7 @@
 *
 **********************************************************/
 import scanForDevicesReducer from '../../app/reducers/ScanForDevicesReducer';
-import { CHANGE_SCAN_METHOD, ENABLE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions'
+import { CHANGE_SCAN_METHOD, ENABLE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions';
 
 describe('ScanForDevicesReducer', () => {
   it('should handle initial state', () => {

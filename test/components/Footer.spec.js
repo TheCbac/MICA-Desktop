@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { footerStyle, mitLogoStyle, bilabLogoStyle, } from '../../app/components/Footer';
+import { footerStyle } from '../../app/components/Footer';
 import Footer from '../../app/components/Footer';
  // The default export from Fotoer.js needs to be imported seperately or else Jest throws an error
 
