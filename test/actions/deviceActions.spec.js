@@ -5,17 +5,33 @@
 *
 * Brief: Testing deviceActions.js
 * Author: George Whitfield
-* Date: 2017.08.25
+* Date: 2017.07.25
 *
 **********************************************************/
 
 import { foundAdvertisingDevice, clearAdvertisingList } from '../../app/actions/devicesActions';
+import noblePeripheralType from '../../app/types/paramTypes';
 
-const testString = 'lemon';
+const testString = 'sefhskdhf74';
 
-const randomdata = {
-  peripheral: testString
+// Random data
+const randomdata: typeof noblePeripheralType = {
+  address: 'sdfhdh43fbDG3',
+  addressType: 'string',
+  advertisement: {
+    localName: 'MICA_45',
+    manufacturerData: 4,
+    serviceData: [123, 234, 345, 234],
+    serviceUuids: ['sjfds3f', 'gdhfjd3', 'sgdhf47FG'],
+    txPowerLevel: 5
+  },
+  connectable: true,
+  id: '23454345g',
+  rssi: 6,
+  services: 1,
+  uuid: 'fgdhfhHJ4g'
 };
+
 // testing suite
 describe('Testing devicesActions.js', () => {
   describe('Testing foundAdvertisingDevice', () => {

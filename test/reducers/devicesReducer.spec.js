@@ -6,7 +6,7 @@
 * Brief: testing deviceReducer.js
 *
 * Author: George Whitfield
-* Date: 2017.08.25
+* Date: 2017.07.25
 *
 **********************************************************/
 import { deviceHandlers, defaultState } from '../../app/reducers/devicesReducer';

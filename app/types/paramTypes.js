@@ -24,7 +24,7 @@ export type noblePeripheralType = {
   },
   connectable: boolean,
   id: string,
-  rssi: int,
+  rssi: number,
   services: any,
   uuid: string
 };

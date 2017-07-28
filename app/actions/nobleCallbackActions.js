@@ -19,14 +19,17 @@ import { foundAdvertisingDevice } from './devicesActions';
 import store from '../index';
 
 /* Noble callback */
+
+
 Noble.on('stateChange', (state: string) => {
   let enabled = false;
   if (state === 'poweredOn') {
     enabled = true;
   }
-  /* Dispatch the action */
+/* Dispatch the action */
   store.dispatch(enableScanMethod('ble', enabled));
 });
+
 
 /* The Noble BLE scan has started, dispatch an event */
 Noble.on('scanStart', () => {
