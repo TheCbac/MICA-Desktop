@@ -17,33 +17,42 @@ import {
 } from './ScanForDevicesActions';
 import { foundAdvertisingDevice } from './devicesActions';
 import store from '../index';
+// import store from '../createNewStore';
 
 /* Noble callback */
-
-
-Noble.on('stateChange', (state: string) => {
-  let enabled = false;
-  if (state === 'poweredOn') {
-    enabled = true;
-  }
-/* Dispatch the action */
-  store.dispatch(enableScanMethod('ble', enabled));
-});
-
-
+function stateChange() {
+  Noble.on('stateChange', (state: string) => {
+    let enabled = false;
+    if (state === 'poweredOn') {
+      enabled = true;
+    }
+  /* Dispatch the action */
+    store.dispatch(enableScanMethod('ble', enabled));
+  });
+}
 /* The Noble BLE scan has started, dispatch an event */
-Noble.on('scanStart', () => {
-  store.dispatch(changeScanState('ble', true));
-});
-/* The Noble BLE Scan has stopped, update the state */
-Noble.on('scanStop', () => {
-  store.dispatch(changeScanState('ble', false));
-});
-
+function scanStart() {
+  Noble.on('scanStart', () => {
+    store.dispatch(changeScanState('ble', true));
+  });
+}
+  /* The Noble BLE Scan has stopped, update the state */
+function scanStop() {
+  Noble.on('scanStop', () => {
+    store.dispatch(changeScanState('ble', false));
+  });
+}
 /* A peripheral was discovered */
-Noble.on('discover', (peripheral) => {
-  store.dispatch(foundAdvertisingDevice(peripheral));
-});
+function discover() {
+  Noble.on('discover', (peripheral) => {
+    store.dispatch(foundAdvertisingDevice(peripheral));
+  });
+}
+stateChange();
+scanStart();
+scanStop();
+discover();
 
-
+// Need to export functions for testing purposes
+export { stateChange, scanStart, scanStop, discover };
 /* [] - END OF FILE */

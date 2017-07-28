@@ -10,8 +10,7 @@
 // import { render } from 'react-dom';
 
 import React from 'react';
-// import { render } from 'react-dom';
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
@@ -21,28 +20,29 @@ import './actions/nobleCallbackActions';
 const store = configureStore();
 
 
-ReactDOM.render(
+render(
   <div>
     <AppContainer>
       <Root store={store} history={history} />
     </AppContainer>
   </div>,
-  document.getElementById('root')
+  document.getElementById('root') || document.createElement('div')
 );
 
 if (module.hot) {
   module.hot.accept('./containers/Root', () => {
     const NextRoot = require('./containers/Root'); // eslint-disable-line global-require
-    ReactDOM.render(
+    render(
       <div>
         <AppContainer>
           <NextRoot store={store} history={history} />
         </AppContainer>
       </div>,
-    document.getElementById('root')
+    document.getElementById('root') || document.createElement('div')
     );
   });
 }
 
 export default store;
+
 /* [] - END OF FILE */
