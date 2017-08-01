@@ -11,6 +11,8 @@
 
 import { spy } from 'sinon';
 import { stateChange, scanStart, scanStop, discover } from '../../app/actions/nobleCallbackActions';
+import scanRewire, * as actions from '../../app/actions/nobleCallbackActions';
+
 
 describe('Testing nobleCallbackActions.js', () => {
   it('Does not throw an error', () => {
@@ -23,5 +25,9 @@ describe('Testing nobleCallbackActions.js', () => {
     expect(scanStopSpy).not.toThrow();
     expect(discoverSpy).not.toThrow();
   });
+  // it('stateChange changes \' enabled\' from false to true', () => {
+  //   scanRewire.__Rewire__('Noble', { state: 'poweredOn' });
+  //   expect(scanStart().enabled).toBe(true);
+  // });
 });
 
