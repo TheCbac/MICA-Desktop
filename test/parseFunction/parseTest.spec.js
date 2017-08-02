@@ -11,23 +11,29 @@
 // with rewire, two files within the same directory cannot have the same name, even
 // the extensions are dirrent.
 
-import { spy } from 'sinon';
+import sinon from 'sinon';
 const rewire = require('rewire');
-import scanRewire from './parseDataPacket';
 
-// the path given for rewire needs to be relative to where rewire is installed on the computer
+// the path given for rewire needs to be relative to where rewire is on the computer I believe.
 const actions = rewire('/Users/George/srv_bilab/micaReactElectron/test/parseFunction/parseDataPacket');
 
 // Fake Data
 const peripheralId = 6;
-const data = [1, 2, 3, 4, 5, 23423, 23424, 5, 455, 65657, 5757, 4564, 45345, 45453, 34554, 345];
+// the data array is an array of 8 bit integers
+const data = [];
 const numChannels = 5;
 const periodLength = 3;
 const packetTime = 1;
 const scalingConstant = 1;
 const gain = 1;
-const offset = 1;
-
+const offset = function (numChannelsVariable) {
+  let i;
+  let offSetArray = [];
+  for (i = 0; i < numChannelsVariable; i++) {
+    offSetArray.push(0);
+  }
+  return offSetArray;
+};
 // Defining variables from parsePacketData.js
 const LOW_NIBBLE_MASK = actions.__get__('LOW_NIBBLE_MASK');
 const HALF_BYTE_SHIFT = actions.__get__('HALF_BYTE_SHIFT');
@@ -36,10 +42,11 @@ const ROLLUNDER_FLAG = actions.__get__('ROLLUNDER_FLAG');
 const BITS_12 = actions.__get__('BITS_12');
 const IS_ODD = actions.__get__('IS_ODD');
 
-const parseSpy = spy(actions.parseDataPacket);
+const parseSpy = sinon.spy(actions.parseDataPacket);
 
 describe('parseDataPacket.js test', () => {
   describe('Test variables', () => {
+    sinon.useFakeTimers(50050);
     it('LOW_NIBBLE_MASK', () => {
       expect(LOW_NIBBLE_MASK).toEqual(0x0F);
     });
