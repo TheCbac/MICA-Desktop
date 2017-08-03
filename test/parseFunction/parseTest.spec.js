@@ -12,7 +12,7 @@
 // the extensions are dirrent.
 
 import sinon from 'sinon';
-
+import * as parseFile from './parseDataPacket';
 // rewire module can acess non-exported variables
 const rewire = require('rewire');
 
@@ -75,6 +75,20 @@ const IS_ODD = actions.__get__('IS_ODD');
 
 const parseSpy = sinon.spy(actions.parseDataPacket);
 
+let i;
+for (i = 0; i < 1; i++) {
+  parseFile.parseDataPacket(
+    peripheralId,
+    data,
+    numChannels,
+    periodLength,
+    newPacketTimeVariable,
+    scalingConstant,
+    gain,
+    offset
+  );
+}
+
 describe('parseDataPacket.js test', () => {
   describe('Test variables', () => {
     // sinon.useFakeTimers(123456);
@@ -111,6 +125,19 @@ describe('parseDataPacket.js test', () => {
         )).not.toThrow();
     });
     it('Returns coorect values in dataArray', () => {
+      console.log(parseSpy.withArgs(
+        peripheralId,
+        data,
+        numChannels,
+        periodLength,
+        newPacketTimeVariable,
+        scalingConstant,
+        gain,
+        offset
+      ).returnValues);
+
+      console.log('Parse Spy Return Values^^^^^^^^^^^^^^^^^^^^');
+
       expect(parseSpy.withArgs(
         peripheralId,
         data,
@@ -122,8 +149,7 @@ describe('parseDataPacket.js test', () => {
         offset
       ).returned([{
         t: 1501785157331.797,
-        d: [
-          0.0034602076124567475,
+        d: [0.0034602076124567475,
           -0.0025367833587011668,
           -0.002485089463220676,
           -0.0075075075075075074,

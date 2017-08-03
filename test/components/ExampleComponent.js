@@ -2,7 +2,7 @@
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
 
-const rewire = rewuire('rewire');
+const rewire = rewire('rewire');
 const componentName = rewire('../../app/components/componentName');
 
 //Define variables
@@ -52,6 +52,7 @@ describe('componentName', () => {
   it('Does something different when props are set differently', () => {
     const { component } = setup();
     expect(someCondition).toBe(result);
-    component.setProps({prop: value});
+    component.setProps({ prop: value });
+    expect(theNextCondition).toBe(true);
   });
 });
