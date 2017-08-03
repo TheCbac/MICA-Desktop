@@ -20,20 +20,25 @@ function getValue(data, index) {
 /* Converts a twos complement word of numBits length to a signed int */
 function twosCompToSigned(value, numBits) {
   /* if the sign bit is set */
-  if (((value & (0x01 << (numBits - 1))) !== 0)) {
-    value = value - (Math.pow(2, numBits));
+  let valueMinused;
+  if ((value & (0x001 << (numBits - 1))) !== 0) {
+    value = value - Math.pow(2, numBits);
   }
   return value;
 }
 function newPacketTime() {
-  let packetTime = new Date();
-  packetTime.microsecond =0;
+  const packetTime = new Date();
+  packetTime.microsecond = 0;
   packetTime.lastLogged = null;
   /* Modify packetTime for microseconds */
   packetTime.addMicroseconds = function (usec) {
     let micro = usec + this.microsecond;
+    console.log(this.microsecond);
+    console.log('This.microsecond^^^^^^^^^^^^^^^^^');
     let millisecond = Math.floor(micro/1000);
     this.setTime(this.getTime() + millisecond);
+    console.log(this.getTime());
+    console.log('This.getTime()^^^^^^^^^^^^^^^');
     this.microsecond = (micro % 1000);
     return this.microsecond;
   };
@@ -51,7 +56,6 @@ function newPacketTime() {
 
 /* Parse Data Function */
 function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTime, scalingConstant, gain, offset) {
-  
   let i = 0;
   let dataArray = [];
 
@@ -101,30 +105,45 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
       const timeDifferentialTwos = (timeMSB << HALF_BYTE_SHIFT) | ((timeLSB >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
+      
+      console.log(timeDifferentialTwos);
+      console.log('TIme Differential Twos^^^^^^^^^^^^^^^^^^^^^');
+
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, BITS_12);
+
+      console.log(timeDifferential);
+      console.log('Time Differential^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+
       const micro = periodLength + timeDifferential;
+
+      console.log(micro);
+      console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+
       /* Add the number of microseconds to the packet time obj */
       packetTime.addMicroseconds(micro);
       const newTime = packetTime.getTimeMicro();
+
       console.log(newTime);
       console.log('^^^^^^^^^^^^^NEW TIME^^^^^^^^^^^^^^^^^^^^^^^^');
+
       /* Push the data array */
       const result = {
         t: newTime,
         d: channelData
       };
-      console.log(result);
+     /* console.log(result);
       console.log('Result above ^^^^^^^^^^^^^^^^^^^^');
       console.log('t --> ' + newTime);
-      console.log('d --> ' + channelData);
+      console.log('d --> ' + channelData); */
 
       dataArray.push(result);
       let array = [];
       array.push(result);
-      console.log(array);
+      
+      /* console.log(array);
       console.log('Array above ^^^^^^^^^^^^^^');
       console.log(dataArray)
-      console.log('Data Array above ^^^^^^^^^^^^^^^^^^^');
+      console.log('Data Array above ^^^^^^^^^^^^^^^^^^^'); */
 
 
       /* ***************** Update on the graph ***************** */
@@ -147,7 +166,8 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
 
 let i;
 for (i = 0; i < 1; i++) {
-  parseDataPacket(6, [110, 209, 90, 88, 130, 77, 34, 102], 5, 3, newPacketTimeVariable, 5, 1, [0, 0, 0, 0, 0]);
+  console.log(parseDataPacket(6, [110, 209, 90, 88, 130, 77, 34, 102], 5, 24, newPacketTimeVariable, 5, 1, [0, 0, 0, 0, 0]));
 }
+
 // read about what data buffers are
 // read about noble.

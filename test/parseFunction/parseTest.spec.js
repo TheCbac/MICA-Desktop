@@ -12,19 +12,50 @@
 // the extensions are dirrent.
 
 import sinon from 'sinon';
+
+// rewire module can acess non-exported variables
 const rewire = require('rewire');
 
 // the path given for rewire needs to be relative to where rewire is on the computer I believe.
 const actions = rewire('/Users/George/srv_bilab/micaReactElectron/test/parseFunction/parseDataPacket');
-
 // Fake Data
+
+const newPacketTimeVariable = newPacketTime();
+
+function newPacketTime() {
+  const packetTime = new Date();
+  packetTime.microsecond = 0;
+  packetTime.lastLogged = null;
+  /* Modify packetTime for microseconds */
+  packetTime.addMicroseconds = function (usec) {
+    let micro = usec + this.microsecond;
+    console.log(this.microsecond);
+    console.log('This.microsecond^^^^^^^^^^^^^^^^^');
+    let millisecond = Math.floor(micro/1000);
+    this.setTime(this.getTime() + millisecond);
+    console.log(this.getTime());
+    console.log('This.getTime()^^^^^^^^^^^^^^^');
+    this.microsecond = (micro % 1000);
+    return this.microsecond;
+  };
+  // Look into 'extends'
+  packetTime.getMicroseconds = function () {
+    return this.microsecond;
+  };
+  /* returns the timestamp with microseconds */
+  packetTime.getTimeMicro = function () {
+    return Number(this.getTime()+ "." + this.microsecond);
+  };
+
+  return packetTime;
+}
+
 const peripheralId = 6;
-// the data array is an array of 8 bit integers
-const data = [];
+    // the data array is an array of 8 bit integers
+const data = [110, 209, 90, 88, 130, 77, 34, 102];
 const numChannels = 5;
-const periodLength = 3;
-const packetTime = 1;
-const scalingConstant = 1;
+const periodLength = 24;
+const scalingConstant = 5;
 const gain = 1;
 const offset = function (numChannelsVariable) {
   let i;
@@ -46,7 +77,7 @@ const parseSpy = sinon.spy(actions.parseDataPacket);
 
 describe('parseDataPacket.js test', () => {
   describe('Test variables', () => {
-    sinon.useFakeTimers(50050);
+    // sinon.useFakeTimers(123456);
     it('LOW_NIBBLE_MASK', () => {
       expect(LOW_NIBBLE_MASK).toEqual(0x0F);
     });
@@ -73,14 +104,32 @@ describe('parseDataPacket.js test', () => {
         data,
         numChannels,
         periodLength,
-        packetTime,
+        newPacketTimeVariable,
         scalingConstant,
         gain,
         offset
         )).not.toThrow();
     });
-    it('Returns coorect t value in dataArray', () => {
-
+    it('Returns coorect values in dataArray', () => {
+      expect(parseSpy.withArgs(
+        peripheralId,
+        data,
+        numChannels,
+        periodLength,
+        newPacketTimeVariable,
+        scalingConstant,
+        gain,
+        offset
+      ).returned([{
+        t: 1501785157331.797,
+        d: [
+          0.0034602076124567475,
+          -0.0025367833587011668,
+          -0.002485089463220676,
+          -0.0075075075075075074,
+          0.00909090909090909
+        ]
+      }])).toBe(true);
     });
     it('Returns correct d value in dataArray', () => {
 
@@ -97,3 +146,11 @@ describe('parseDataPacket.js test', () => {
   });
 });
 
+/* ********Notes********** /*
+*
+*   - need to find some way to assert values of timeMSB/LSB and dataMSB/LSB
+*
+*
+*
+*
+*************************/
