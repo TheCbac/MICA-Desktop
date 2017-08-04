@@ -55,7 +55,7 @@ function newPacketTime() {
 }
 
 /* Parse Data Function */
-function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTime, scalingConstant, gain, offset) {
+let parseDataPacket = function (peripheralId, data, numChannels, periodLength, packetTime, scalingConstant, gain, offset) {
   let i = 0;
   let dataArray = [];
 
@@ -64,8 +64,8 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
       /* ***************** Time information ***************** */
       const timeMSB = getValue(data, i++);
       const timeLSB = getValue(data, i++);
-      console.log('Time LSB --> ' + timeLSB);
-      console.log('Time MSB --> ' + timeMSB);
+      // console.log('Time LSB --> ' + timeLSB);
+      // console.log('Time MSB --> ' + timeMSB);
       /* If the rollunder flag is set read secondsLSB */
       /* Currently no error correction is done with secondsLSB, but it
           needs to be read to maintain packet index integrity  */
@@ -82,7 +82,7 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
             dataMSB = getValue(data, i++);
             dataLSB = getValue(data, i++);
             rawData = (dataMSB << HALF_BYTE_SHIFT) | ((dataLSB >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
-            console.log('rawData for channel ' + channel + ' --> ' + rawData);
+            // console.log('rawData for channel ' + channel + ' --> ' + rawData);
           }
           /* If an odd numbered channel */
         else {
@@ -90,7 +90,7 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
             dataMSB = getValue(data, (i - 1));
             dataLSB = getValue(data, (i + 1));
             rawData = ((dataMSB & LOW_NIBBLE_MASK) << BYTE_SHIFT) | dataLSB;
-            console.log('rawData for channel ' + channel + ' --> ' + rawData);
+            // console.log('rawData for channel ' + channel + ' --> ' + rawData);
 
           }
 
@@ -117,7 +117,7 @@ function parseDataPacket(peripheralId, data, numChannels, periodLength, packetTi
       const micro = periodLength + timeDifferential;
 
       console.log(micro);
-      console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+      console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
       /* Add the number of microseconds to the packet time obj */
       packetTime.addMicroseconds(micro);
@@ -168,6 +168,7 @@ let i;
 for (i = 0; i < 1; i++) {
   console.log(parseDataPacket(6, [110, 209, 90, 88, 130, 77, 34, 102], 5, 24, newPacketTimeVariable, 5, 1, [0, 0, 0, 0, 0]));
 }
-
 // read about what data buffers are
 // read about noble.
+
+// export default parseDataPacket;

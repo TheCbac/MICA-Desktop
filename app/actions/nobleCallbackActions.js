@@ -52,7 +52,4 @@ stateChange();
 scanStart();
 scanStop();
 discover();
-
-// Need to export functions for testing purposes
-export { stateChange, scanStart, scanStop, discover };
 /* [] - END OF FILE */

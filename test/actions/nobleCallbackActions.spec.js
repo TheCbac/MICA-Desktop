@@ -8,11 +8,14 @@
 * Date: 2017.07.27
 *
 **********************************************************/
-
+import rewire from 'rewire';
 import { spy } from 'sinon';
-import { stateChange, scanStart, scanStop, discover } from '../../app/actions/nobleCallbackActions';
-import scanRewire, * as actions from '../../app/actions/nobleCallbackActions';
+let actions = rewire('../../app/actions/nobleCallbackActions');
 
+const stateChange = actions.__get__('stateChange');
+const scanStart = actions.__get__('scanStart');
+const scanStop = actions.__get__('scanStop');
+const discover = actions.__get__('discover');
 
 describe('Testing nobleCallbackActions.js', () => {
   it('Does not throw an error', () => {
@@ -31,3 +34,4 @@ describe('Testing nobleCallbackActions.js', () => {
   // });
 });
 
+// when the noble settings are changed, make sure that the store is doing the right thing..

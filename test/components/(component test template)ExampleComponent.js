@@ -1,3 +1,4 @@
+//template for React component tests
 
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
