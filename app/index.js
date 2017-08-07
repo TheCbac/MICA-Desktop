@@ -19,11 +19,9 @@ const store = configureStore();
 
 
 render(
-  <div>
-    <AppContainer>
-      <Root store={store} history={history} />
-    </AppContainer>
-  </div>,
+  <AppContainer>
+    <Root store={store} history={history} />
+  </AppContainer>,
   document.getElementById('root') || document.createElement('div')
 );
 
@@ -31,11 +29,9 @@ if (module.hot) {
   module.hot.accept('./containers/Root', () => {
     const NextRoot = require('./containers/Root'); // eslint-disable-line global-require
     render(
-      <div>
-        <AppContainer>
-          <NextRoot store={store} history={history} />
-        </AppContainer>
-      </div>,
+      <AppContainer>
+        <NextRoot store={store} history={history} />
+      </AppContainer>,
     document.getElementById('root') || document.createElement('div')
     );
   });
