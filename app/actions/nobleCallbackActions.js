@@ -20,7 +20,7 @@ import store from '../index';
 // import store from '../createNewStore';
 
 /* Noble callback */
-function stateChange() {
+export function stateChange() {
   Noble.on('stateChange', (state: string) => {
     let enabled = false;
     if (state === 'poweredOn') {
@@ -31,19 +31,19 @@ function stateChange() {
   });
 }
 /* The Noble BLE scan has started, dispatch an event */
-function scanStart() {
+export function scanStart() {
   Noble.on('scanStart', () => {
     store.dispatch(changeScanState('ble', true));
   });
 }
   /* The Noble BLE Scan has stopped, update the state */
-function scanStop() {
+export function scanStop() {
   Noble.on('scanStop', () => {
     store.dispatch(changeScanState('ble', false));
   });
 }
 /* A peripheral was discovered */
-function discover() {
+export function discover() {
   Noble.on('discover', (peripheral) => {
     store.dispatch(foundAdvertisingDevice(peripheral));
   });

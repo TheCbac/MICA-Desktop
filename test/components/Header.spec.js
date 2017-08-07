@@ -40,9 +40,8 @@ describe('Header', () => {
     });
   });
   it('Matches Snapshot', () => {
+    // Need to find a way to test the children of Navbar.Brand and NavItems
     expect(component).toMatchSnapshot();
   });
 });
 
-// To create a new snapshot, you have to move the old snapshot file to the trash. Using ' npm test -- -u ' 
-// does not work.

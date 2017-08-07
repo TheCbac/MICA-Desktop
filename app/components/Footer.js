@@ -11,7 +11,7 @@
 import React, { Component } from 'react';
 import { Grid, Col, Row } from 'react-bootstrap';
 
-export const footerStyle = {
+const footerStyle = {
   position: 'absolute',
   right: 0,
   bottom: 0,
@@ -21,10 +21,10 @@ export const footerStyle = {
   height: '25px',
   textAlign: 'center'
 };
-export const mitLogoStyle = {
+const mitLogoStyle = {
   height: '20px'
 };
-export const bilabLogoStyle = {
+const bilabLogoStyle = {
   height: '20px'
 };
 export default class Footer extends Component {

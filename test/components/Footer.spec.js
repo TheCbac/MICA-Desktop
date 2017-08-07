@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-underscore-dangle: 0 */
 /* **********************************************************
 * File: Footer.spec.js
 *
@@ -11,7 +12,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { footerStyle } from '../../app/components/Footer';
+import __RewireAPI__ from '../../app/components/Footer';
 import Footer from '../../app/components/Footer';
  // The default export from Fotoer.js needs to be imported seperately or else Jest throws an error
 
@@ -21,7 +22,9 @@ function setup() {
     component
   };
 }
-
+const mitLogoStyle = __RewireAPI__.__get__('mitLogoStyle');
+const bilabLogoStyle = __RewireAPI__.__get__('bilabLogoStyle');
+const footerStyle = __RewireAPI__.__get__('footerStyle');
 // Begin test
 describe('Footer test', () => {
   const { component } = setup();
@@ -42,6 +45,11 @@ describe('Footer test', () => {
       const img = component.find('img');
       expect(img.at(0)).toMatchSnapshot();
       expect(img.at(1)).toMatchSnapshot();
+    });
+    it('variables test', () => {
+      expect(footerStyle).toMatchSnapshot();
+      expect(mitLogoStyle).toMatchSnapshot();
+      expect(bilabLogoStyle).toMatchSnapshot();
     });
   });
 });

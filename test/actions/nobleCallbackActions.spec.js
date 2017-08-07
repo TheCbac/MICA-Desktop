@@ -1,6 +1,8 @@
 // @flow
+/* eslint no-underscore-dangle: 0 */
+
 /* **********************************************************
-* File: /test/actions/nobleCallbackActions.js
+* File: /test/actions/nobleCallbackActions.spec.js
 *
 * Brief: Test for Noble Ble callbacks
 *
@@ -8,30 +10,23 @@
 * Date: 2017.07.27
 *
 **********************************************************/
-import rewire from 'rewire';
 import { spy } from 'sinon';
-let actions = rewire('../../app/actions/nobleCallbackActions');
-
-const stateChange = actions.__get__('stateChange');
-const scanStart = actions.__get__('scanStart');
-const scanStop = actions.__get__('scanStop');
-const discover = actions.__get__('discover');
+// let actions = rewire('/Users/George/srv_bilab/micaReactElectron/app/actions/nobleCallbackActions');
+import scanRewire, { stateChange, scanStart, scanStop, discover } from '../../app/actions/nobleCallbackActions';
+import * as scanForDevicesActions from '../../app/actions/ScanForDevicesActions';
+ 
+const changeScanMethod = scanForDevicesActions.changeScanMethod;
 
 describe('Testing nobleCallbackActions.js', () => {
+  const stateChangeSpy = spy(stateChange);
+  const scanStartSpy = spy(scanStart);
+  const scanStopSpy = spy(scanStop);
+  const discoverSpy = spy(discover);
   it('Does not throw an error', () => {
-    const stateChangeSpy = spy(stateChange);
-    const scanStartSpy = spy(scanStart);
-    const scanStopSpy = spy(scanStop);
-    const discoverSpy = spy(discover);
     expect(stateChangeSpy).not.toThrow();
     expect(scanStartSpy).not.toThrow();
     expect(scanStopSpy).not.toThrow();
     expect(discoverSpy).not.toThrow();
   });
-  // it('stateChange changes \' enabled\' from false to true', () => {
-  //   scanRewire.__Rewire__('Noble', { state: 'poweredOn' });
-  //   expect(scanStart().enabled).toBe(true);
-  // });
 });
-
-// when the noble settings are changed, make sure that the store is doing the right thing..
+// will add more tests in future.

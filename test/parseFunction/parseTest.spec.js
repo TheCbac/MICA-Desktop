@@ -13,6 +13,8 @@
 
 import sinon from 'sinon';
 import * as parseFile from './parseDataPacket';
+import __RewireAPI__ from './parseDataPacket';
+
 // rewire module can acess non-exported variables
 describe('parseDataPacket.js test', () => {
   const rewire = require('rewire');
@@ -59,6 +61,8 @@ describe('parseDataPacket.js test', () => {
   const gain = 1;
   const offset = [0, 0, 0, 0, 0];
   // Defining variables from parsePacketData.js
+
+  // __get__ uses rewire. __RewireAPI__.__get__ uses babel-plugin-rewire
   const LOW_NIBBLE_MASK = actions.__get__('LOW_NIBBLE_MASK');
   const HALF_BYTE_SHIFT = actions.__get__('HALF_BYTE_SHIFT');
   const BYTE_SHIFT = actions.__get__('BYTE_SHIFT');
@@ -68,14 +72,14 @@ describe('parseDataPacket.js test', () => {
 
   const parseRewire = actions.__get__('parseDataPacket');
   const returnOfParseRewire = parseRewire(
-          peripheralId,
-          data,
-          numChannels,
-          periodLength,
-          newPacketTimeVariable,
-          scalingConstant,
-          gain,
-          offset
+    peripheralId,
+    data,
+    numChannels,
+    periodLength,
+    newPacketTimeVariable,
+    scalingConstant,
+    gain,
+    offset
   );
 
   const getValue = actions.__get__('getValue');
@@ -156,7 +160,7 @@ describe('parseDataPacket.js test', () => {
         ]
       }]);
     });
-    it('Returns coorect values in dataArray', () => {
+    it('Raw data is calculated correctly', () => {
 
     });
     it('Time differential is calculated correctly', () => {
@@ -164,3 +168,4 @@ describe('parseDataPacket.js test', () => {
     });
   });
 });
+// will add more tests.
