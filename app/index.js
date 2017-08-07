@@ -17,11 +17,12 @@ import './actions/nobleCallbackActions';
 
 const store = configureStore();
 
+
 render(
   <AppContainer>
     <Root store={store} history={history} />
   </AppContainer>,
-  document.getElementById('root')
+  document.getElementById('root') || document.createElement('div')
 );
 
 if (module.hot) {
@@ -31,7 +32,7 @@ if (module.hot) {
       <AppContainer>
         <NextRoot store={store} history={history} />
       </AppContainer>,
-      document.getElementById('root')
+    document.getElementById('root') || document.createElement('div')
     );
   });
 }

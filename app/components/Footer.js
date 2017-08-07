@@ -11,24 +11,24 @@
 import React, { Component } from 'react';
 import { Grid, Col, Row } from 'react-bootstrap';
 
+const footerStyle = {
+  position: 'absolute',
+  right: 0,
+  bottom: 0,
+  left: 0,
+  color: '#9d9d9d',
+  backgroundColor: '#222',
+  height: '25px',
+  textAlign: 'center'
+};
+const mitLogoStyle = {
+  height: '20px'
+};
+const bilabLogoStyle = {
+  height: '20px'
+};
 export default class Footer extends Component {
   render() {
-    const footerStyle = {
-      position: 'absolute',
-      right: 0,
-      bottom: 0,
-      left: 0,
-      color: '#9d9d9d',
-      backgroundColor: '#222',
-      height: '25px',
-      textAlign: 'center'
-    };
-    const mitLogoStyle = {
-      height: '20px'
-    };
-    const bilabLogoStyle = {
-      height: '20px'
-    };
     return (
       <Grid className="Footer" style={footerStyle} fluid>
         <Row>

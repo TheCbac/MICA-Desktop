@@ -13,6 +13,20 @@ export type scanTypes = 'usb' | 'ble';
 
 /* Noble Object */
 export type noblePeripheralType = {
-
+  address: string,
+  addressType: string,
+  advertisement: {
+    localName: string,
+    manufacturerData: any,
+    serviceData: [],
+    serviceUuids: string[],
+    txPowerLevel: any
+  },
+  connectable: boolean,
+  id: string,
+  rssi: number,
+  services: any,
+  uuid: string
 };
+
 /* [] - END OF FILE */

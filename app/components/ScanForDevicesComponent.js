@@ -32,13 +32,13 @@ type scanBtnStyleType = {
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
   props: {
-    method: scanTypes,
-    enabled: boolean,
-    scanning: boolean,
-    changeScanMethod: (scanTypes) => changeScanActionType,
-    startStopScan: () => mixed,
-    advertisingDevices: noblePeripheralType[],
-  };
+      method: scanTypes,
+      enabled: boolean,
+      scanning: boolean,
+      changeScanMethod: (scanTypes) => changeScanActionType,
+      startStopScan: () => mixed,
+      advertisingDevices: noblePeripheralType[],
+    };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
     /* Act for the active method */

@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-underscore-dangle: 0 */
 /* **********************************************************
 * File: test/components/ScanForDevicesComponent.spec.js
 *
@@ -12,6 +13,7 @@ import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
+import __RewireAPI__ from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
 function setup(propsObj) {
   let props;
@@ -38,7 +40,8 @@ function setup(propsObj) {
   return {
     component,
     actions,
-    buttons: component.find('Button')
+    buttons: component.find('Button'),
+    table: component.find('ReactTable')
   };
 }
 /* IDs of the buttons */
@@ -52,6 +55,35 @@ describe('ScanForDevicesComponent', () => {
     expect(buttons.at(bleId).prop('name')).toEqual('bleMethodBtn');
     expect(buttons.at(usbId).prop('name')).toEqual('usbMethodBtn');
     expect(buttons.at(scanId).prop('name')).toEqual('scanBtn');
+  });
+  it('ReactTable', () => {
+    const { table } = setup();
+    it('Should be named correctly', () => {
+      expect(table.at(0).prop('name')).toEqual('advertisingTable');
+    });
+    it('Should have the correct number of columns and rows', () => {
+      expect(table.at(0).prop('rows')).toBe(3);
+      /* Inject fake variable */
+      const columns = __RewireAPI__.__Rewire__('advertisingColumns', [{
+        Header: 'Advertising Devices',
+        accessors: 'advertisement.localName'
+      }, {
+        Header: 'IDs',
+        accessor: 'ids'
+      }]);
+      expect(table.at(0).prop('columns')).toEqual(columns);
+    }); 
+    it('Should have correct tabStyle', () => {
+      const tabStyle = __RewireAPI__.__Rewire__('tabStyle', {
+        margin: '200px',
+        backgroundColor: 'white',
+        borderRadius: '15px',
+        border: '0px',
+        cursor: 'pointer',
+        textAlign: 'center'
+      });
+      expect(table.at(0).prop('tabStyle')).toBe(tabStyle);
+    });
   });
   /* BLE or USB */
   describe('Method selection', () => {
