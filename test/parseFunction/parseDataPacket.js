@@ -1,4 +1,6 @@
 /* Returns the data packet object from the dataPacket data */
+/* eslint no-bitwise: 0 */
+/* eslint import/prefer-default-export: 0 */
 
 const LOW_NIBBLE_MASK = 0x0F;
 const HALF_BYTE_SHIFT = 4;
@@ -55,7 +57,7 @@ function newPacketTime() {
 }
 
 /* Parse Data Function */
-let parseDataPacket = function (peripheralId, data, numChannels, periodLength, packetTime, scalingConstant, gain, offset) {
+export const parseDataPacket = function (peripheralId, data, numChannels, periodLength, packetTime, scalingConstant, gain, offset) {
   let i = 0;
   let dataArray = [];
 
@@ -168,7 +170,3 @@ let i;
 for (i = 0; i < 1; i++) {
   console.log(parseDataPacket(6, [110, 209, 90, 88, 130, 77, 34, 102], 5, 24, newPacketTimeVariable, 5, 1, [0, 0, 0, 0, 0]));
 }
-// read about what data buffers are
-// read about noble.
-
-// export default parseDataPacket;

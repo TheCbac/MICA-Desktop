@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-underscore-dangle: 0 */
 /* **********************************************************
 * File: test/parseDataPacket/parseDataPacket.spec.js
 *
@@ -12,18 +13,18 @@
 // the extensions are dirrent.
 
 import sinon from 'sinon';
-import * as parseFile from './parseDataPacket';
+import { parseDataPacket } from './parseDataPacket';
 import __RewireAPI__ from './parseDataPacket';
 
 // rewire module can acess non-exported variables
 describe('parseDataPacket.js test', () => {
-  const rewire = require('rewire');
+  // const rewire = require('rewire');
 
   // Create fake time
   const clock = sinon.useFakeTimers(123455);
 
   // the path given for rewire needs to be relative to where rewire is on the computer I believe.
-  const actions = rewire('/Users/George/srv_bilab/micaReactElectron/test/parseFunction/parseDataPacket');
+  // const actions = rewire('/Users/George/srv_bilab/micaReactElectron/test/parseFunction/parseDataPacket');
   function newPacketTime() {
     const packetTime = new Date();
     packetTime.microsecond = 0;
@@ -62,15 +63,15 @@ describe('parseDataPacket.js test', () => {
   const offset = [0, 0, 0, 0, 0];
   // Defining variables from parsePacketData.js
 
-  // __get__ uses rewire. __RewireAPI__.__get__ uses babel-plugin-rewire
-  const LOW_NIBBLE_MASK = actions.__get__('LOW_NIBBLE_MASK');
-  const HALF_BYTE_SHIFT = actions.__get__('HALF_BYTE_SHIFT');
-  const BYTE_SHIFT = actions.__get__('BYTE_SHIFT');
-  const ROLLUNDER_FLAG = actions.__get__('ROLLUNDER_FLAG');
-  const BITS_12 = actions.__get__('BITS_12');
-  const IS_ODD = actions.__get__('IS_ODD');
+  // actions.__get__ uses rewire. __RewireAPI__.__get__ uses babel-plugin-rewire
+  const LOW_NIBBLE_MASK = __RewireAPI__.__get__('LOW_NIBBLE_MASK');
+  const HALF_BYTE_SHIFT = __RewireAPI__.__get__('HALF_BYTE_SHIFT');
+  const BYTE_SHIFT = __RewireAPI__.__get__('BYTE_SHIFT');
+  const ROLLUNDER_FLAG = __RewireAPI__.__get__('ROLLUNDER_FLAG');
+  const BITS_12 = __RewireAPI__.__get__('BITS_12');
+  const IS_ODD = __RewireAPI__.__get__('IS_ODD');
 
-  const parseRewire = actions.__get__('parseDataPacket');
+  const parseRewire = __RewireAPI__.__get__('parseDataPacket');
   const returnOfParseRewire = parseRewire(
     peripheralId,
     data,
@@ -82,8 +83,8 @@ describe('parseDataPacket.js test', () => {
     offset
   );
 
-  const getValue = actions.__get__('getValue');
-  const twosCompToSigned = actions.__get__('twosCompToSigned');
+  const getValue = __RewireAPI__.__get__('getValue');
+  const twosCompToSigned = __RewireAPI__.__get__('twosCompToSigned');
   const getValueSpy = sinon.spy(getValue);
   const twosCompToSignedSpy = sinon.spy(twosCompToSigned);
 
@@ -91,11 +92,11 @@ describe('parseDataPacket.js test', () => {
   describe('Test variables', () => {
       // Set up spy functions before the tests.
     beforeAll(() => {
-      actions.__set__({
+      __RewireAPI__.__set__({
         getValue: getValueSpy,
         twosCompToSigned: twosCompToSignedSpy
       });
-      parseRewire(
+      parseDataPacket(
         peripheralId,
         data,
         numChannels,
