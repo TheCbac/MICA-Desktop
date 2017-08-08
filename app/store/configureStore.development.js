@@ -12,6 +12,7 @@ import type { scanStateType } from '../reducers/ScanForDevicesReducer';
 const history = createBrowserHistory();
 
 const configureStore = (initialState: ?scanStateType) => {
+// const configureStore = (initialState) => {
   // Redux Configuration
   const middleware = [];
   const enhancers = [];

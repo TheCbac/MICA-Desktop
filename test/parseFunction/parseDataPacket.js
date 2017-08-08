@@ -22,10 +22,13 @@ function getValue(data, index) {
 /* Converts a twos complement word of numBits length to a signed int */
 function twosCompToSigned(value, numBits) {
   /* if the sign bit is set */
-  let valueMinused;
   if ((value & (0x001 << (numBits - 1))) !== 0) {
-    value = value - Math.pow(2, numBits);
+    value -= Math.pow(2, numBits);
   }
+  console.log(Math.pow(2,numBits));
+  console.log('numbits^^^^^^^^^^^^^');
+  console.log(value);
+  console.log('Value^ ^ ^ ^ ^ ^ ^ ');
   return value;
 }
 function newPacketTime() {
@@ -35,21 +38,27 @@ function newPacketTime() {
   /* Modify packetTime for microseconds */
   packetTime.addMicroseconds = function (usec) {
     let micro = usec + this.microsecond;
-    console.log(this.microsecond);
-    console.log('This.microsecond^^^^^^^^^^^^^^^^^');
+    // console.log(this.microsecond);
+    // console.log('This.microsecond^^^^^^^^^^^^^^^^^');
     let millisecond = Math.floor(micro/1000);
+    console.log(millisecond);
+    console.log('millisecond^^^^^^^^^^^^^^^^^^^');
     this.setTime(this.getTime() + millisecond);
-    console.log(this.getTime());
-    console.log('This.getTime()^^^^^^^^^^^^^^^');
+    // console.log(this.getTime());
+    // console.log('This.getTime()^^^^^^^^^^^^^^^');
     this.microsecond = (micro % 1000);
     return this.microsecond;
   };
   // Look into 'extends'
   packetTime.getMicroseconds = function () {
     return this.microsecond;
+    
   };
   /* returns the timestamp with microseconds */
   packetTime.getTimeMicro = function () {
+    
+    console.log(this.microsecond);
+    console.log('this.microsecond');
     return Number(this.getTime()+ "." + this.microsecond);
   };
 
@@ -99,17 +108,17 @@ export const parseDataPacket = function (peripheralId, data, numChannels, period
           /* Record the result */
           /* dataPoint = K/G*(x-x0) = K/G*x - offset */
         const chanOffset = offset[channel];
-        console.log('offset for channel ' + channel + chanOffset);
+        // console.log('offset for channel ' + channel + chanOffset);
           // console.log("parseData - RawData",rawData, this.twosCompToSigned(rawData, BITS_12));
         channelData[channel] = (scalingConstant / (gain * (twosCompToSigned(rawData, BITS_12)) - chanOffset).toFixed(5));
-        console.log('ChannelData[' + channel + '] --> ' + channelData[channel]);
+        // console.log('ChannelData[' + channel + '] --> ' + channelData[channel]);
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
       const timeDifferentialTwos = (timeMSB << HALF_BYTE_SHIFT) | ((timeLSB >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
       
-      console.log(timeDifferentialTwos);
-      console.log('TIme Differential Twos^^^^^^^^^^^^^^^^^^^^^');
+      // console.log(timeDifferentialTwos);
+      // console.log('TIme Differential Twos^^^^^^^^^^^^^^^^^^^^^');
 
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, BITS_12);
 
@@ -120,13 +129,14 @@ export const parseDataPacket = function (peripheralId, data, numChannels, period
 
       console.log(micro);
       console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-
+      console.log(packetTime.microsecond);
+      console.log('packetTime.microsecond^^^^^^^^^^^^^^^^^^^^^^^^^^^');
       /* Add the number of microseconds to the packet time obj */
       packetTime.addMicroseconds(micro);
       const newTime = packetTime.getTimeMicro();
 
-      console.log(newTime);
-      console.log('^^^^^^^^^^^^^NEW TIME^^^^^^^^^^^^^^^^^^^^^^^^');
+      // console.log(newTime);
+      // console.log('^^^^^^^^^^^^^NEW TIME^^^^^^^^^^^^^^^^^^^^^^^^');
 
       /* Push the data array */
       const result = {
@@ -167,6 +177,8 @@ export const parseDataPacket = function (peripheralId, data, numChannels, period
 }
 
 let i;
+/*
 for (i = 0; i < 1; i++) {
   console.log(parseDataPacket(6, [110, 209, 90, 88, 130, 77, 34, 102], 5, 24, newPacketTimeVariable, 5, 1, [0, 0, 0, 0, 0]));
 }
+*/
