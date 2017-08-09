@@ -25,10 +25,10 @@ function twosCompToSigned(value, numBits) {
   if ((value & (0x001 << (numBits - 1))) !== 0) {
     value -= Math.pow(2, numBits);
   }
-  console.log(Math.pow(2,numBits));
-  console.log('numbits^^^^^^^^^^^^^');
-  console.log(value);
-  console.log('Value^ ^ ^ ^ ^ ^ ^ ');
+  // console.log(Math.pow(2,numBits));
+  // console.log('numbits^^^^^^^^^^^^^');
+  // console.log(value);
+  // console.log('Value^ ^ ^ ^ ^ ^ ^ ');
   return value;
 }
 function newPacketTime() {
@@ -41,8 +41,8 @@ function newPacketTime() {
     // console.log(this.microsecond);
     // console.log('This.microsecond^^^^^^^^^^^^^^^^^');
     let millisecond = Math.floor(micro/1000);
-    console.log(millisecond);
-    console.log('millisecond^^^^^^^^^^^^^^^^^^^');
+   //  console.log(millisecond);
+   //  console.log('millisecond^^^^^^^^^^^^^^^^^^^');
     this.setTime(this.getTime() + millisecond);
     // console.log(this.getTime());
     // console.log('This.getTime()^^^^^^^^^^^^^^^');
@@ -57,8 +57,8 @@ function newPacketTime() {
   /* returns the timestamp with microseconds */
   packetTime.getTimeMicro = function () {
     
-    console.log(this.microsecond);
-    console.log('this.microsecond');
+  //   console.log(this.microsecond);
+  //   console.log('this.microsecond');
     return Number(this.getTime()+ "." + this.microsecond);
   };
 
@@ -122,15 +122,15 @@ export const parseDataPacket = function (peripheralId, data, numChannels, period
 
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, BITS_12);
 
-      console.log(timeDifferential);
-      console.log('Time Differential^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+  //     console.log(timeDifferential);
+  //     console.log('Time Differential^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
       const micro = periodLength + timeDifferential;
 
-      console.log(micro);
-      console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-      console.log(packetTime.microsecond);
-      console.log('packetTime.microsecond^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+     //  console.log(micro);
+     //  console.log('Micro^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+     //  console.log(packetTime.microsecond);
+     //  console.log('packetTime.microsecond^^^^^^^^^^^^^^^^^^^^^^^^^^^');
       /* Add the number of microseconds to the packet time obj */
       packetTime.addMicroseconds(micro);
       const newTime = packetTime.getTimeMicro();

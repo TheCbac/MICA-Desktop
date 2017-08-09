@@ -28,7 +28,9 @@
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl",
-    "cleanup": "mop -v"
+    "cleanup": "mop -v",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "browserslist": "electron 1.4",
   "build": {
@@ -142,7 +144,7 @@
     "css-loader": "^0.28.0",
     "devtron": "^1.4.0",
     "electron": "^1.6.5",
-    "electron-builder": "^17.0.1",
+    "electron-builder": "^19.19.1",
     "electron-devtools-installer": "^2.2.0",
     "electron-rebuild": "^1.5.11",
     "enzyme": "^2.8.2",
