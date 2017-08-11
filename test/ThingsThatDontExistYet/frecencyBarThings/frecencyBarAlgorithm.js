@@ -11,47 +11,59 @@
 *
 **********************************************************/
 const date = new Date();
-const now = date.getTime();
 
-const halfLife = 30000; // half life is 30 seconds (30000 miliseconds)
+const startFakeSeconds = (date.getTime() / 1000);
+// console.log(startFakeSeconds);
+// console.log('startFakeSeconds^^^^^^');
+
+const halfLife = 30; // half life is 30 seconds (30000 miliseconds)
 
 let thingsArray = [];
 const numberOfThingsToBeSorted = 10; // number of elements to be sorted using frecency functions
 /* fakeLastUpdateTimesArray must have length of numberOfThingsToBeSorted */
-let fakeLastUpdateTimesArray = [100000, 4000000, 2000000, 50000, 30000000, 700000, 70000000, 50000000, 3000000000, 10000];
+let fakeLastUpdateTimesArray = [
+  startFakeSeconds + 10,
+  startFakeSeconds + 40,
+  startFakeSeconds + 20,
+  startFakeSeconds + 20,
+  startFakeSeconds + 30,
+  startFakeSeconds + 73,
+  startFakeSeconds + 94,
+  startFakeSeconds + 50,
+  startFakeSeconds + 31,
+  startFakeSeconds + 11];
 let namesArray = ['thing1', 'thing2', 'thing3', 'thing4', 'thing5', 'thing6', 'thing7', 'thing8', 'thing9', 'thing10'];
 let scoreObject = {
   /* random starting value for score object */
   lastUpdateTime: 1,
-  score: 1,
+  score: 10,
   name: 'name'
 };
 
-function currentScore(thing) {
-  return (0.5 ** (halfLife * (now - thing.previousUpdateTime))) * thing.score;
+function currentScore(thing: Object) {
+  const date = new Date();
+  const x = thing.score;
+  return (((0.5 ** (((date.getTime() / 1000) - thing.lastUpdateTime) / halfLife)) * x) + 1);
 }
 
 /* Simulate a click from the user */
 function updateScore(scoreOb) {
-  console.log(scoreOb.score);
-  console.log('ScoreOb.score^^^^^^^^^^^^^^^^^^^^^^');
-  return Number(currentScore(scoreOb.score) + 1);
+  return Number(currentScore(scoreOb) + 1);
 }
 
 let i;
+// Create the new array
 function formatArray() {
-  let newArray =[]
   for (i = 0; i < numberOfThingsToBeSorted; i++) {
-    thingsArray.push(scoreObject);
+    const scoreObjectCopy = Object.assign({}, scoreObject);
+    thingsArray.push(scoreObjectCopy);
     thingsArray[i].lastUpdateTime = fakeLastUpdateTimesArray[i];
     thingsArray[i].score = currentScore(thingsArray[i]);
     thingsArray[i].name = namesArray[i];
-    console.log(i);
-    console.log('i^^^^^^^^^^^^^^^^^^^');
+
     // console.log(thingsArray[i].lastUpdateTime);
     // console.log('thingsArray lastUpdateTime');
-    console.log(thingsArray);
-    newArray = thingsArray;
+    // console.log(thingsArray);
   }
 }
 

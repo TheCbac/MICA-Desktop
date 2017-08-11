@@ -34,7 +34,7 @@
   },
   "browserslist": "electron 1.4",
   "build": {
-    "productName": "ElectronReact",
+    "productName": "MICADesktopApp",
     "appId": "org.develar.ElectronReact",
     "files": [
       "dist/",

@@ -40,8 +40,6 @@ function setup(propsObj) {
       // Status of each block in the FrecencyBar grid
       componentArray: componentArray,
       numberOfElements: numberOfElements,
-      prop3: false,
-      prop4: []
     };
   } else {
     props = { ...propsObj };
@@ -52,9 +50,7 @@ function setup(propsObj) {
   };
   const component = shallow(<FrecencyBar
     componentArray={props.componentArray}
-    prop2={props.prop2}
-    prop3={props.prop3}
-    prop4={props.prop4}
+    numberOfElements={props.numberOfElements}
     {...actions}
   />);
   return {

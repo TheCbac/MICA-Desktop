@@ -32,9 +32,9 @@ export default class Footer extends Component {
     return (
       <Grid className="Footer" style={footerStyle} fluid>
         <Row>
-          <Col xs={4}><img src="../img/mitLogo.png" style={mitLogoStyle} alt="MICA" /></Col>
+          <Col xs={4}><img src="../app/img/mitLogo.png" style={mitLogoStyle} alt="MICA" /></Col>
           <Col xs={4}>Craig Cheney &copy; 2017</Col>
-          <Col xs={4}><img src="../img/bilabLogo_white.png" style={bilabLogoStyle} alt="BioInstrumentation Lab" /></Col>
+          <Col xs={4}><img src="../app/img/bilabLogo_white.png" style={bilabLogoStyle} alt="BioInstrumentation Lab" /></Col>
         </Row>
       </Grid>
     );
