@@ -13,7 +13,7 @@ import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
-import __RewireAPI__ from '../../app/components/ScanForDevicesComponent';
+import { __RewireAPI__ as Rewire } from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
 function setup(propsObj) {
   let props;
@@ -64,7 +64,7 @@ describe('ScanForDevicesComponent', () => {
     it('Should have the correct number of columns and rows', () => {
       expect(table.at(0).prop('rows')).toBe(3);
       /* Inject fake variable */
-      const columns = __RewireAPI__.__Rewire__('advertisingColumns', [{
+      const columns = Rewire.__Rewire__('advertisingColumns', [{
         Header: 'Advertising Devices',
         accessors: 'advertisement.localName'
       }, {
@@ -74,7 +74,7 @@ describe('ScanForDevicesComponent', () => {
       expect(table.at(0).prop('columns')).toEqual(columns);
     }); 
     it('Should have correct tabStyle', () => {
-      const tabStyle = __RewireAPI__.__Rewire__('tabStyle', {
+      const tabStyle = Rewire.__Rewire__('tabStyle', {
         margin: '200px',
         backgroundColor: 'white',
         borderRadius: '15px',
@@ -141,6 +141,11 @@ describe('ScanForDevicesComponent', () => {
         component.setProps({ scanning: true });
         scanButton = component.find({ name: 'scanBtn' });
         expect(scanButton.prop('bsStyle')).toEqual('danger');
+      });
+      it('Should call startStopScan when clicked', () => {
+        const { buttons, actions } = setup();
+        buttons.at(2).simulate('click');
+        expect(actions.startStopScan.called).toBe(true);
       });
     });
   });

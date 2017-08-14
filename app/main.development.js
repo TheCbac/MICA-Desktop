@@ -43,17 +43,31 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
-  
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728
-  });
+  // Electron does not recognize when variable is set to development mode. It stays in production
   if (process.env.NODE_ENV === 'production') {
-    mainWindow.devTools = false;
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: 1024,
+      height: 728,
+      webPreferences: {
+        // This should be set to false once we find a way to change NODE_ENV to development mode automatically
+        // For now, we can just set it to false manually every time we want to build the app
+        devTools: true
+      }
+    });
+  } else {
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: 1024,
+      height: 728,
+      webPreferences: {
+        devTools: true
+      }
+    });
   }
 
   mainWindow.openDevTools();
+
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
@@ -73,5 +87,4 @@ app.on('ready', async () => {
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
-
 });

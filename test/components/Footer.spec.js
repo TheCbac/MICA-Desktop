@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import __RewireAPI__ from '../../app/components/Footer';
+import { __RewireAPI__ as Rewire } from '../../app/components/Footer';
 import Footer from '../../app/components/Footer';
  // The default export from Fotoer.js needs to be imported seperately or else Jest throws an error
 
@@ -22,9 +22,9 @@ function setup() {
     component
   };
 }
-const mitLogoStyle = __RewireAPI__.__get__('mitLogoStyle');
-const bilabLogoStyle = __RewireAPI__.__get__('bilabLogoStyle');
-const footerStyle = __RewireAPI__.__get__('footerStyle');
+const mitLogoStyle = Rewire.__get__('mitLogoStyle');
+const bilabLogoStyle = Rewire.__get__('bilabLogoStyle');
+const footerStyle = Rewire.__get__('footerStyle');
 // Begin test
 describe('Footer test', () => {
   const { component } = setup();

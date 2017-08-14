@@ -15,13 +15,13 @@ import sinon from 'sinon';
 import { __RewireAPI__ as Rewire } from './frecencyBarAlgorithm';
 import * as frecencyAlgorithm from './frecencyBarAlgorithm';
 
-// const clock = sinon.useFakeTimers(100000000);
 const arrayOfClicks = [10, 14, 22, 55, 3, 6, 30, 10, 10, 12];
 // const arrayOfClicks = [0,0,0,0,0,0,0,0,0,0];
 
 const newThingsArray = [];
 
 const thingsArray = Rewire.__get__('thingsArray');
+const namesArray = Rewire.__get__('namesArray');
 
 const currentScoreSpy = sinon.spy(frecencyAlgorithm.currentScore);
 const updateScoreSpy = sinon.spy(frecencyAlgorithm.updateScore);
@@ -53,30 +53,29 @@ describe('Frecency bar algorithm', () => {
       // Set score of each item in array to new score with clicks
       frecencyAlgorithm.thingsArray[i].scoreAfterClicks = arrayOfNewScores[i];
     }
-   // console.log(newThingsArray);
-   // console.log('newThingsArray');
-   // console.log(frecencyAlgorithm.thingsArray);
-   // console.log('frecencyAlgorithm.thingsArray ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^');
-
-    // Use the newThingsArray in place of the old thingsArray
-    Rewire.__set__('thingsArray', newThingsArray);
-    console.log(newThingsArray);
-    console.log('Test newThingsArray^ ^ ^ ^ ^ ^^ ^ ^ ^ ');
-    console.log(frecencyAlgorithm.thingsArray);
-    console.log('Test ThingsArray^ ^ ^ ^ ^ ^^ ^ ^ ^ ');
+    // Use the newThingsArray in place of the old thingsArray.
+    Rewire.__set__('thingsArray', newThingsArray); // For some reason, it's not setting thingsArray correctly.
   }
-  it('FormatArray calls each function the correct amount of times', () => {
+  it('FormatArray', () => {
     frecencyAlgorithm.formatArray();
     // Calls currentScore once per item in thingsArray
     expect(currentScoreSpy.callCount).toBe(10);
-  });
-  it('Calculates frecency correctly', () => {
-    expect(frecencyAlgorithm.thingsArray).toBe(0);
+    let i;
+    for (i = 0; i < namesArray.length; i++) {
+      expect(frecencyAlgorithm.thingsArray[i].name).toBe('thing' + (i + 1));
+      expect(frecencyAlgorithm.thingsArray[i].name).toEqual(namesArray[i]);
+    }
   });
   it('sortThings sorts the array correctly based on score', () => {
-
+    const correctlySortedNameArray = ['thing7', 'thing6', 'thing8', 'thing2', 'thing9', 'thing5', 'thing4', 'thing3', 'thing10', 'thing1'];
+    let i;
+    for (i = 0; i < frecencyAlgorithm.thingsArray.length; i++) {
+      expect(frecencyAlgorithm.sortThings()[i].name).toEqual(correctlySortedNameArray[i]);
+      
+    }
   });
   it('Adding clicks will change the score correctly', () => {
 
   });
 });
+
