@@ -19,10 +19,10 @@ const startFakeSeconds = (date.getTime() / 1000);
 
 const halfLife = 30; // half life is 30 seconds (30000 miliseconds)
 
-let thingsArray = [];
+const thingsArray = [];
 const numberOfThingsToBeSorted = 10; // number of elements to be sorted using frecency functions
 /* fakeLastUpdateTimesArray must have length of numberOfThingsToBeSorted */
-let fakeLastUpdateTimesArray = [
+const fakeLastUpdateTimesArray = [
   // fake time 'x' seconds ago.
   startFakeSeconds - 10,
   startFakeSeconds - 40,
@@ -61,13 +61,11 @@ function formatArray() {
     const scoreObjectCopy = Object.assign({}, scoreObject);
     thingsArray.push(scoreObjectCopy);
     thingsArray[i].lastUpdateTime = fakeLastUpdateTimesArray[i];
-    thingsArray[i].score = currentScore(thingsArray[i]);
     thingsArray[i].name = namesArray[i];
-
-    // console.log(thingsArray[i].lastUpdateTime);
-    // console.log('thingsArray lastUpdateTime');
-    // console.log(thingsArray);
+    thingsArray[i].score = currentScore(thingsArray[i]);
+    // console.log(thingsArray[i]);
   }
+  // console.log(thingsArray);
 }
 
 /* Sort objects based on score in increasing order */

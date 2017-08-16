@@ -15,7 +15,7 @@ import sinon from 'sinon';
 import { __RewireAPI__ as Rewire } from './frecencyBarAlgorithm';
 import * as frecencyAlgorithm from './frecencyBarAlgorithm';
 
-const arrayOfClicks = [10, 14, 22, 55, 3, 6, 30, 10, 10, 12];
+// const arrayOfClicks = [10, 14, 22, 55, 3, 6, 30, 10, 10, 12];
 // const arrayOfClicks = [0,0,0,0,0,0,0,0,0,0];
 
 const newThingsArray = [];
@@ -71,11 +71,7 @@ describe('Frecency bar algorithm', () => {
     let i;
     for (i = 0; i < frecencyAlgorithm.thingsArray.length; i++) {
       expect(frecencyAlgorithm.sortThings()[i].name).toEqual(correctlySortedNameArray[i]);
-      
     }
-  });
-  it('Adding clicks will change the score correctly', () => {
-
   });
 });
 

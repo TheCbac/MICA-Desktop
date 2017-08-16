@@ -1,7 +1,7 @@
 // @flow
 /* eslint no-underscore-dangle: 0 */
 /* **********************************************************
-* File: test/parseDataPacket/parseDataPacket.spec.js
+* File: test/parseDataPacket/parseDataPacketTest.spec.js
 *
 * Brief: Test for data packet parsing function
 *
@@ -161,20 +161,16 @@ describe('parseDataPacket.js test', () => {
       }]);
     });
     describe('Data is calculated correctly', () => {
-      const d = returnOfParse[0].d;
       const t = returnOfParse[0].t;
-     
       const timeWithoutFakeTime = Number((t - 123456).toFixed(5));
-      console.log(timeWithoutFakeTime);
-      console.log('timeWithoutFakeTime ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ');
       const micro = (timeWithoutFakeTime * 1000) + 1000;
-      const timeDifferential = micro - periodLength;  
-      //console.log(twosCompToSignedSpy.firstCall.returnValue);
-      console.log('twos comp signed first return value^^^^^^^^');
-      //console.log(twosCompToSignedSpy.secondCall.returnValue);
-      console.log('twos comp signed second return value');
+      const timeDifferential = micro - periodLength;
       it('Time Differential', () => {
         expect(twosCompToSignedSpy.getCall(5).returnValue).toBe(timeDifferential);
+      });
+      it('Raw Data', () => {
+        const rawDataCalculation = ((((scalingConstant / returnOfParse[0].d[0]) + offset[0]) / gain));
+        expect(twosCompToSignedSpy.args[0][0]).toBe(rawDataCalculation);
       });
     });
   });

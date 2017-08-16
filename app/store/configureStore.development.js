@@ -8,7 +8,6 @@ import rootReducer from '../reducers/index';
 import * as ScanActions from '../actions/ScanForDevicesActions';
 import type { scanStateType } from '../reducers/ScanForDevicesReducer';
 
-
 const history = createBrowserHistory();
 
 const configureStore = (initialState: ?scanStateType) => {
