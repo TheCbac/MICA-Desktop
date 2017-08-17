@@ -75,11 +75,7 @@
       "buildResources": "resources",
       "output": "release"
     },
-    "asarUnpack": "resources/*",
-    "extraResources": [{
-      "from": "app",
-      "to": "app/resources"
-    }]
+     "extraResources": "resources/**/*"
   },
   "repository": {
     "type": "git",

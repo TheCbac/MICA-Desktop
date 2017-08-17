@@ -15,7 +15,31 @@
       using sinon to spy on the twosCompToSigned function, I can use spyCall.args to get the arguments passed
       to the spy.
 
+  4) Images dissapearing when application is build - bug:
+    * I found out that we can add folders to the Resources folder of the application after it is build by going 
+      * into the development package.json and configuring the following:
 
+        "build": {
+          ...
+            "extraResources": 'file/path/goes/here'
+          ...
+        }
+
+        or
+
+        "build": {
+        ...
+          "extraResources": [
+            'multiple/file/paths',
+            can/be/placed/here'
+          ]
+        ...
+        }
+
+    * But, it is difficult to debug this because electron isn't opening the development tools anymore after the application is built.
+
+    5) DevTools don't open after project is built, even if webPreferences.devTools is set to true and 
+       mainwindow.webContents.openDevTools() is called.
 
 # Additional Notes
 

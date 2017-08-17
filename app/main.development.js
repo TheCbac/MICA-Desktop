@@ -55,10 +55,10 @@ app.on('ready', async () => {
       // This should be set to false once we find a way to change NODE_ENV to development mode automatically
       // For now, we can just set it to false manually every time we want to build the app
       devTools: true
-    },
+    }
   });
   
-  mainWindow.openDevTools();
+  mainWindow.webContents.openDevTools('detach');
 
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
