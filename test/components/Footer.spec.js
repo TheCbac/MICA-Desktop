@@ -43,33 +43,6 @@ describe('Footer test', () => {
     });
     it('Image elements match snapshot', () => {
       const img = component.find('img');
-      console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-            console.log(process.resourcesPath);
-      console.log(process.resourcesPath);
-    
       expect(img.at(0)).toMatchSnapshot();
       expect(img.at(1)).toMatchSnapshot();
 

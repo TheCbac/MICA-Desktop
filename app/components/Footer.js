@@ -11,17 +11,14 @@
 import React, { Component } from 'react';
 import { Grid, Col, Row } from 'react-bootstrap';
 
-const path = require('path');
 let mitImagePath = '../resources/img/mitLogo.png';
 /* Set mitImagePath to new path */
 if (process.resourcesPath !== undefined) {
-  mitImagePath = (process.resourcesPath + 'resources/img/mitLogo.png');
+  mitImagePath = (String(process.resourcesPath) + 'resources/img/mitLogo.png');
 }
 
 // const nativeImage = require('electron').nativeImage;
-
 // const mitLogoImage = nativeImage.createFromPath(mitImagePath);
-
 const footerStyle = {
   position: 'absolute',
   right: 0,
@@ -43,7 +40,7 @@ export default class Footer extends Component {
     return (
       <Grid className="Footer" style={footerStyle} fluid>
         <Row>
-          <Col xs={4}><img src={'/Users/George/srv_bilab/micaReactElectron/release/mac/MICADesktopApp.app/Contents/Resources/resources/img/mitLogo.png' || mitImagePath} style={mitLogoStyle} alt="MICA" /></Col>
+          <Col xs={4}><img src={'../resources/img/mitLogo.png' || mitImagePath} style={mitLogoStyle} alt="MICA" /></Col>
           <Col xs={4}>Craig Cheney &copy; 2017</Col>
           <Col xs={4}><img src={'../resources/img/bilabLogo_white.png'} style={bilabLogoStyle} alt="BioInstrumentation Lab" /></Col>
         </Row>

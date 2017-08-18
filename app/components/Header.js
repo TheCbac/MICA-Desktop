@@ -16,24 +16,24 @@ import { IndexLinkContainer } from 'react-router-bootstrap';
 export default class Header extends Component {
   render() {
     return (
-        <Navbar inverse collapseOnSelect>
-          <Navbar.Header>
-            <Navbar.Brand>
-              MICA
-            </Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
-          <Navbar.Collapse>
-            <Nav>
-              <IndexLinkContainer to="/" activeClassName="active">
-                <NavItem>DEVICES</NavItem>
-              </IndexLinkContainer>
-              <IndexLinkContainer to="/collectData" activeClassName="active">
-                <NavItem>COLLECT DATA</NavItem>
-              </IndexLinkContainer>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+      <Navbar inverse collapseOnSelect>
+        <Navbar.Header>
+          <Navbar.Brand>
+            MICA
+          </Navbar.Brand>
+          <Navbar.Toggle />
+        </Navbar.Header>
+        <Navbar.Collapse>
+          <Nav>
+            <IndexLinkContainer to="/" activeClassName="active">
+              <NavItem>DEVICES</NavItem>
+            </IndexLinkContainer>
+            <IndexLinkContainer to="/collectData" activeClassName="active">
+              <NavItem>COLLECT DATA</NavItem>
+            </IndexLinkContainer>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
     );
   }
 }
