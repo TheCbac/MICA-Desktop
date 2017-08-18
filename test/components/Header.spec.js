@@ -10,9 +10,7 @@
 *
 **********************************************************/
 // $FlowFixMe
-import 'react-router';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import { IndexLinkContainer } from 'react-router-bootstrap';
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import Header from '../../app/components/Header';
