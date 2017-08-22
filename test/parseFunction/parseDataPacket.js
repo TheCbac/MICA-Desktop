@@ -1,6 +1,7 @@
 /* Returns the data packet object from the dataPacket data */
 /* eslint no-bitwise: 0 */
 /* eslint import/prefer-default-export: 0 */
+/* eslint no-underscore-dangle: 0 */
 
 const LOW_NIBBLE_MASK = 0x0F;
 const HALF_BYTE_SHIFT = 4;

@@ -21,23 +21,16 @@ function setup(propsObj) {
         { device: 'DRIVE_BOT46738',
           sensors: ['Gyroscope', 'Magnetometer'] },
         { device: 'DRIVE_BOT2343',
-          sensors: ['Accellerometer', 'Gyroscope']}],
-      prop2: false,
-      prop3: false,
-      prop4: []
+          sensors: ['Accellerometer', 'Gyroscope'] }],
     };
   } else {
     props = { ...propsObj };
   }
   const actions = {
     changeCurrentSensor: sinon.spy(),
-    method2: sinon.spy()
   };
   const component = shallow(<SensorsComponent
-    prop1={props.prop1}
-    prop2={props.prop2}
-    prop3={props.prop3}
-    prop4={props.prop4}
+    devicesArray={props.devicesArray}
     {...actions}
   />);
   return {

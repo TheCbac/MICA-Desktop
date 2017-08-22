@@ -88,7 +88,7 @@ describe('QuickAccessBar', () => {
     const { component } = setup();
     expect(component.childAt(0).contains(<Button />)).toBe(true);
     expect(component.childAt(1).contains(<Grid />)).toBe(true);
-    expect(component.childAt(2).contains(null)).toBe(true);
+    expect(component.childAt(2).contains(undefined)).toBe(true);
   });
 });
 

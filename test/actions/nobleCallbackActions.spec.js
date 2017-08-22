@@ -12,10 +12,8 @@
 **********************************************************/
 import { spy } from 'sinon';
 // let actions = rewire('/Users/George/srv_bilab/micaReactElectron/app/actions/nobleCallbackActions');
-import scanRewire, { stateChange, scanStart, scanStop, discover } from '../../app/actions/nobleCallbackActions';
+import { stateChange, scanStart, scanStop, discover } from '../../app/actions/nobleCallbackActions';
 import * as scanForDevicesActions from '../../app/actions/ScanForDevicesActions';
- 
-const changeScanMethod = scanForDevicesActions.changeScanMethod;
 
 describe('Testing nobleCallbackActions.js', () => {
   const stateChangeSpy = spy(stateChange);
@@ -29,4 +27,3 @@ describe('Testing nobleCallbackActions.js', () => {
     expect(discoverSpy).not.toThrow();
   });
 });
-// will add more tests in future.

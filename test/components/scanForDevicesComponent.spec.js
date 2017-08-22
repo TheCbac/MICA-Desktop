@@ -12,6 +12,7 @@
 import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
+import FontAwesome from 'react-fontawesome';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
 import { __RewireAPI__ as Rewire } from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
@@ -72,7 +73,7 @@ describe('ScanForDevicesComponent', () => {
         accessor: 'ids'
       }]);
       expect(table.at(0).prop('columns')).toEqual(columns);
-    }); 
+    });
     it('Should have correct tabStyle', () => {
       const tabStyle = Rewire.__Rewire__('tabStyle', {
         margin: '200px',
@@ -146,6 +147,21 @@ describe('ScanForDevicesComponent', () => {
         const { buttons, actions } = setup();
         buttons.at(2).simulate('click');
         expect(actions.startStopScan.called).toBe(true);
+      });
+      it('Should have appropriate text displayed when scanning', () => {
+        const { component } = setup({ method: 'ble', enabled: true, scanning: true });
+        const scanButton = component.find({ name: 'scanBtn' });
+        // First word in text.
+        expect(scanButton.childAt(0).text()).toBe('Stop');
+        // Second word
+        expect(scanButton.childAt(1).text()).toBe(' Scan ');
+        expect(scanButton.childAt(2).text()).toBe('<FontAwesome />');
+      });
+      it('Should have appropriate text displayed when not scanning', () => {
+        const { component } = setup({ scanning: false });
+        const scanButton = component.find({ name: 'scanBtn' });
+        expect(scanButton.childAt(0).text()).toBe('Start');
+        expect(scanButton.childAt(1).text()).toBe(' Scan ');
       });
     });
   });

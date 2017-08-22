@@ -172,6 +172,9 @@ describe('parseDataPacket.js test', () => {
         const rawDataCalculation = ((((scalingConstant / returnOfParse[0].d[0]) + offset[0]) / gain));
         expect(twosCompToSignedSpy.args[0][0]).toBe(rawDataCalculation);
       });
+      it('Micro', () => {
+        expect(micro).toBe(periodLength + timeDifferential);
+      });
     });
   });
 });
