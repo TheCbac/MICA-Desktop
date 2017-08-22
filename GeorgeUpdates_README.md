@@ -5,6 +5,9 @@
     * Frecency Algorithm
       in 'test/ThingsThatDoNotExistYet/frecencyBarThings'
     * Quick little snapshot test for micaUuids.js
+    * HamburgerSettings
+    * HamburgerSetting Button
+    * SensorsComponent (Sesnors box in the Sen+Gen tab)
 
   2) Figured out how to disable the development tools building standalone application.
     * In main.development.js when a new BrowserWindow is created, we have to set the
@@ -16,36 +19,10 @@
       using sinon to spy on the twosCompToSigned function, I can use spyCall.args to get the arguments passed
       to the spy.
 
-  4) Bug - Images dissapearing when application is built.
-    * I found out that we can add folders to the Resources folder of the application after it is build by going 
-      * into the development package.json and configuring the following:
-
-        "build": {
-          ...
-            "extraResources": 'file/path/goes/here'
-          ...
-        }
-
-        or
-
-        "build": {
-        ...
-          "extraResources": [
-            'multiple/file/paths',
-            can/be/placed/here'
-          ]
-        ...
-        }
-
-    * But, it is difficult to debug this because electron isn't opening the development tools anymore after the application is built.
-
-    5) Bug - DevTools don't open after project is built, even if webPreferences.devTools is set to true and 
-       mainwindow.webContents.openDevTools() is called.
-
-    6) While looking into the error with the image filepaths, I found out how to change the application's icon:
-      * Go into micaReactElectron/resources and change the icon files. Change the icon.icns, icon.ico, and icon.png to the desired icon and 
-        * electron-builder will automatically use these files as the new icon.  
-      * Note: I added a fake icon just as a proof-of-concept.
+  4) While looking into the error with the image filepaths, I found out how to change the application's icon:
+    * Go into micaReactElectron/resources and change the icon files. Change the icon.icns, icon.ico, and icon.png to the desired icon and 
+      * electron-builder will automatically use these files as the new icon.  
+    * Note: I added a fake icon just as a proof-of-concept.
 
 # Additional Notes
 

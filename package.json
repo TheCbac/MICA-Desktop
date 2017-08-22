@@ -31,11 +31,12 @@
     "package-all": "npm run build && build -mwl",
     "cleanup": "mop -v",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder -mwl"
+    "dist": "electron-builder -mwl",
+    "build-help": "electron-builder --help"
   },
   "browserslist": "electron 1.4",
   "build": {
-    "productName": "MICADesktopApp",
+    "productName": "MICADesktopApp1",
     "appId": "org.develar.ElectronReact",
     "files": [
       "dist/",
