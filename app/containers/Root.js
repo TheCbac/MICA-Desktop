@@ -12,12 +12,10 @@ type RootType = {
 
 export default function Root({ store, history }: RootType) {
   return (
-    <div>
-      <Provider store={store}>
-        <ConnectedRouter history={history}>
-          <Routes />
-        </ConnectedRouter>
-      </Provider>
-    </div>
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <Routes />
+      </ConnectedRouter>
+    </Provider>
   );
 }

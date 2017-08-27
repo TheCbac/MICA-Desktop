@@ -1,7 +1,7 @@
 // @flow
 /* eslint no-underscore-dangle: 0 */
 /* **********************************************************
-* File: test/parseDataPacket/parseDataPacket.spec.js
+* File: test/parseDataPacket/parseDataPacketTest.spec.js
 *
 * Brief: Test for data packet parsing function
 *
@@ -13,8 +13,7 @@
 // the extensions are dirrent.
 
 import sinon from 'sinon';
-import { parseDataPacket } from './parseDataPacket';
-import __RewireAPI__ from './parseDataPacket';
+import { parseDataPacket, __RewireAPI__ as Rewire } from './parseDataPacket';
 
 // rewire module can acess non-exported variables
 describe('parseDataPacket.js test', () => {
@@ -63,16 +62,16 @@ describe('parseDataPacket.js test', () => {
   const offset = [0, 0, 0, 0, 0];
   // Defining variables from parsePacketData.js
 
-  // actions.__get__ uses rewire. __RewireAPI__.__get__ uses babel-plugin-rewire
-  const LOW_NIBBLE_MASK = __RewireAPI__.__get__('LOW_NIBBLE_MASK');
-  const HALF_BYTE_SHIFT = __RewireAPI__.__get__('HALF_BYTE_SHIFT');
-  const BYTE_SHIFT = __RewireAPI__.__get__('BYTE_SHIFT');
-  const ROLLUNDER_FLAG = __RewireAPI__.__get__('ROLLUNDER_FLAG');
-  const BITS_12 = __RewireAPI__.__get__('BITS_12');
-  const IS_ODD = __RewireAPI__.__get__('IS_ODD');
+  // actions.__get__ uses rewire. Rewire.__get__ uses babel-plugin-rewire
+  const LOW_NIBBLE_MASK = Rewire.__get__('LOW_NIBBLE_MASK');
+  const HALF_BYTE_SHIFT = Rewire.__get__('HALF_BYTE_SHIFT');
+  const BYTE_SHIFT = Rewire.__get__('BYTE_SHIFT');
+  const ROLLUNDER_FLAG = Rewire.__get__('ROLLUNDER_FLAG');
+  const BITS_12 = Rewire.__get__('BITS_12');
+  const IS_ODD = Rewire.__get__('IS_ODD');
 
-  const parseRewire = __RewireAPI__.__get__('parseDataPacket');
-  const returnOfParseRewire = parseRewire(
+  const parseRewire = Rewire.__get__('parseDataPacket');
+  const returnOfParse = parseDataPacket(
     peripheralId,
     data,
     numChannels,
@@ -83,8 +82,8 @@ describe('parseDataPacket.js test', () => {
     offset
   );
 
-  const getValue = __RewireAPI__.__get__('getValue');
-  const twosCompToSigned = __RewireAPI__.__get__('twosCompToSigned');
+  const getValue = Rewire.__get__('getValue');
+  const twosCompToSigned = Rewire.__get__('twosCompToSigned');
   const getValueSpy = sinon.spy(getValue);
   const twosCompToSignedSpy = sinon.spy(twosCompToSigned);
 
@@ -92,7 +91,7 @@ describe('parseDataPacket.js test', () => {
   describe('Test variables', () => {
       // Set up spy functions before the tests.
     beforeAll(() => {
-      __RewireAPI__.__set__({
+      Rewire.__set__({
         getValue: getValueSpy,
         twosCompToSigned: twosCompToSignedSpy
       });
@@ -151,7 +150,7 @@ describe('parseDataPacket.js test', () => {
         )).not.toThrow();
     });
     it('Returns the correct values in the dataArray', () => {
-      expect(returnOfParseRewire).toEqual([{
+      expect(returnOfParse).toEqual([{
         t: 123456.797,
         d: [0.0034602076124567475,
           -0.0025367833587011668,
@@ -161,11 +160,21 @@ describe('parseDataPacket.js test', () => {
         ]
       }]);
     });
-    it('Raw data is calculated correctly', () => {
-
-    });
-    it('Time differential is calculated correctly', () => {
-
+    describe('Data is calculated correctly', () => {
+      const t = returnOfParse[0].t;
+      const timeWithoutFakeTime = Number((t - 123456).toFixed(5));
+      const micro = (timeWithoutFakeTime * 1000) + 1000;
+      const timeDifferential = micro - periodLength;
+      it('Time Differential', () => {
+        expect(twosCompToSignedSpy.getCall(5).returnValue).toBe(timeDifferential);
+      });
+      it('Raw Data', () => {
+        const rawDataCalculation = ((((scalingConstant / returnOfParse[0].d[0]) + offset[0]) / gain));
+        expect(twosCompToSignedSpy.args[0][0]).toBe(rawDataCalculation);
+      });
+      it('Micro', () => {
+        expect(micro).toBe(periodLength + timeDifferential);
+      });
     });
   });
 });

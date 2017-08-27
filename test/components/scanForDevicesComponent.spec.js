@@ -12,8 +12,9 @@
 import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
+import FontAwesome from 'react-fontawesome';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
-import __RewireAPI__ from '../../app/components/ScanForDevicesComponent';
+import { __RewireAPI__ as Rewire } from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
 function setup(propsObj) {
   let props;
@@ -64,7 +65,7 @@ describe('ScanForDevicesComponent', () => {
     it('Should have the correct number of columns and rows', () => {
       expect(table.at(0).prop('rows')).toBe(3);
       /* Inject fake variable */
-      const columns = __RewireAPI__.__Rewire__('advertisingColumns', [{
+      const columns = Rewire.__Rewire__('advertisingColumns', [{
         Header: 'Advertising Devices',
         accessors: 'advertisement.localName'
       }, {
@@ -72,9 +73,9 @@ describe('ScanForDevicesComponent', () => {
         accessor: 'ids'
       }]);
       expect(table.at(0).prop('columns')).toEqual(columns);
-    }); 
+    });
     it('Should have correct tabStyle', () => {
-      const tabStyle = __RewireAPI__.__Rewire__('tabStyle', {
+      const tabStyle = Rewire.__Rewire__('tabStyle', {
         margin: '200px',
         backgroundColor: 'white',
         borderRadius: '15px',
@@ -141,6 +142,26 @@ describe('ScanForDevicesComponent', () => {
         component.setProps({ scanning: true });
         scanButton = component.find({ name: 'scanBtn' });
         expect(scanButton.prop('bsStyle')).toEqual('danger');
+      });
+      it('Should call startStopScan when clicked', () => {
+        const { buttons, actions } = setup();
+        buttons.at(2).simulate('click');
+        expect(actions.startStopScan.called).toBe(true);
+      });
+      it('Should have appropriate text displayed when scanning', () => {
+        const { component } = setup({ method: 'ble', enabled: true, scanning: true });
+        const scanButton = component.find({ name: 'scanBtn' });
+        // First word in text.
+        expect(scanButton.childAt(0).text()).toBe('Stop');
+        // Second word
+        expect(scanButton.childAt(1).text()).toBe(' Scan ');
+        expect(scanButton.childAt(2).text()).toBe('<FontAwesome />');
+      });
+      it('Should have appropriate text displayed when not scanning', () => {
+        const { component } = setup({ scanning: false });
+        const scanButton = component.find({ name: 'scanBtn' });
+        expect(scanButton.childAt(0).text()).toBe('Start');
+        expect(scanButton.childAt(1).text()).toBe(' Scan ');
       });
     });
   });

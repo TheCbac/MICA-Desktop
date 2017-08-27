@@ -1,5 +1,6 @@
 // @flow
 /* eslint no-unused-vars: ["error", { "args": "none" }]*/
+/* eslint max-len: 0 */
 /* **********************************************************
 * File: test/reducers/devicesReducer.spec.js
 *
