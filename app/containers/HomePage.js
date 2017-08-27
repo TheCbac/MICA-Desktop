@@ -14,7 +14,8 @@ import scanForDevices from '../components/ScanForDevicesComponent';
 import {
   changeScanMethod,
   enableScanMethod,
-  startStopScan
+  startStopScan,
+  connectToDevice
 } from '../actions/ScanForDevicesActions';
 import { foundAdvertisingDevice } from '../actions/devicesActions';
 import type { stateType } from '../types/stateTypes';
@@ -33,7 +34,8 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   changeScanMethod,
   enableScanMethod,
   startStopScan,
-  foundAdvertisingDevice
+  foundAdvertisingDevice,
+  connectToDevice
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(scanForDevices);

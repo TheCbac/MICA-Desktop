@@ -22,6 +22,7 @@ export type scanStateType = {
 
 export type devicesStateType = {
   advertising: noblePeripheralType[],
+  connecting: noblePeripheralType[],
   connected: noblePeripheralType[]
 };
 

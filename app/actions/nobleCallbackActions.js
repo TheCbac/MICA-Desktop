@@ -48,6 +48,7 @@ export function discover() {
     store.dispatch(foundAdvertisingDevice(peripheral));
   });
 }
+/* Register the callbacks */
 stateChange();
 scanStart();
 scanStop();

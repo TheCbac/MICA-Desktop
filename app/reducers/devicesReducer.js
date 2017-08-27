@@ -16,12 +16,17 @@ import type {
 } from '../types/stateTypes';
 import type {
   clearAdvertisingActionType,
-  foundDeviceActionType
+  foundDeviceActionType,
+  connectingToDeviceActionType,
+  connectedToDeviceActionType
 } from '../types/actionTypes';
+import { getPeripheralFromList } from '../utils/deviceUtils';
+
 
 /* Default state of the devicesReducer */
 export const defaultState = {
   advertising: [],
+  connecting: [],
   connected: []
 };
 
@@ -42,6 +47,38 @@ export const deviceHandlers = {
   ): devicesStateType {
     /* Must deep copy, not just shallow copy */
     return update(state, { advertising: { $push: [action.payload.peripheral] } });
+  },
+  /* Attempting to connect to a device: move from advertising to connecting */
+  CONNECTING_TO_DEVICE(
+    state: devicesStateType,
+    action: connectingToDeviceActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the advertising list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.advertising, action.payload.peripheralId
+    );
+    /* Add the peripheral to the connecting list */
+    /* Remove the peripheral from the advertising list */
+    return update(state, {
+      connecting: { $push: [peripheral] },
+      advertising: { $splice: [[index, 1]] }
+    });
+  },
+  /* Connection successful, move from connecting list to connected */
+  CONNECTED_TO_DEVICE(
+    state: devicesStateType,
+    action: connectedToDeviceActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the connecting list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.connecting, action.payload.peripheralId
+    );
+    /* Add the peripheral to the connecting list */
+    /* Remove the peripheral from the advertising list */
+    return update(state, {
+      connected: { $push: [peripheral] },
+      connecting: { $splice: [[index, 1]] }
+    });
   }
 };
 

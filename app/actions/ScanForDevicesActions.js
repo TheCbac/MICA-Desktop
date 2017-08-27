@@ -9,7 +9,7 @@
 *
 **********************************************************/
 import type { stateType } from '../types/stateTypes';
-import type { scanTypes } from '../types/paramTypes';
+import type { scanTypes, nobleIdType } from '../types/paramTypes';
 import type {
   enableScanActionType,
   changeScanActionType,
@@ -17,8 +17,13 @@ import type {
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
 import { micaServiceUuid } from '../utils/mica/micaUuids';
+import { getPeripheralFromList } from '../utils/deviceUtils';
 import store from '../index';
-import { clearAdvertisingList } from './devicesActions';
+import {
+  clearAdvertisingList,
+  connectingToDevice,
+  connectedToDevice
+} from './devicesActions';
 
 /* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
@@ -73,6 +78,7 @@ export function startStopScan() {
         /* If not scanning start a scan */
           if (!scanState.scanning) {
             Noble.startScanning([micaServiceUuid], false);
+            // Noble.startScanning();
             store.dispatch(clearAdvertisingList());
           } else {
             Noble.stopScanning();
@@ -85,6 +91,33 @@ export function startStopScan() {
       }
     }
   };
+}
+
+/* Connecting to the a MICA Device - Redux Thunk */
+export function connectToDevice(advertisingDeviceId: nobleIdType) {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* get the current devices */
+    const advertisingList = getState().devices.advertising;
+    /* Get the device from the advertising list */
+    const { peripheral } = getPeripheralFromList(advertisingList, advertisingDeviceId);
+    if (peripheral) {
+      /* Move to advertising list */
+      store.dispatch(connectingToDevice(peripheral.id));
+      /* Connect to the peripheral - pass the ID to the callback */
+      peripheral.connect(connectCallBack.bind(null, peripheral.id));
+    }
+  };
+}
+
+/* Callback when a device has been connected (or timeout) */
+function connectCallBack(id: nobleIdType, error: ?string): void {
+  if (error) {
+    console.log('connectCallback:', id, error);
+    return;
+  }
+  /* Dispatch an action to indicate connected device */
+  store.dispatch(connectedToDevice(id));
 }
 
 /* [] - END OF FILE */

@@ -10,7 +10,8 @@
 **********************************************************/
 import type {
   scanTypes,
-  noblePeripheralType
+  noblePeripheralType,
+  nobleIdType
 } from './paramTypes';
 
 /* Type for changing the scanning type */
@@ -49,6 +50,22 @@ export type foundDeviceActionType = {
   type: 'FOUND_ADVERTISING_DEVICE',
   payload: {
     peripheral: noblePeripheralType
+  }
+};
+
+/* Attempting to connect to a device - move from advertising list to connecting list */
+export type connectingToDeviceActionType = {
+  type: 'CONNECTING_TO_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
+  }
+};
+
+/* Successfully connected to a device */
+export type connectedToDeviceActionType = {
+  type: 'CONNECTED_TO_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
   }
 };
 

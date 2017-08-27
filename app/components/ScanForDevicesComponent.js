@@ -38,6 +38,7 @@ export default class ScanForDevices extends Component {
       changeScanMethod: (scanTypes) => changeScanActionType,
       startStopScan: () => mixed,
       advertisingDevices: noblePeripheralType[],
+      connectToDevice: () => mixed
     };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
@@ -69,6 +70,7 @@ export default class ScanForDevices extends Component {
       enabled,
       startStopScan,
       advertisingDevices,
+      connectToDevice
     } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
@@ -141,9 +143,7 @@ export default class ScanForDevices extends Component {
               className={'-striped -highlight'}
               style={tableStyle}
               getTdProps={(state, rowInfo) => ({
-                onClick: () => {
-                  console.log('Click row: ', rowInfo);
-                }
+                onClick: () => { connectToDevice(rowInfo.original.id); }
               })
             }
             />

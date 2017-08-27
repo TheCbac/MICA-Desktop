@@ -8,14 +8,18 @@
 * Date: 2017.07.10
 *
 **********************************************************/
-import type { noblePeripheralType } from '../types/paramTypes';
+import type { noblePeripheralType, nobleIdType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
-  clearAdvertisingActionType
+  clearAdvertisingActionType,
+  connectingToDeviceActionType,
+  connectedToDeviceActionType
 } from '../types/actionTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
+export const CONNECTING_TO_DEVICE = 'CONNECTING_TO_DEVICE';
+export const CONNECTED_TO_DEVICE = 'CONNECTED_TO_DEVICE';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
@@ -34,4 +38,22 @@ export function clearAdvertisingList(): clearAdvertisingActionType {
   };
 }
 
+/* Move peripheral from advertising to connecting */
+export function connectingToDevice(peripheralId: nobleIdType): connectingToDeviceActionType {
+  return {
+    type: CONNECTING_TO_DEVICE,
+    payload: {
+      peripheralId
+    }
+  };
+}
+/* Successfully connected, move from connecting to connected */
+export function connectedToDevice(peripheralId: nobleIdType): connectedToDeviceActionType {
+  return {
+    type: CONNECTED_TO_DEVICE,
+    payload: {
+      peripheralId
+    }
+  };
+}
 /* [] - END OF FILE */

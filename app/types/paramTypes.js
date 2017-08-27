@@ -29,4 +29,6 @@ export type noblePeripheralType = {
   uuid: string
 };
 
+export type nobleIdType = string;
+
 /* [] - END OF FILE */
