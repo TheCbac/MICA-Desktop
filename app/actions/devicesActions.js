@@ -13,13 +13,17 @@ import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
   connectingToDeviceActionType,
-  connectedToDeviceActionType
+  connectedToDeviceActionType,
+  disconnectedFromDeviceActionType,
+  disconnectingFromDeviceActionType
 } from '../types/actionTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
 export const CONNECTING_TO_DEVICE = 'CONNECTING_TO_DEVICE';
 export const CONNECTED_TO_DEVICE = 'CONNECTED_TO_DEVICE';
+export const DISCONNECTING_FROM_DEVICE = 'DISCONNECTING_FROM_DEVICE';
+export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
@@ -51,6 +55,30 @@ export function connectingToDevice(peripheralId: nobleIdType): connectingToDevic
 export function connectedToDevice(peripheralId: nobleIdType): connectedToDeviceActionType {
   return {
     type: CONNECTED_TO_DEVICE,
+    payload: {
+      peripheralId
+    }
+  };
+}
+
+/* Disconnect from a connected device */
+export function disconnectingFromDevice(
+  peripheralId: nobleIdType
+): disconnectingFromDeviceActionType {
+  return {
+    type: DISCONNECTING_FROM_DEVICE,
+    payload: {
+      peripheralId
+    }
+  };
+}
+
+/* Disconnect from a connected device */
+export function disconnectedFromDevice(
+  peripheralId: nobleIdType
+): disconnectedFromDeviceActionType {
+  return {
+    type: DISCONNECTED_FROM_DEVICE,
     payload: {
       peripheralId
     }
