@@ -3,7 +3,7 @@ import React from 'react';
 import { HashRouter as Router } from 'react-router-dom';
 import { Switch, Route, hashHistory } from 'react-router';
 import App from './containers/App';
-import HomePage from './containers/HomePage';
+import DevicesPage from './containers/DevicesPage';
 import CollectDataPage from './containers/CollectDataPage';
 import AnalysisPage from './containers/AnalysisPage';
 import SenGenPage from './containers/SenGenPage';
@@ -16,11 +16,11 @@ export default () => (
         <Route path="/collectData" component={CollectDataPage} />
         <Route path="/sengen" component={SenGenPage} />
         <Route path="/analyze" component={AnalysisPage} />
-        <Route path="/" component={HomePage} />
+        <Route path="/" component={DevicesPage} />
       </Switch>
     </App>
   </Router>
 );
 
-// <Route path="/" component={HomePage} must be last in the Route order
+// <Route path="/" component={DevicesPage} must be last in the Route order
 // or else the tabs will not work correctly.

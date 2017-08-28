@@ -13,7 +13,8 @@ import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import type { scanTypes, noblePeripheralType } from '../types/paramTypes';
+import { getPeripheralFromList } from '../utils/deviceUtils';
+import type { scanTypes, noblePeripheralType, nobleIdType } from '../types/paramTypes';
 import type { changeScanActionType } from '../types/actionTypes';
 
 type methodBtnStyleType = 'success' | 'danger' | 'default';
@@ -21,13 +22,15 @@ type scanBtnStyleType = {
   color: 'primary' | 'danger',
   text: 'Start' | 'Stop'
 };
-
-// type advertisingDeviceType = {
-//   name: string,
-//   id: string
-// };
-
-// type advertisingListType = Array<advertisingDeviceType>;
+type connectBtnTextType =
+  'CONNECT' | 'CONNECTING...' | 'DISCONNECT' | 'DISCONNECTING...' | 'State Unknown';
+type connectBtnColorType = 'warning' | 'default';
+type connectBtnSettingsType = {
+  text: connectBtnTextType,
+  color: connectBtnColorType,
+  style: {color: 'white' | 'black'}
+};
+type deviceListType = 'advertising' | 'connecting' | 'connected' | 'disconnecting';
 
 export default class ScanForDevices extends Component {
   /* Properties, checked with flow */
@@ -38,7 +41,11 @@ export default class ScanForDevices extends Component {
       changeScanMethod: (scanTypes) => changeScanActionType,
       startStopScan: () => mixed,
       advertisingDevices: noblePeripheralType[],
-      connectToDevice: () => mixed
+      connectingDevices: noblePeripheralType[],
+      connectedDevices: noblePeripheralType[],
+      disconnectingDevices: noblePeripherlType[],
+      connectToDevice: () => mixed,
+      disconnectFromDevice: () => mixed
     };
   /* Returns the color for the button */
   getColor(name: scanTypes): methodBtnStyleType {
@@ -62,6 +69,61 @@ export default class ScanForDevices extends Component {
     }
     return { color: 'primary', text: 'Start' };
   }
+
+  /* Determine which list the device is in */
+  determineDeviceState(id: nobleIdType): ?deviceListType {
+    if (getPeripheralFromList(this.props.advertisingDevices, id).index != null) {
+      return 'advertising';
+    } else if (getPeripheralFromList(this.props.connectedDevices, id).index != null) {
+      return 'connected';
+    } else if (getPeripheralFromList(this.props.connectingDevices, id).index != null) {
+      return 'connecting';
+    } else if (getPeripheralFromList(this.props.disconnectingDevices, id).index != null) {
+      return 'disconnecting';
+    }
+    return null;
+  }
+  /* Find which list the device is in */
+  getConnectBtnSettings(id: nobleIdType): connectBtnSettingsType {
+    const glow = {
+      color: 'white',
+      textShadow: 'white 0 0 15px'
+    };
+    const dull = {
+      color: 'black'
+    };
+    /* Find the current state of the device */
+    const deviceState = this.determineDeviceState(id);
+    /* Act depinding on the state */
+    switch (deviceState) {
+      case 'advertising': {
+        return { text: 'CONNECT', color: 'warning', style: dull };
+      }
+      case 'connecting': {
+        return { text: 'CONNECTING...', color: 'warning', style: dull };
+      }
+      case 'connected': {
+        return { text: 'DISCONNECT', color: 'warning', style: glow };
+      }
+      case 'disconnecting': {
+        return { text: 'DISCONNECTING...', color: 'warning', style: dull };
+      }
+      default: {
+        return { text: 'State Unknown', color: 'warning', style: dull };
+      }
+    }
+  }
+  /* Perform a device action based on the current state */
+  performDeviceAction(id: nobleIdType): void {
+    /* Find the current state of the device */
+    const deviceState = this.determineDeviceState(id);
+    /* Act depinding on the state */
+    if (deviceState === 'advertising') {
+      this.props.connectToDevice(id);
+    } else if (deviceState === 'connected') {
+      this.props.disconnectFromDevice(id);
+    }
+  }
   /* Render function */
   render() {
     const {
@@ -70,7 +132,9 @@ export default class ScanForDevices extends Component {
       enabled,
       startStopScan,
       advertisingDevices,
-      connectToDevice
+      connectingDevices,
+      connectedDevices,
+      disconnectingDevices
     } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
@@ -78,31 +142,47 @@ export default class ScanForDevices extends Component {
     /* React Table */
     const tableStyle = {
       marginTop: '20px',
-      backgroundColor: 'white',
+      backgroundColor: '#D2D3C9',
       borderRadius: '5px',
       border: '0px',
-      cursor: 'pointer',
       textAlign: 'center'
     };
-    // const data = [{
-    //   name: 'Cube5',
-    //   id: '111123214321432',
-    // }, {
-    //   name: 'Cube5',
-    //   id: '1111232143214dsfasd2',
-    // }, {
-    //   name: 'Cube7',
-    //   id: 'dslfadkflsamfdsa',
-    // }, {
-    //   name: 'Cube8',
-    //   id: 'asdaass232342423',
-    // }];
+    /* Data table */
     const advertisingColumns = [{
       Header: 'Advertising Device',
       accessor: 'advertisement.localName',
+      Cell: row => (
+        <div style={this.getConnectBtnSettings(row.original.id).style}>
+          {row.value.toUpperCase()}
+        </div>
+      )
     }, {
-      Header: 'ID',
-      accessor: 'id',
+      Header: 'Address',
+      accessor: 'address',
+      Cell: row => (
+        <div style={this.getConnectBtnSettings(row.original.id).style}>
+          {row.value.toUpperCase()}
+        </div>
+      )
+    }, {
+      Header: 'Signal Strength',
+      accessor: 'rssi',
+      Cell: row => (
+        <div style={this.getConnectBtnSettings(row.original.id).style}>
+          {`${row.value} dB`}
+        </div>
+      )
+    }, {
+      Header: 'Actions',
+      Cell: row => (
+        <div>
+          <Button
+            onClick={() => this.performDeviceAction(row.original.id)}
+            bsStyle={this.getConnectBtnSettings(row.original.id).color}
+            style={this.getConnectBtnSettings(row.original.id).style}
+          >{this.getConnectBtnSettings(row.original.id).text}</Button>
+        </div>
+      )
     }];
     return (
       <Grid fluid>
@@ -131,21 +211,22 @@ export default class ScanForDevices extends Component {
                 onClick={() => startStopScan()}
               >{this.getScanState().text} Scan {spinner}</Button>
             </ButtonGroup>
-            <Row />
+          </Col>
+          <Row />
+          <Col md={10} mdOffset={1}>
             <ReactTable
               name={'advertisingTable'}
-              data={advertisingDevices}
-              // data={data}   // testing only
+              data={advertisingDevices.concat(
+                connectingDevices,
+                connectedDevices,
+                disconnectingDevices
+              )}
               columns={advertisingColumns}
               minRows={3}
               noDataText={'No devices found'}
               showPagination={false}
               className={'-striped -highlight'}
               style={tableStyle}
-              getTdProps={(state, rowInfo) => ({
-                onClick: () => { connectToDevice(rowInfo.original.id); }
-              })
-            }
             />
           </Col>
         </Row>

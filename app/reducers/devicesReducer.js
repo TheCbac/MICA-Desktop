@@ -18,7 +18,9 @@ import type {
   clearAdvertisingActionType,
   foundDeviceActionType,
   connectingToDeviceActionType,
-  connectedToDeviceActionType
+  connectedToDeviceActionType,
+  disconnectingFromDeviceActionType,
+  disconnectedFromDeviceActionType
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 
@@ -27,7 +29,8 @@ import { getPeripheralFromList } from '../utils/deviceUtils';
 export const defaultState = {
   advertising: [],
   connecting: [],
-  connected: []
+  connected: [],
+  disconnecting: []
 };
 
 /* Handlers to create reducers  */
@@ -78,6 +81,37 @@ export const deviceHandlers = {
     return update(state, {
       connected: { $push: [peripheral] },
       connecting: { $splice: [[index, 1]] }
+    });
+  },
+  /* Attempting to disconnect from a device: move from connected to disconnected */
+  DISCONNECTING_FROM_DEVICE(
+    state: devicesStateType,
+    action: disconnectingFromDeviceActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the advertising list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.connected, action.payload.peripheralId
+    );
+    /* Add the peripheral to the disconnecting list */
+    /* Remove the peripheral from the connected list */
+    return update(state, {
+      disconnecting: { $push: [peripheral] },
+      connected: { $splice: [[index, 1]] }
+    });
+  },
+  /* Disonnection successful, remove from disconnecting list */
+  DISCONNECTED_FROM_DEVICE(
+    state: devicesStateType,
+    action: disconnectedFromDeviceActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the connecting list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.disconnecting, action.payload.peripheralId
+    );
+    /* Remove the peripheral from the disconnecting list */
+    return update(state, {
+      advertising: { $push: [peripheral] },
+      disconnecting: { $splice: [[index, 1]] }
     });
   }
 };

@@ -69,4 +69,20 @@ export type connectedToDeviceActionType = {
   }
 };
 
+/* Disconnecting from a device */
+export type disconnectingFromDeviceActionType = {
+  type: 'DISCONNECTING_FROM_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
+  }
+};
+
+/* Disconnect from a device */
+export type disconnectedFromDeviceActionType = {
+  type: 'DISCONNECTED_FROM_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
+  }
+};
+
 /* [] - END OF FILE */

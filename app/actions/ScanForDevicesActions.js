@@ -22,7 +22,9 @@ import store from '../index';
 import {
   clearAdvertisingList,
   connectingToDevice,
-  connectedToDevice
+  connectedToDevice,
+  disconnectingFromDevice,
+  disconnectedFromDevice
 } from './devicesActions';
 
 /* Action names */
@@ -78,7 +80,6 @@ export function startStopScan() {
         /* If not scanning start a scan */
           if (!scanState.scanning) {
             Noble.startScanning([micaServiceUuid], false);
-            // Noble.startScanning();
             store.dispatch(clearAdvertisingList());
           } else {
             Noble.stopScanning();
@@ -106,6 +107,8 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
       store.dispatch(connectingToDevice(peripheral.id));
       /* Connect to the peripheral - pass the ID to the callback */
       peripheral.connect(connectCallBack.bind(null, peripheral.id));
+      /* Register a callback function for a disconnect event */
+      peripheral.once('disconnect', disconnectCallback.bind(null, peripheral.id));
     }
   };
 }
@@ -118,6 +121,30 @@ function connectCallBack(id: nobleIdType, error: ?string): void {
   }
   /* Dispatch an action to indicate connected device */
   store.dispatch(connectedToDevice(id));
+}
+
+/* Disconnect from a device */
+export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* get the currently connected devices */
+    const connectedList = getState().devices.connected;
+    /* Get the device from the advertising list */
+    const { peripheral } = getPeripheralFromList(connectedList, connectedDeviceId);
+    if (peripheral) {
+      /* Move to disconnecting list */
+      store.dispatch(disconnectingFromDevice(peripheral.id));
+      /* Connect to the peripheral
+      Disconnect call back was registered when the device connected */
+      peripheral.disconnect();
+    }
+  };
+}
+
+/* Callback for when a device becomes disconnected */
+function disconnectCallback(id: nobleIdType): void {
+  /* Dispatch a disconnect event */
+  store.dispatch(disconnectedFromDevice(id));
 }
 
 /* [] - END OF FILE */
