@@ -11,23 +11,39 @@
 /* Different scan types available */
 export type scanTypes = 'usb' | 'ble';
 
+/* Noble characteritic type */
+export type nobleCharacteristicType = {
+  uuid: string,
+  name: ?string,
+  properties: ?string[],
+  descriptors: ?string,
+  type: ?string
+};
+/* Noble BLE servcies */
+export type nobleServiceType = {
+  uuid: string,
+  name: ?string,
+  characteristics: ?nobleCharacteristicType[]
+};
+
 /* Noble Object */
 export type noblePeripheralType = {
   address: string,
   addressType: string,
   advertisement: {
     localName: string,
-    manufacturerData: any,
+    manufacturerData: ?string,
     serviceData: [],
     serviceUuids: string[],
-    txPowerLevel: any
+    txPowerLevel: ?number
   },
   connectable: boolean,
   id: string,
   rssi: number,
-  services: any,
+  services: ?nobleServiceType[],
   uuid: string
 };
+
 
 export type nobleIdType = string;
 

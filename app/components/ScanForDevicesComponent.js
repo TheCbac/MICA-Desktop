@@ -43,7 +43,7 @@ export default class ScanForDevices extends Component {
       advertisingDevices: noblePeripheralType[],
       connectingDevices: noblePeripheralType[],
       connectedDevices: noblePeripheralType[],
-      disconnectingDevices: noblePeripherlType[],
+      disconnectingDevices: noblePeripheralType[],
       connectToDevice: () => mixed,
       disconnectFromDevice: () => mixed
     };

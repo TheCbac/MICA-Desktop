@@ -76,7 +76,7 @@
       "buildResources": "resources",
       "output": "release"
     },
-     "extraResources": "resources/**/*"
+    "extraResources": "resources/**/*"
   },
   "repository": {
     "type": "git",
@@ -150,6 +150,7 @@
     "electron": "^1.6.5",
     "electron-builder": "^19.19.1",
     "electron-devtools-installer": "^2.2.0",
+    "electron-log": "^2.2.7",
     "electron-rebuild": "^1.5.11",
     "enzyme": "^2.8.2",
     "eslint": "^3.19.0",
@@ -204,7 +205,6 @@
     "extract-text-webpack-plugin": "^2.1.0",
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
-    "node": "^8.2.1",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-bootstrap-table": "^3.4.2",

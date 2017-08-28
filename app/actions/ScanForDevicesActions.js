@@ -18,6 +18,8 @@ import type {
 import { Noble } from '../utils/nativeModules';
 import { micaServiceUuid } from '../utils/mica/micaUuids';
 import { getPeripheralFromList } from '../utils/deviceUtils';
+import { discoverMicaNoble } from '../utils/mica/micaNobleDevices';
+
 import store from '../index';
 import {
   clearAdvertisingList,
@@ -81,6 +83,11 @@ export function startStopScan() {
           if (!scanState.scanning) {
             Noble.startScanning([micaServiceUuid], false);
             store.dispatch(clearAdvertisingList());
+            /* Set a timeout for stop scanning. This logic isn't quite correct
+             * Need to include a provision for clearing the timoeout */
+            setTimeout(() => {
+              Noble.stopScanning();
+            }, 15000);
           } else {
             Noble.stopScanning();
           }
@@ -106,8 +113,10 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
       /* Move to advertising list */
       store.dispatch(connectingToDevice(peripheral.id));
       /* Connect to the peripheral - pass the ID to the callback */
+      // $FlowFixMe
       peripheral.connect(connectCallBack.bind(null, peripheral.id));
       /* Register a callback function for a disconnect event */
+      // $FlowFixMe
       peripheral.once('disconnect', disconnectCallback.bind(null, peripheral.id));
     }
   };
@@ -116,11 +125,12 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
 /* Callback when a device has been connected (or timeout) */
 function connectCallBack(id: nobleIdType, error: ?string): void {
   if (error) {
-    console.log('connectCallback:', id, error);
     return;
   }
   /* Dispatch an action to indicate connected device */
   store.dispatch(connectedToDevice(id));
+  /* Discover parameters about the device */
+  discoverMicaNoble(id);
 }
 
 /* Disconnect from a device */
@@ -148,4 +158,3 @@ function disconnectCallback(id: nobleIdType): void {
 }
 
 /* [] - END OF FILE */
-
