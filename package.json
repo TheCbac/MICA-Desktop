@@ -150,7 +150,6 @@
     "electron": "^1.6.5",
     "electron-builder": "^19.19.1",
     "electron-devtools-installer": "^2.2.0",
-    "electron-log": "^2.2.7",
     "electron-rebuild": "^1.5.11",
     "enzyme": "^2.8.2",
     "eslint": "^3.19.0",

@@ -85,6 +85,11 @@ Installing noble in the app/ package. Rebuild for current version:
 
 `$ npm rebuild jest --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=53`
 
+## Logging
+
+### Winston
+To avoid errors about colors, put winston in dependencies in /app
+
 
 ### xpc-connection
  Issues during testing of xpc-connection

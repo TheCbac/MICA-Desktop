@@ -17,6 +17,9 @@ import {
   shallowObjToArray,
   getCharacteristicFromPeripheralId
 } from '../deviceUtils';
+import log from '../loggingUtils';
+/* Set the file debug level */
+// log.debugLevel = 5;
 
 export function discoverMicaNoble(id: nobleIdType): void {
   /* Find the Device  */
@@ -41,16 +44,30 @@ export function discoverMicaNoble(id: nobleIdType): void {
 /* Callback once MICA discovery is done */
 function discoverMicaNobleCallback(id: nobleIdType, error: ?string): void {
   if (error) {
-    console.log('discoverMicaNobleCallback: failed %s', error);
+    log.error('discoverMicaNobleCallback: Discovery failed %s', error);
     return;
   }
-  /* Register subscriptions */
-  const sensingCommands = getCharacteristicFromPeripheralId(
+  log.verbose('discoverMicaNobleCallback: Dicovered MICA profile for ', id);
+  /* Find the sensing command characteristic subscriptions */
+  const sensingCommandsChar = getCharacteristicFromPeripheralId(
     micaServiceUuid,
     micaCharUuids.sensorCommands,
     id,
     store.getState().devices.connected
   );
-  console.log('discoverMicaNobleCallback:', sensingCommands);
+  if (sensingCommandsChar) {
+    /* Subscribe to the char */
+    sensingCommandsChar.subscribe(subscribeCallback.bind(null, id, 'SensingCommand'));
+  }
 }
+
+/* Call back function for subscriptions */
+function subscribeCallback(id: string, char: string, error: ?string): void {
+  if (error) {
+    log.error('Subscription to', char, 'failed on device:', id);
+  } else {
+    log.verbose('Subscription to', char, 'succeeded on device:', id);
+  }
+}
+
 /* [] - END OF FILE */
