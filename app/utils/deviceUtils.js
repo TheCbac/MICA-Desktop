@@ -8,6 +8,7 @@
 * Date: 2017.08.27
 *
 **********************************************************/
+import log from './loggingUtils';
 import type {
   noblePeripheralType,
   nobleIdType,
@@ -69,13 +70,13 @@ export function getCharacteristicFromService(
 
 /* Returns a characteristic from a given peripehral */
 export function getCharacteristicFromPeripheralId(
-  serviceUuid: string,
   charUuid: string,
-  peripheralId: nobleIdType,
+  serviceUuid: string,
+  deviceId: nobleIdType,
   deviceList: noblePeripheralType[]
 ): ?nobleCharacteristicType {
   /* Find the peripheral */
-  const peripheral = getPeripheralFromList(deviceList, peripheralId).peripheral;
+  const peripheral = getPeripheralFromList(deviceList, deviceId).peripheral;
   if (!peripheral) { return undefined; }
   /* Find the service */
   const service = getServiceFromPeripheral(serviceUuid, peripheral);
@@ -83,6 +84,24 @@ export function getCharacteristicFromPeripheralId(
   if (!service) { return undefined; }
   /* Get the characteristic */
   return getCharacteristicFromService(charUuid, service);
+}
+
+export function readMetaCharacteristicFromId(charUuid: string, serviceUuid: string,
+  deviceId: nobleIdType, deviceList: noblePeripheralType[],
+  callback: (string, string, ?string, Buffer) => void
+): boolean {
+  /* find the device from the list */
+  const char = getCharacteristicFromPeripheralId(charUuid, serviceUuid, deviceId, deviceList);
+  /* Ensure the character was found */
+  if (!char) {
+    log.warn('readMetaCharacteristicFrom ID failed to find characteristic',
+    charUuid, 'on device', deviceId);
+    return false;
+  }
+  /* Read the characteristic, passing in the callback, with the bound IDs */
+  char.read(callback.bind(null, charUuid, deviceId));
+  /* Indicate the read call was successful */
+  return true;
 }
 
 /* Return an array from an array like object */

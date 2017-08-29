@@ -16,10 +16,10 @@ import type {
   scanStateActionType,
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
-import { micaServiceUuid } from '../utils/mica/micaUuids';
+import { micaServiceUuid } from '../utils/mica/micaConstants';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 import { discoverMicaNoble } from '../utils/mica/micaNobleDevices';
-
+import log from '../utils/loggingUtils';
 import store from '../index';
 import {
   clearAdvertisingList,
@@ -28,6 +28,10 @@ import {
   disconnectingFromDevice,
   disconnectedFromDevice
 } from './devicesActions';
+
+/* Set the file debug level */
+log.debugLevel = 5;
+log.debug('ScanForDevicesActions.js logging level set to:', log.debugLevel);
 
 /* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
@@ -125,6 +129,7 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
 /* Callback when a device has been connected (or timeout) */
 function connectCallBack(id: nobleIdType, error: ?string): void {
   if (error) {
+    log.error('Failed to connect to device:', id);
     return;
   }
   /* Dispatch an action to indicate connected device */

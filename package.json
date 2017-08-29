@@ -25,6 +25,7 @@
     "start-hot-renderer": "cross-env HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./app/main.development",
     "postinstall": "concurrently \"npm run flow-typed\" \"npm run build-dll\" \"install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
     "dev": "cross-env NODE_ENV=development START_HOT=1 npm run hot-updates-server",
+    "devDebug": "DEBUG_LVL=5 cross-env NODE_ENV=development START_HOT=1 npm run hot-updates-server",
     "package": "npm run build && build --publish never",
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",

@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: test/utils/mica/micaUuids.js
+* File: test/utils/mica/micaConstants.spec.js
 *
 * Brief: Snapshot test for the Mica constants
 *
@@ -8,10 +8,10 @@
 * Modified: 2017.08.18
 *
 **********************************************************/
-import * as Mica from '../../../app/utils/mica/MicaUuids';
+import * as Mica from '../../../app/utils/mica/micaConstants';
 
 // Begin test
-describe('MicaUuids', () => {
+describe('MicaConstants', () => {
   // Snapshot tests are great for cases like these where we have a big list of constants
   it('Passes snapshot test', () => {
     expect(Mica.micaServiceUuid).toMatchSnapshot();
