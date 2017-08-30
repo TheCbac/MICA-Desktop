@@ -149,7 +149,7 @@ export default class ScanForDevices extends Component {
     };
     /* Data table */
     const advertisingColumns = [{
-      Header: 'Advertising Device',
+      Header: 'Name',
       accessor: 'advertisement.localName',
       Cell: row => (
         <div style={this.getConnectBtnSettings(row.original.id).style}>
@@ -227,6 +227,11 @@ export default class ScanForDevices extends Component {
               showPagination={false}
               className={'-striped -highlight'}
               style={tableStyle}
+              sortable
+              defaultSorted={[{
+                id: 'advertisement.localName',
+                desc: false
+              }]}
             />
           </Col>
         </Row>

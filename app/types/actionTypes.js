@@ -86,6 +86,14 @@ export type disconnectedFromDeviceActionType = {
   }
 };
 
+/* Disconnect from a device */
+export type lostConnectionFromDeviceActionType = {
+  type: 'LOST_CONNECTION_FROM_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
+  }
+};
+
 export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {

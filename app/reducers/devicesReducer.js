@@ -21,6 +21,7 @@ import type {
   connectedToDeviceActionType,
   disconnectingFromDeviceActionType,
   disconnectedFromDeviceActionType,
+  lostConnectionFromDeviceActionType,
   reportMetaDataActionType
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
@@ -82,10 +83,17 @@ export const deviceHandlers = {
     if (!peripheral) { return state; }
     /* Add the peripheral to the connecting list */
     /* Remove the peripheral from the advertising list */
-    return update(state, {
+    // return update(state, {
+    //   connected: { $push: [peripheral] },
+    //   connecting: { $splice: [[index, 1]] }
+    // });
+    const state1 = update(state, {
       connected: { $push: [peripheral] },
       connecting: { $splice: [[index, 1]] }
     });
+    const metaObj = { };
+    metaObj[action.payload.peripheralId] = {};
+    return update(state1, { metadata: { $merge: metaObj } });
   },
   /* Attempting to disconnect from a device: move from connected to disconnected */
   DISCONNECTING_FROM_DEVICE(
@@ -109,10 +117,11 @@ export const deviceHandlers = {
     state: devicesStateType,
     action: disconnectedFromDeviceActionType
   ): devicesStateType {
-    /* Get the peripheral and index from the connecting list */
+    /* Get the peripheral and index from the disconnecting list */
     const { peripheral, index } = getPeripheralFromList(
       state.disconnecting, action.payload.peripheralId
     );
+    /* Device was */
     if (!peripheral) { return state; }
     /* Remove the peripheral from the disconnecting list */
     return update(state, {
@@ -120,23 +129,40 @@ export const deviceHandlers = {
       disconnecting: { $splice: [[index, 1]] }
     });
   },
-  /* Metadata was read in successfully */
-  REPORT_META_DATA(
+  /* Device was abruptly lost, remove from connected list */
+  LOST_CONNECTION_FROM_DEVICE(
     state: devicesStateType,
-    action: reportMetaDataActionType
+    action: lostConnectionFromDeviceActionType
   ): devicesStateType {
     /* Get the peripheral and index from the connected list */
     const { peripheral, index } = getPeripheralFromList(
       state.connected, action.payload.peripheralId
     );
+    /* Device was */
     if (!peripheral) { return state; }
+    /* Remove the peripheral from the connected list */
+    return update(state, {
+      advertising: { $push: [peripheral] },
+      connected: { $splice: [[index, 1]] }
+    });
+  },
+  /* Metadata was read in successfully */
+  REPORT_META_DATA(
+    state: devicesStateType,
+    action: reportMetaDataActionType
+  ): devicesStateType {
+    const deviceId = action.payload.peripheralId;
+    /* Get the peripheral and index from the connected list */
+    const { peripheral } = getPeripheralFromList(state.connected, deviceId);
+    /* Ensure the peripheral was found */
+    if (!peripheral) { return state; }
+    /* Find the module name @TODO: this should be changed the metaObjType */
     const module = action.payload.data[0].module;
-    const metadataObj = { };
-    metadataObj[module] = action.payload.data;
-    /* Add the metadataObj */
-    // $FlowFixMe
-    return update(state, { connected: { [index]: { $merge: metadataObj } } });
-    // return state;
+    /* Create an obj who has a key of the module in question */
+    const deviceMetaObj = { };
+    deviceMetaObj[module] = action.payload.data;
+    /* Update the stored Metadata object.  */
+    return update(state, { metadata: { [deviceId]: { $merge: deviceMetaObj } } });
   }
 };
 

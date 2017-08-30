@@ -26,7 +26,8 @@ import {
   connectingToDevice,
   connectedToDevice,
   disconnectingFromDevice,
-  disconnectedFromDevice
+  disconnectedFromDevice,
+  lostConnectionFromDevice
 } from './devicesActions';
 
 /* Set the file debug level */
@@ -159,8 +160,23 @@ export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
 
 /* Callback for when a device becomes disconnected */
 function disconnectCallback(id: nobleIdType): void {
-  /* Dispatch a disconnect event */
-  store.dispatch(disconnectedFromDevice(id));
+  /* Get the state*/
+  const deviceList = store.getState().devices;
+  /* Disconnection was planned*/
+  const disconnectingDevice = getPeripheralFromList(deviceList.disconnecting, id).peripheral;
+  if (disconnectingDevice) {
+    /* Dispatch a disconnect event */
+    store.dispatch(disconnectedFromDevice(id));
+    return;
+  }
+  /* Disconnection was not planned*/
+  const lostDevice = getPeripheralFromList(deviceList.connected, id).peripheral;
+  if (lostDevice) {
+    /* Dispatch a disconnect event */
+    store.dispatch(lostConnectionFromDevice(id));
+    return;
+  }
+  log.warn('disconnectCallback: Device in unknown state lost:', id);
 }
 
 /* [] - END OF FILE */
