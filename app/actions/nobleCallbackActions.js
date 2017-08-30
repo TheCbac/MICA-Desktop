@@ -33,12 +33,22 @@ export function stateChange() {
 /* The Noble BLE scan has started, dispatch an event */
 export function scanStart() {
   Noble.on('scanStart', () => {
-    store.dispatch(changeScanState('ble', true));
+    /* Set a timeout */
+    const timeoutId = setTimeout(() => {
+      Noble.stopScanning();
+    }, 15000);
+    /* Dispatch the start scan action */
+    store.dispatch(changeScanState('ble', true, timeoutId));
   });
 }
   /* The Noble BLE Scan has stopped, update the state */
 export function scanStop() {
   Noble.on('scanStop', () => {
+    /* Get the timeout ID saved */
+    const timeoutId = store.getState().scanForDevices.timeoutId;
+    /* Clear if applicable */
+    if (timeoutId) { clearTimeout(timeoutId); }
+    /* Dispatch the stop scan action */
     store.dispatch(changeScanState('ble', false));
   });
 }

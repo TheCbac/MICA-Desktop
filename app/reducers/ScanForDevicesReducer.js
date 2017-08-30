@@ -9,6 +9,7 @@
 *
 **********************************************************/
 import createReducer from './createReducer';
+import update from 'immutability-helper';
 import type { scanStateType } from '../types/stateTypes';
 import type {
   changeScanActionType,
@@ -20,7 +21,8 @@ import type {
 const defaultState = {
   method: 'ble',
   enabled: false,
-  scanning: false
+  scanning: false,
+  timeoutId: undefined
 };
 
 /* Handlers to create reducers  */
@@ -29,13 +31,12 @@ const scanForDeviceHandlers = {
   CHANGE_SCAN_METHOD(
     state: scanStateType = defaultState,
     action: changeScanActionType): scanStateType {
-    /* Copy and return the new state object */
-    return {
-      ...state,
-      method: action.payload.method,
-      enabled: action.payload.enable,
-      scanning: false
-    };
+    /* Set the scan method, enable state, and stop scanning */
+    return update(state, {
+      method: { $set: action.payload.method },
+      enabled: { $set: action.payload.enable },
+      scanning: { $set: false }
+    });
   },
   /* Enables or disables the ability to scan */
   ENABLE_SCAN_METHOD(
@@ -43,19 +44,27 @@ const scanForDeviceHandlers = {
     action: enableScanActionType): scanStateType {
     /* Change the state if the method matches the active method */
     if (action.payload.method === state.method) {
-      return { ...state, enabled: action.payload.enable, scanning: false };
+      /* Enable or disable, stop the scan */
+      return update(state, {
+        enabled: { $set: action.payload.enable },
+        scanning: { $set: false }
+      });
     }
-    return { ...state };
+    return state;
   },
   /* Sets whether the app is scanning or not */
   CHANGE_SCAN_STATE(
     state: scanStateType,
     action: scanStateActionType): scanStateType {
-    /* Enable scanning is */
+    /* Only change the active method */
     if (action.payload.method === state.method) {
-      return { ...state, scanning: action.payload.state };
+      /* Set the scanning state, store the timeoutId */
+      return update(state, {
+        scanning: { $set: action.payload.state },
+        timeoutId: { $set: action.payload.timeoutId }
+      });
     }
-    return { ...state };
+    return state;
   }
 };
 

@@ -45,7 +45,7 @@ export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDe
 /* Clear the advertisement list */
 export function clearAdvertisingList(): clearAdvertisingActionType {
   return {
-    type: CLEAR_ADVERTISING_LIST
+    type: CLEAR_ADVERTISING_LIST,
   };
 }
 

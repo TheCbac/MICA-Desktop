@@ -37,7 +37,8 @@ export type scanStateActionType = {
   type: 'CHANGE_SCAN_STATE',
   payload: {
     method: scanTypes,
-    state: boolean
+    state: boolean,
+    timeoutId: ?number
   }
 };
 

@@ -51,7 +51,7 @@ export function changeScanMethod(method: scanTypes): changeScanActionType {
     type: CHANGE_SCAN_METHOD,
     payload: {
       method,
-      enable
+      enable,
     }
   };
 }
@@ -67,12 +67,14 @@ export function enableScanMethod(method: scanTypes, enable: boolean): enableScan
 }
 
 /* Indicate that the scanState should change */
-export function changeScanState(method: scanTypes, state: boolean): scanStateActionType {
+export function changeScanState(method: scanTypes,
+  state: boolean, tOutId?: number): scanStateActionType {
   return {
     type: CHANGE_SCAN_STATE,
     payload: {
       method,
-      state
+      state,
+      timeoutId: tOutId
     }
   };
 }
@@ -87,14 +89,12 @@ export function startStopScan() {
         case 'ble':
         /* If not scanning start a scan */
           if (!scanState.scanning) {
+            /* Start scanning - triggers a callback that updates the state */
             Noble.startScanning([micaServiceUuid], false);
+            /* Dispatch the event */
             store.dispatch(clearAdvertisingList());
-            /* Set a timeout for stop scanning. This logic isn't quite correct
-             * Need to include a provision for clearing the timoeout */
-            setTimeout(() => {
-              Noble.stopScanning();
-            }, 15000);
           } else {
+            /* Stop scanning - triggers callback that updates the state*/
             Noble.stopScanning();
           }
           break;
