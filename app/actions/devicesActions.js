@@ -15,8 +15,10 @@ import type {
   connectingToDeviceActionType,
   connectedToDeviceActionType,
   disconnectedFromDeviceActionType,
-  disconnectingFromDeviceActionType
+  disconnectingFromDeviceActionType,
+  reportMetaDataActionType
 } from '../types/actionTypes';
+import type { metaDataType } from '../types/metaDataTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
@@ -24,6 +26,7 @@ export const CONNECTING_TO_DEVICE = 'CONNECTING_TO_DEVICE';
 export const CONNECTED_TO_DEVICE = 'CONNECTED_TO_DEVICE';
 export const DISCONNECTING_FROM_DEVICE = 'DISCONNECTING_FROM_DEVICE';
 export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
+export const REPORT_META_DATA = 'REPORT_META_DATA';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
@@ -81,6 +84,18 @@ export function disconnectedFromDevice(
     type: DISCONNECTED_FROM_DEVICE,
     payload: {
       peripheralId
+    }
+  };
+}
+
+/* Report Metadata */
+export function reportMetaData(deviceId: nobleIdType,
+  metaData: metaDataType): reportMetaDataActionType {
+  return {
+    type: REPORT_META_DATA,
+    payload: {
+      peripheralId: deviceId,
+      data: metaData
     }
   };
 }

@@ -30,7 +30,7 @@ import {
 } from './devicesActions';
 
 /* Set the file debug level */
-log.debugLevel = 5;
+// log.debugLevel = 5;
 log.debug('ScanForDevicesActions.js logging level set to:', log.debugLevel);
 
 /* Action names */
@@ -132,6 +132,7 @@ function connectCallBack(id: nobleIdType, error: ?string): void {
     log.error('Failed to connect to device:', id);
     return;
   }
+  log.debug('ConnectCallBack Called');
   /* Dispatch an action to indicate connected device */
   store.dispatch(connectedToDevice(id));
   /* Discover parameters about the device */

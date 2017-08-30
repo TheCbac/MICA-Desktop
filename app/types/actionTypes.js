@@ -13,6 +13,7 @@ import type {
   noblePeripheralType,
   nobleIdType
 } from './paramTypes';
+import type { metaDataType } from './metaDataTypes';
 
 /* Type for changing the scanning type */
 export type changeScanActionType = {
@@ -85,4 +86,11 @@ export type disconnectedFromDeviceActionType = {
   }
 };
 
+export type reportMetaDataActionType = {
+  type: 'REPORT_META_DATA',
+  payload: {
+    peripheralId: string,
+    data: metaDataType
+  }
+};
 /* [] - END OF FILE */

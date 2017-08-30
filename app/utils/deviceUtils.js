@@ -88,7 +88,7 @@ export function getCharacteristicFromPeripheralId(
 
 export function readMetaCharacteristicFromId(charUuid: string, serviceUuid: string,
   deviceId: nobleIdType, deviceList: noblePeripheralType[],
-  callback: (string, string, ?string, Buffer) => void
+  callback: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
 ): boolean {
   /* find the device from the list */
   const char = getCharacteristicFromPeripheralId(charUuid, serviceUuid, deviceId, deviceList);

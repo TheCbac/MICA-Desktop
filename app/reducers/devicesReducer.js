@@ -20,7 +20,8 @@ import type {
   connectingToDeviceActionType,
   connectedToDeviceActionType,
   disconnectingFromDeviceActionType,
-  disconnectedFromDeviceActionType
+  disconnectedFromDeviceActionType,
+  reportMetaDataActionType
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 
@@ -30,7 +31,8 @@ export const defaultState = {
   advertising: [],
   connecting: [],
   connected: [],
-  disconnecting: []
+  disconnecting: [],
+  metadata: {}
 };
 
 /* Handlers to create reducers  */
@@ -60,6 +62,7 @@ export const deviceHandlers = {
     const { peripheral, index } = getPeripheralFromList(
       state.advertising, action.payload.peripheralId
     );
+    if (!peripheral) { return state; }
     /* Add the peripheral to the connecting list */
     /* Remove the peripheral from the advertising list */
     return update(state, {
@@ -76,6 +79,7 @@ export const deviceHandlers = {
     const { peripheral, index } = getPeripheralFromList(
       state.connecting, action.payload.peripheralId
     );
+    if (!peripheral) { return state; }
     /* Add the peripheral to the connecting list */
     /* Remove the peripheral from the advertising list */
     return update(state, {
@@ -92,6 +96,7 @@ export const deviceHandlers = {
     const { peripheral, index } = getPeripheralFromList(
       state.connected, action.payload.peripheralId
     );
+    if (!peripheral) { return state; }
     /* Add the peripheral to the disconnecting list */
     /* Remove the peripheral from the connected list */
     return update(state, {
@@ -99,7 +104,7 @@ export const deviceHandlers = {
       connected: { $splice: [[index, 1]] }
     });
   },
-  /* Disonnection successful, remove from disconnecting list */
+  /* Disconnection successful, remove from disconnecting list */
   DISCONNECTED_FROM_DEVICE(
     state: devicesStateType,
     action: disconnectedFromDeviceActionType
@@ -108,11 +113,30 @@ export const deviceHandlers = {
     const { peripheral, index } = getPeripheralFromList(
       state.disconnecting, action.payload.peripheralId
     );
+    if (!peripheral) { return state; }
     /* Remove the peripheral from the disconnecting list */
     return update(state, {
       advertising: { $push: [peripheral] },
       disconnecting: { $splice: [[index, 1]] }
     });
+  },
+  /* Metadata was read in successfully */
+  REPORT_META_DATA(
+    state: devicesStateType,
+    action: reportMetaDataActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the connected list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.connected, action.payload.peripheralId
+    );
+    if (!peripheral) { return state; }
+    const module = action.payload.data[0].module;
+    const metadataObj = { };
+    metadataObj[module] = action.payload.data;
+    /* Add the metadataObj */
+    // $FlowFixMe
+    return update(state, { connected: { [index]: { $merge: metadataObj } } });
+    // return state;
   }
 };
 

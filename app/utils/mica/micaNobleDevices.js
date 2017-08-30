@@ -20,9 +20,10 @@ import {
 } from '../deviceUtils';
 import parseMetaData from './metaDataParsers';
 import log from '../loggingUtils';
+import { reportMetaData } from '../../actions/devicesActions';
 
 /* Set the file debug level */
-log.debugLevel = 5;
+// log.debugLevel = 5;
 log.debug('micaNobleDevices.js logging level set to:', log.debugLevel);
 
 /* Function to Discover and Subscribe to MICA characteristics */
@@ -91,7 +92,7 @@ function subscribeCallback(id: string, char: string, error: ?string): void {
 }
 
 /* Read all of the meta data from a mica device */
-function readMetaData(deviceId: string): void {
+function readMetaData(deviceId: nobleIdType): void {
   const connectedDevices = store.getState().devices.connected;
   /* Initiate a metadata read */
   readMetaCharacteristicFromId(micaCharUuids.energyMetadata, micaServiceUuid,
@@ -119,8 +120,12 @@ function readMetaCharCallback(
     log.error('readMetaCharCallback', charId, 'failed on device', deviceId, 'with error', error);
     return;
   }
+  /* Parse the metadata */
   const metaData = parseMetaData(charId, data);
-  log.debug('readMetaCharCallback: Parsed metadata:', metaData);
+  if (metaData) {
+    log.debug('readMetaCharCallback: Parsed metadata:', metaData);
+    store.dispatch(reportMetaData(deviceId, metaData));
+  }
 }
 
 /* [] - END OF FILE */
