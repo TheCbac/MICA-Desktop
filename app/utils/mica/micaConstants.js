@@ -1,4 +1,5 @@
 // @flow
+/* eslint quote-props: "off" */
 /* **********************************************************
 * File: utils/mica/micaConstants.js
 *
@@ -31,68 +32,57 @@ export const micaCharUuids = {
 
 type moduleName = 'energy' | 'actuation' | 'power' | 'sensing' | 'communication' | 'control';
 /* Wrapper function for mapping IDs to names  */
-export function moduleToName(module: moduleName, id: number): ?string {
-  switch (module) {
-    case 'energy':
-      return batteryIdToName(id);
-    case 'actuation':
-      return actuatorIdToName(id);
-    case 'power':
-      return powerIdToName(id);
-    default:
-      log.warn('moduleToName: Unknown module name', module);
-      return undefined;
-  }
+export function moduleToName(module: moduleName, id: number): string {
+  /* No need to search for None */
+  if (id === 0) { return 'None'; }
+  /* Get the module */
+  const moduleObj = micaIDs[module];
+  /* Ensure it exists */
+  if (!moduleObj) { return 'Unknown'; }
+  /* Return the name if it exists */
+  return moduleObj[id] || 'Unknown';
 }
 
-function powerIdToName(id: number): string {
-  switch (id) {
-    case 0x00:
-      return 'None';
-    case 0x01:
-      return 'Linear Regulator';
-    case 0x02:
-      return 'Buck Converter';
-    case 0x03:
-      return 'Boost Converter';
-    case 0x04:
-      return 'Buck/Boost Converter';
-    default:
-      return 'Unknown';
+const micaIDs = {
+  actuation: {
+    '1': 'Signal Voltage',
+    '2': 'Signal Current',
+    '3': 'Power Voltage',
+    '4': 'Power Current'
+  },
+  energy: {
+    '1': 'LiPo',
+    '2': 'LiFePO',
+    '3': 'Alkaline'
+  },
+  power: {
+    '1': 'Linear Regulator',
+    '2': 'Buck Converter',
+    '3': 'Boost Converter',
+    '4': 'Buck Boost'
+  },
+  sensing: {
+    '1': 'Accelerometer',
+    '2': 'Gyroscope',
+    '3': 'Magnetometer',
+    '4': 'ADC',
+    '5': 'Output Current',
+    '6': 'Load Cell'
+  },
+  communication: {
+    '1': 'Internal I2C',
+    '2': 'Internal UART',
+    '3': 'Internal SPI',
+    '4': 'External I2C',
+    '5': 'External UART',
+    '6': 'External SPI'
+  },
+  control: {
+    '1': 'LEDs',
+    '2': 'Digital Port',
+    '3': 'Analog Port',
+    '4': 'Bootloader'
   }
-}
-/* Return the battery name from the ID number */
-function batteryIdToName(id: number): string {
-  switch (id) {
-    case 0x00:
-      return 'None';
-    case 0x01:
-      return 'LiPo';
-    case 0x02:
-      return 'LiFePO';
-    case 0x03:
-      return 'Alkaline';
-    default:
-      return 'Unknown';
-  }
-}
-
-/* Return the battery name from the ID number */
-function actuatorIdToName(id: number): string {
-  switch (id) {
-    case 0x00:
-      return 'None';
-    case 0x01:
-      return 'Signal Voltage';
-    case 0x02:
-      return 'Signal Current';
-    case 0x03:
-      return 'Power Voltage';
-    case 0x04:
-      return 'Power Current';
-    default:
-      return 'Unknown';
-  }
-}
+};
 
 /* [] - END OF FILE */

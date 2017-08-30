@@ -100,6 +100,12 @@ function readMetaData(deviceId: string): void {
     deviceId, connectedDevices, readMetaCharCallback);
   readMetaCharacteristicFromId(micaCharUuids.powerMetadata, micaServiceUuid,
     deviceId, connectedDevices, readMetaCharCallback);
+  readMetaCharacteristicFromId(micaCharUuids.sensorMetadata, micaServiceUuid,
+    deviceId, connectedDevices, readMetaCharCallback);
+  readMetaCharacteristicFromId(micaCharUuids.communicationMetadata, micaServiceUuid,
+    deviceId, connectedDevices, readMetaCharCallback);
+  readMetaCharacteristicFromId(micaCharUuids.controlMetadata, micaServiceUuid,
+    deviceId, connectedDevices, readMetaCharCallback);
 }
 
 /* callback to receive the data read in by a device */

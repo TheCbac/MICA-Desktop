@@ -44,19 +44,19 @@ export type sensingMetaObj = {
   channelNames: ?string[],
   scalingConstant: ?number,
   gain: ?number,
-  units: ?string,
+  units: string,
   offset: ?number
 };
 /* Communication Metadata type */
-export type commMetaType = {
-  module: 'communications',
+export type commMetaObj = {
+  module: 'communication',
   id: number,
   type: string,
   numDevices: number,
   deviceNames: ?string[]
 };
 /* Control Metadata type */
-export type controlMetaType = {
+export type controlMetaObj = {
   module: 'control',
   id: number,
   type: string,
@@ -69,7 +69,7 @@ export type metaDataType =
   actuationMetaObj[] |
   powerMetaObj[] |
   sensingMetaObj[] |
-  commMetaType[] |
-  controlMetaType[];
+  commMetaObj[] |
+  controlMetaObj[];
 
 /* [] - END OF FILE */

@@ -115,4 +115,19 @@ export function shallowObjToArray(obj: {}): ?mixed[] {
   return objArray;
 }
 
+/* Return a float from a buffer */
+export function bufferToFloat(buffer: Buffer): ?number {
+  /* Must be four bytes */
+  if (buffer.length !== 4) { return undefined; }
+  /* Array to place bytes in */
+  const floatBytes = [];
+  /* Reverse order */
+  floatBytes[3] = buffer[0];
+  floatBytes[2] = buffer[1];
+  floatBytes[1] = buffer[2];
+  floatBytes[0] = buffer[3];
+  /* Convert to float */
+  return new Buffer(floatBytes).readFloatBE(0);
+}
+
 /* [] - END OF FILE */
