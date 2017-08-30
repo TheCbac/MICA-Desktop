@@ -45,6 +45,7 @@ export default class ScanForDevices extends Component {
       connectedDevices: noblePeripheralType[],
       disconnectingDevices: noblePeripheralType[],
       connectToDevice: () => mixed,
+      cancelPendingConnection: () => mixed,
       disconnectFromDevice: () => mixed
     };
   /* Returns the color for the button */
@@ -94,7 +95,7 @@ export default class ScanForDevices extends Component {
     };
     /* Find the current state of the device */
     const deviceState = this.determineDeviceState(id);
-    /* Act depinding on the state */
+    /* Act depending on the state */
     switch (deviceState) {
       case 'advertising': {
         return { text: 'CONNECT', color: 'warning', style: dull };
@@ -117,11 +118,13 @@ export default class ScanForDevices extends Component {
   performDeviceAction(id: nobleIdType): void {
     /* Find the current state of the device */
     const deviceState = this.determineDeviceState(id);
-    /* Act depinding on the state */
+    /* Act depending on the state */
     if (deviceState === 'advertising') {
       this.props.connectToDevice(id);
     } else if (deviceState === 'connected') {
       this.props.disconnectFromDevice(id);
+    } else if (deviceState === 'connecting') {
+      this.props.cancelPendingConnection(id);
     }
   }
   /* Render function */

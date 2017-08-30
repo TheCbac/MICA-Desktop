@@ -62,6 +62,14 @@ export type connectingToDeviceActionType = {
   }
 };
 
+/* Abort the planned connection */
+export type cancelConnectToDeviceActionType = {
+  type: 'CANCEL_CONNECT_TO_DEVICE',
+  payload: {
+    peripheralId: nobleIdType
+  }
+};
+
 /* Successfully connected to a device */
 export type connectedToDeviceActionType = {
   type: 'CONNECTED_TO_DEVICE',

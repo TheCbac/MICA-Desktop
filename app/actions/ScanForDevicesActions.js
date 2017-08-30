@@ -25,6 +25,7 @@ import {
   clearAdvertisingList,
   connectingToDevice,
   connectedToDevice,
+  cancelConnectToDevice,
   disconnectingFromDevice,
   disconnectedFromDevice,
   lostConnectionFromDevice
@@ -140,6 +141,21 @@ function connectCallBack(id: nobleIdType, error: ?string): void {
   discoverMicaNoble(id);
 }
 
+export function cancelPendingConnection(deviceId: nobleIdType) {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Find the device in the connecting list */
+    const connectingList = getState().devices.connecting;
+    /* Get the peripheral and cancel the pending connection */
+    const { peripheral } = getPeripheralFromList(connectingList, deviceId);
+    /* Ensure the device was found */
+    if (!peripheral) { return; }
+    /* Disconnect from the device */
+    peripheral.disconnect();
+    /* Issue the action  */
+    store.dispatch(cancelConnectToDevice(deviceId));
+  };
+}
 /* Disconnect from a device */
 export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
   /* Return a function for redux thunk */
@@ -176,7 +192,8 @@ function disconnectCallback(id: nobleIdType): void {
     store.dispatch(lostConnectionFromDevice(id));
     return;
   }
-  log.warn('disconnectCallback: Device in unknown state lost:', id);
+  /* Cancel con */
+  log.info('disconnectCallback: Device in unknown state:', id);
 }
 
 /* [] - END OF FILE */

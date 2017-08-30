@@ -19,6 +19,7 @@ import type {
   foundDeviceActionType,
   connectingToDeviceActionType,
   connectedToDeviceActionType,
+  cancelConnectToDeviceActionType,
   disconnectingFromDeviceActionType,
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
@@ -81,19 +82,31 @@ export const deviceHandlers = {
       state.connecting, action.payload.peripheralId
     );
     if (!peripheral) { return state; }
-    /* Add the peripheral to the connecting list */
-    /* Remove the peripheral from the advertising list */
-    // return update(state, {
-    //   connected: { $push: [peripheral] },
-    //   connecting: { $splice: [[index, 1]] }
-    // });
+    /* Add to connected, remove from connecting */
     const state1 = update(state, {
       connected: { $push: [peripheral] },
       connecting: { $splice: [[index, 1]] }
     });
+    /* Create a metadata object for the device - Overrides previous */
     const metaObj = { };
     metaObj[action.payload.peripheralId] = {};
     return update(state1, { metadata: { $merge: metaObj } });
+  },
+  /* Cancel a pending connection */
+  CANCEL_CONNECT_TO_DEVICE(
+    state: devicesStateType,
+    action: cancelConnectToDeviceActionType
+  ): devicesStateType {
+    /* Get the peripheral and index from the connecting list */
+    const { peripheral, index } = getPeripheralFromList(
+      state.connecting, action.payload.peripheralId
+    );
+    if (!peripheral) { return state; }
+    /* Add to advertising, remove from connecting */
+    return update(state, {
+      advertising: { $push: [peripheral] },
+      connecting: { $splice: [[index, 1]] }
+    });
   },
   /* Attempting to disconnect from a device: move from connected to disconnected */
   DISCONNECTING_FROM_DEVICE(

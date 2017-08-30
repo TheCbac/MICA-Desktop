@@ -17,6 +17,7 @@ import {
   enableScanMethod,
   startStopScan,
   connectToDevice,
+  cancelPendingConnection,
   disconnectFromDevice
 } from '../actions/ScanForDevicesActions';
 import { foundAdvertisingDevice } from '../actions/devicesActions';
@@ -42,7 +43,8 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   startStopScan,
   foundAdvertisingDevice,
   connectToDevice,
-  disconnectFromDevice
+  disconnectFromDevice,
+  cancelPendingConnection
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(scanForDevices);

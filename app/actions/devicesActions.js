@@ -14,6 +14,7 @@ import type {
   clearAdvertisingActionType,
   connectingToDeviceActionType,
   connectedToDeviceActionType,
+  cancelConnectToDeviceActionType,
   disconnectedFromDeviceActionType,
   disconnectingFromDeviceActionType,
   lostConnectionFromDeviceActionType,
@@ -25,6 +26,7 @@ export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
 export const CONNECTING_TO_DEVICE = 'CONNECTING_TO_DEVICE';
 export const CONNECTED_TO_DEVICE = 'CONNECTED_TO_DEVICE';
+export const CANCEL_CONNECT_TO_DEVICE = 'CANCEL_CONNECT_TO_DEVICE';
 export const DISCONNECTING_FROM_DEVICE = 'DISCONNECTING_FROM_DEVICE';
 export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
 export const LOST_CONNECTION_FROM_DEVICE = 'LOST_CONNECTION_FROM_DEVICE';
@@ -60,6 +62,16 @@ export function connectingToDevice(peripheralId: nobleIdType): connectingToDevic
 export function connectedToDevice(peripheralId: nobleIdType): connectedToDeviceActionType {
   return {
     type: CONNECTED_TO_DEVICE,
+    payload: {
+      peripheralId
+    }
+  };
+}
+
+/* Cancel a pending connection */
+export function cancelConnectToDevice(peripheralId: nobleIdType): cancelConnectToDeviceActionType {
+  return {
+    type: CANCEL_CONNECT_TO_DEVICE,
     payload: {
       peripheralId
     }
