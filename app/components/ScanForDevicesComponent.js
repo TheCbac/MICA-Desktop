@@ -141,7 +141,7 @@ export default class ScanForDevices extends Component {
     } = this.props;
     const scanBtnStyle = { marginLeft: '20px' };
     /* Spin when scanning */
-    const spinner = scanning ? <FontAwesome name={'spinner'} spin /> : null;
+    const spinner = scanning ? <FontAwesome name={'spinner'} pulse /> : null;
     /* React Table */
     const tableStyle = {
       marginTop: '20px',

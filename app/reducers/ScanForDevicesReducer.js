@@ -8,8 +8,8 @@
 * Date: 2017.07.10
 *
 **********************************************************/
-import createReducer from './createReducer';
 import update from 'immutability-helper';
+import createReducer from './createReducer';
 import type { scanStateType } from '../types/stateTypes';
 import type {
   changeScanActionType,

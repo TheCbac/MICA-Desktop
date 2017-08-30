@@ -11,3 +11,10 @@ body {
   font-size: 14px;
   overflow-y: hidden;
 }
+
+.glow:hover {
+  text-shadow: white 0 0 20px;
+  color: white !important;
+  /* background-color: yellow;
+  color:red; */
+}
