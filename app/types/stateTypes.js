@@ -24,7 +24,9 @@ export type devicesStateType = {
   advertising: noblePeripheralType[],
   connecting: noblePeripheralType[],
   connected: noblePeripheralType[],
-  disconnecting: noblePeripheralType[]
+  disconnecting: noblePeripheralType[],
+  metadata: {},
+  selected: { sensor: ?string, generator: ?string}
 };
 
 /* State of the app  */

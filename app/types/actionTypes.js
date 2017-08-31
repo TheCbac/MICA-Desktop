@@ -110,4 +110,13 @@ export type reportMetaDataActionType = {
     data: metaDataType
   }
 };
+
+/* Set the selected devices */
+export type setSelectedDeviceAction = {
+  type: 'SET_SELECTED_DEVICES',
+  payload: {
+    sensor: ?string,
+    generator: ?string
+  }
+};
 /* [] - END OF FILE */

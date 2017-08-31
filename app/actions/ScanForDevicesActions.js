@@ -92,7 +92,7 @@ export function startStopScan() {
             /* Start scanning - triggers a callback that updates the state */
             Noble.startScanning([micaServiceUuid], false);
             /* Dispatch the event */
-            store.dispatch(clearAdvertisingList());
+            dispatch(clearAdvertisingList());
           } else {
             /* Stop scanning - triggers callback that updates the state*/
             Noble.stopScanning();
@@ -117,7 +117,7 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
     const { peripheral } = getPeripheralFromList(advertisingList, advertisingDeviceId);
     if (peripheral) {
       /* Move to advertising list */
-      store.dispatch(connectingToDevice(peripheral.id));
+      dispatch(connectingToDevice(peripheral.id));
       /* Connect to the peripheral - pass the ID to the callback */
       // $FlowFixMe
       peripheral.connect(connectCallBack.bind(null, peripheral.id));
@@ -153,7 +153,7 @@ export function cancelPendingConnection(deviceId: nobleIdType) {
     /* Disconnect from the device */
     peripheral.disconnect();
     /* Issue the action  */
-    store.dispatch(cancelConnectToDevice(deviceId));
+    dispatch(cancelConnectToDevice(deviceId));
   };
 }
 /* Disconnect from a device */
@@ -166,7 +166,7 @@ export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
     const { peripheral } = getPeripheralFromList(connectedList, connectedDeviceId);
     if (peripheral) {
       /* Move to disconnecting list */
-      store.dispatch(disconnectingFromDevice(peripheral.id));
+      dispatch(disconnectingFromDevice(peripheral.id));
       /* Connect to the peripheral
       Disconnect call back was registered when the device connected */
       peripheral.disconnect();

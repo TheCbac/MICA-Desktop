@@ -8,12 +8,13 @@ import CollectDataPage from './containers/CollectDataPage';
 import AnalysisPage from './containers/AnalysisPage';
 import SenGenPage from './containers/SenGenPage';
 
+
 export default () => (
   <Router history={hashHistory}>
     <App>
       <Switch>
         <Route path="/collectData" component={CollectDataPage} />
-        <Route path="/sengen" component={SenGenPage} /* onEnter={}*/ />
+        <Route path="/sengen" component={SenGenPage} />
         <Route path="/analyze" component={AnalysisPage} />
         <Route path="/" component={DevicesPage} />
       </Switch>

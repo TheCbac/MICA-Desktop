@@ -23,7 +23,8 @@ import type {
   disconnectingFromDeviceActionType,
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
-  reportMetaDataActionType
+  reportMetaDataActionType,
+  setSelectedDeviceAction
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 
@@ -34,7 +35,8 @@ export const defaultState = {
   connecting: [],
   connected: [],
   disconnecting: [],
-  metadata: {}
+  metadata: {},
+  selected: {}
 };
 
 /* Handlers to create reducers  */
@@ -176,6 +178,19 @@ export const deviceHandlers = {
     deviceMetaObj[module] = action.payload.data;
     /* Update the stored Metadata object.  */
     return update(state, { metadata: { [deviceId]: { $merge: deviceMetaObj } } });
+  },
+  /* Get the devices that have been selected */
+  SET_SELECTED_DEVICES(
+    state: devicesStateType,
+    action: setSelectedDeviceAction
+  ): devicesStateType {
+    /* Set the values directly */
+    return update(state, {
+      selected: { $set: {
+        sensor: action.payload.sensor,
+        generator: action.payload.generator
+      } }
+    });
   }
 };
 

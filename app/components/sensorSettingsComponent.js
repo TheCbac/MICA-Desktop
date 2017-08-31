@@ -14,19 +14,31 @@ import { Grid, Col, Row, Dropdown, DropdownButton, MenuItem } from 'react-bootst
 import FontAwesome from 'react-fontawesome';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
+import log from '../utils/loggingUtils';
+// import { getSelectedDevices } from '../actions/senGenActions';
 
+
+log.debugLevel = 5;
 
 export default class sensorSettings extends Component {
   /* Component properties */
   props: {
-    active: {
+    selected: {
       generator: ?string,
       sensor: ?string
-    }
+    },
+    getSelectedDevices: () => mixed
   };
-  /* Get the active device */
-  activeDevice(type: 'sensor' | 'generator'): {text: string, style: {fontStyle: string}} {
-    const device = this.props.active[type];
+
+  constructor(props) {
+    super(props);
+    log.debug('constructor of sensorSettings');
+    /* Trigger the selected devices to occur */
+    props.getSelectedDevices();
+  }
+  /* Get the selected device */
+  selectedDevice(type: 'sensor' | 'generator'): {text: string, style: {fontStyle: string}} {
+    const device = this.props.selected[type];
     let text = 'NO DEVICES';
     let style = 'italic';
     /* If the device is present */
@@ -81,7 +93,7 @@ export default class sensorSettings extends Component {
                 <div className="pull-right">
                   <Dropdown id="dropdown-custom-menu" style={dropdownStyle}>
                     <CustomToggle bsRole="toggle" >
-                      <span style={this.activeDevice('sensor').style}>{this.activeDevice('sensor').text}</span>
+                      <span style={this.selectedDevice('sensor').style}>{this.selectedDevice('sensor').text}</span>
                       <span className="fa-stack">
                         <FontAwesome style={upStyle} stack={'1x'} name={'chevron-up'} size={'lg'} />
                         <FontAwesome style={downStyle} stack={'1x'} name={'chevron-down'} size={'lg'} />
@@ -91,7 +103,7 @@ export default class sensorSettings extends Component {
                     <CustomMenu bsRole="menu">
                       <MenuItem eventKey="1">Red</MenuItem>
                       <MenuItem eventKey="2">Blue</MenuItem>
-                      <MenuItem eventKey="3" active>Orange</MenuItem>
+                      <MenuItem eventKey="3">Orange</MenuItem>
                       <MenuItem eventKey="1">Red-Orange</MenuItem>
                     </CustomMenu>
                   </Dropdown>
@@ -108,7 +120,7 @@ export default class sensorSettings extends Component {
                 <div className="pull-right">
                   <Dropdown id="dropdown-custom-menu" style={dropdownStyle}>
                     <CustomToggle bsRole="toggle" >
-                      <span style={this.activeDevice('generator').style}>{this.activeDevice('generator').text}</span>
+                      <span style={this.selectedDevice('generator').style}>{this.selectedDevice('generator').text}</span>
                       <span className="fa-stack">
                         <FontAwesome style={upStyle} stack={'1x'} name={'chevron-up'} size={'lg'} />
                         <FontAwesome style={downStyle} stack={'1x'} name={'chevron-down'} size={'lg'} />
