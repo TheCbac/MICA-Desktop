@@ -12,30 +12,51 @@
 import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
-import FontAwesome from 'react-fontawesome';
 import ScanForDevices from '../../app/components/ScanForDevicesComponent';
 import { __RewireAPI__ as Rewire } from '../../app/components/ScanForDevicesComponent';
 /* Create the scan devices component */
 function setup(propsObj) {
-  let props;
-  if (propsObj === undefined) {
-    props = {
-      method: 'ble',
-      enabled: false,
-      scanning: false,
-      advertisingDevices: []
-    };
-  } else {
-    props = { ...propsObj };
+  /* Default props */
+  let props = {
+    method: 'ble',
+    enabled: false,
+    scanning: false,
+    advertisingDevices: [],
+    connectingDevices: [],
+    connectedDevices: [],
+    disconnectingDevices: []
+  };
+  /* If arguments were passed in use those */
+  if (propsObj !== undefined) {
+    props = { ...props, ...propsObj };
   }
+  // let props;
+  // if (propsObj === undefined) {
+  //   props = {
+  //     method: 'ble',
+  //     enabled: false,
+  //     scanning: false,
+  //     advertisingDevices: [],
+  //     connectingDevices: [],
+  //     connectedDevices: [],
+  //     disconnectingDevices: []
+  //   };
+  // } else {
+  //   props = { ...propsObj };
+  // }
   const actions = {
     changeScanMethod: spy(),
-    startStopScan: spy()
+    startStopScan: spy(),
+    connectToDevice: spy(),
+    cancelPendingConnection: spy(),
+    disconnectFromDevice: spy()
   };
   const component = shallow(<ScanForDevices
-    method={props.method}
-    enabled={props.enabled}
-    scanning={props.scanning}
+    // method={props.method}
+    // enabled={props.enabled}
+    // scanning={props.scanning}
+    // advertisingDevices={props.advertisingDevices}
+    {...props}
     {...actions}
   />);
   return {

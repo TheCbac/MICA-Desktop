@@ -19,7 +19,7 @@ export type nobleCharacteristicType = {
   descriptors: ?string,
   type: ?string
 };
-/* Noble BLE servcies */
+/* Noble BLE services */
 export type nobleServiceType = {
   uuid: string,
   name: ?string,

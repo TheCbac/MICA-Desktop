@@ -10,66 +10,97 @@
 * Date: 2017.07.25
 *
 **********************************************************/
-import { deviceHandlers, defaultState } from '../../app/reducers/devicesReducer';
-// import { createReducer } from '../../app/reducers/devicesReducer';
+import reducer from '../../app/reducers/devicesReducer';
+import { FOUND_ADVERTISING_DEVICE } from '../../app/actions/devicesActions';
+import type { devicesStateType } from '../../app/types/stateTypes';
+import type { noblePeripheralType } from '../../app/types/paramTypes';
+import type { foundDeviceActionType } from '../../app/types/actionTypes';
 
-const testDevicesStateType = {
-  advertising: [2, 3, 4],
-  connected: [5, 3, 5]
+/* Default state for the reducer */
+const defaultState: devicesStateType = {
+  advertising: [],
+  connecting: [],
+  connected: [],
+  disconnecting: [],
+  metadata: {},
+  selected: {
+    sensor: undefined,
+    generator: undefined
+  }
 };
 
-const testDevicesActionType = {
-  type: 'CLEAR_ADVERTISING_LIST'
-};
-const testFoundDevicesActionType = {
-  payload: {
-    peripheral: {}
+/* Default noblePeripehral */
+const dummyBle: noblePeripheralType = {
+  address: 'CBAC123456',
+  addressType: 'public',
+  advertisement: {
+    localName: 'IMU1',
+    serviceData: [],
+    serviceUuids: [],
   },
-  type: 'FOUND_ADVERTISING_DEVICE'
+  connectable: true,
+  id: '1234567890',
+  rssi: -56,
+  services: [],
+  uuid: '1234567890'
 };
 
-const clearAdvertisingList = deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
-const foundAvertisingDevice = deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
-
-// Need to figure out what the colon after the parenthesis means in devicesReducer.js.
-describe('Testing devicesReducer.js', () => {
-  describe('Testing deivceHandlers', () => {
-    describe('Testing CLEAR_ADVERTISING_LIST', () => {
-      it('Return the correct information', () => {
-        const blankAdvertising = {
-          advertising: []
-        };
-        expect(clearAdvertisingList).toEqual({
-          connected: testDevicesStateType.connected,
-          advertising: blankAdvertising.advertising
-        });
-      });
-    });
-    it('Does not throw an error', () => {
-      expect(() => {
-        deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
-      }).not.toThrow();
-    });
-    describe('Testing FOUND_ADVERTISING_DEVICE', () => {
-      it('Return the correct information', () => {
-        const newAdvertisingValue = testDevicesStateType.advertising.concat(testFoundDevicesActionType.payload.peripheral);
-        expect(foundAvertisingDevice).toEqual({
-          connected: testDevicesStateType.connected,
-          advertising: newAdvertisingValue
-        });
-      });
-      it('Does not throw an error', () => {
-        expect(() => {
-          deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
-        }).not.toThrow();
-      });
+/* Test Suite */
+describe('devicesReducer.spec.js', () => {
+  describe('FOUND_ADVERTISING_DEVICE', () => {
+    it('Should add in a new device to an empty list', () => {
+      /* Create the action */
+      const action: foundDeviceActionType = {
+        type: FOUND_ADVERTISING_DEVICE,
+        payload: {
+          peripheral: dummyBle
+        }
+      };
+      /* Call the reducer */
+      const newState = reducer(defaultState, action);
+      expect(defaultState.advertising.length).toEqual(0);
+      //$flowFixMe
+      expect(newState.advertising.length).toEqual(1);
     });
   });
-  it('Has a defaultState with values set to blank arrays', () => {
-    expect(defaultState).toEqual({
-      advertising: [],
-      connected: []
-    });
-  });
+  /* Written by GW - needs refactoring for correctness */
+  // describe('Testing deviceHandlers', () => {
+  //   describe('Testing CLEAR_ADVERTISING_LIST', () => {
+  //     it('Return the correct information', () => {
+  //       const blankAdvertising = {
+  //         advertising: []
+  //       };
+  //       expect(clearAdvertisingList).toEqual({
+  //         connected: testDevicesStateType.connected,
+  //         advertising: blankAdvertising.advertising
+  //       });
+  //     });
+  //   });
+  //   it('Does not throw an error', () => {
+  //     expect(() => {
+  //       deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
+  //     }).not.toThrow();
+  //   });
+  //   describe('Testing FOUND_ADVERTISING_DEVICE', () => {
+  //     it('Return the correct information', () => {
+  //       const newAdvertisingValue = testDevicesStateType.advertising.concat(testFoundDevicesActionType.payload.peripheral);
+  //       expect(foundAdvertisingDevice).toEqual({
+  //         connected: testDevicesStateType.connected,
+  //         advertising: newAdvertisingValue
+  //       });
+  //     });
+  //     it('Does not throw an error', () => {
+  //       expect(() => {
+  //         deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
+  //       }).not.toThrow();
+  //     });
+  //   });
+  // });
+  // it('Has a defaultState with values set to blank arrays', () => {
+  //   expect(defaultState).toEqual({
+  //     advertising: [],
+  //     connected: []
+  //   });
+  // });
 });
 
