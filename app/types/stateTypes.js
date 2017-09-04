@@ -26,7 +26,8 @@ export type devicesStateType = {
   connected: noblePeripheralType[],
   disconnecting: noblePeripheralType[],
   metadata: {},
-  selected: { sensor: ?string, generator: ?string}
+  selected: { sensor: ?string, generator: ?string},
+  unselected: { sensors: string[], generators: string[]}
 };
 
 /* State of the app  */

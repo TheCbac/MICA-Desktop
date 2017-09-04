@@ -12,6 +12,7 @@
 import React, { Component } from 'react';
 import { Grid, Col, Row, Dropdown, DropdownButton, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
+import type { Element } from 'react';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
 import log from '../utils/loggingUtils';
@@ -27,7 +28,12 @@ export default class sensorSettings extends Component {
       generator: ?string,
       sensor: ?string
     },
-    getSelectedDevices: () => mixed
+    unselected: {
+      generators: string[],
+      sensors: string[]
+    },
+    getSelectedDevices: () => mixed,
+    setSelectedDevices: () => mixed
   };
 
   constructor(props) {
@@ -50,6 +56,41 @@ export default class sensorSettings extends Component {
       text: text.toUpperCase(),
       style: { fontStyle: style }
     };
+  }
+  /* Unselected devices */
+  unselectedDevices(type: 'sensors' | 'generators'): *[] {
+    const deviceStyle = {
+      fontFamily: 'Franklin Gothic Book',
+      color: '#7C7C7C',
+      textDecoration: 'none',
+      fontStyle: 'normal'
+    };
+    const array = [];
+    /* iterate over devices */
+    const len = this.props.unselected[type].length;
+    if (len) {
+      for (let i = 0; i < len; i += 1) {
+        const name = this.props.unselected[type][i];
+        const element = (<MenuItem
+          style={deviceStyle}
+          onClick={(e) => {
+            e.preventDefault();
+            this.setDevices(type, name);
+          }}
+          key={i}
+        >{name}</MenuItem>);
+        array.push(element);
+      }
+    } else {
+      deviceStyle.fontStyle = 'italic';
+      array.push(<MenuItem style={deviceStyle} key="none">NO OTHER DEVICES</MenuItem>);
+    }
+
+    return array;
+  }
+
+  setDevices(type, name) {
+    this.props.setSelectedDevices(type, name);
   }
   /* Render function */
   render() {
@@ -81,6 +122,7 @@ export default class sensorSettings extends Component {
       marginTop: '-4px',
       marginRight: '-30px'
     };
+
     return (
       <Grid fluid>
         <Row>
@@ -101,10 +143,7 @@ export default class sensorSettings extends Component {
                     </CustomToggle>
 
                     <CustomMenu bsRole="menu">
-                      <MenuItem eventKey="1">Red</MenuItem>
-                      <MenuItem eventKey="2">Blue</MenuItem>
-                      <MenuItem eventKey="3">Orange</MenuItem>
-                      <MenuItem eventKey="1">Red-Orange</MenuItem>
+                      {this.unselectedDevices('sensors')}
                     </CustomMenu>
                   </Dropdown>
                 </div>
@@ -128,10 +167,7 @@ export default class sensorSettings extends Component {
                     </CustomToggle>
 
                     <CustomMenu bsRole="menu">
-                      <MenuItem eventKey="1">Red</MenuItem>
-                      <MenuItem eventKey="2">Blue</MenuItem>
-                      <MenuItem eventKey="3" active>Orange</MenuItem>
-                      <MenuItem eventKey="1">Red-Orange</MenuItem>
+                      {this.unselectedDevices('generators')}
                     </CustomMenu>
                   </Dropdown>
                 </div>

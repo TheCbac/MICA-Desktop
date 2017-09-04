@@ -36,7 +36,11 @@ export const defaultState = {
   connected: [],
   disconnecting: [],
   metadata: {},
-  selected: {}
+  selected: {},
+  unselected: {
+    generators: [],
+    sensors: []
+  }
 };
 
 /* Handlers to create reducers  */
@@ -180,18 +184,20 @@ const deviceHandlers = {
     return update(state, { metadata: { [deviceId]: { $merge: deviceMetaObj } } });
   },
   /* Get the devices that have been selected */
-  SET_SELECTED_DEVICES(
+  UPDATE_SELECTED_DEVICES(
     state: devicesStateType,
-    action: setSelectedDeviceAction
+    action: updateSelectedDeviceAction
   ): devicesStateType {
     /* Set the values directly */
     return update(state, {
       selected: { $set: {
         sensor: action.payload.sensor,
         generator: action.payload.generator
-      } }
+      } },
+      unselected: { $set: action.payload.unselected }
     });
-  }
+  },
+
 };
 
 export default createReducer(defaultState, deviceHandlers);

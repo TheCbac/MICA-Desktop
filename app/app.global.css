@@ -9,7 +9,7 @@ body {
 
   height: 100vh;
   font-size: 14px;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 
 .glow:hover {

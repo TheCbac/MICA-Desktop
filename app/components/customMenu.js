@@ -30,10 +30,14 @@ export default class CustomMenu extends Component {
   render() {
     const { children } = this.props;
     const { value } = this.state;
-
+    const style = {
+      fontFamily: 'Franklin Gothic Book',
+      color: '#7C7C7C',
+      textDecoration: 'none'
+    };
     return (
-      <div className="dropdown-menu" style={{ padding: '' }}>
-        <ul className="list-unstyled">
+      <div className="dropdown-menu" style={style}>
+        <ul className="list-unstyled" style={style}>
           {React.Children.toArray(children).filter(child => (
             !value.trim() || child.props.children.indexOf(value) !== -1
           ))}

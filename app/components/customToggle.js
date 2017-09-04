@@ -9,9 +9,14 @@
 *
 **********************************************************/
 import React, { Component } from 'react';
-
+import type { Element } from 'react';
 
 export default class CustomToggle extends Component {
+  /* Props validation */
+  props: {
+    onClick: ?() => void,
+    children: Element
+  }
   constructor(props, context) {
     super(props, context);
 
