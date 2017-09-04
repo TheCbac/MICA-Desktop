@@ -1,20 +1,28 @@
 // @flow
-/* eslint no-unused-vars: ["error", { "args": "none" }]*/
-/* eslint max-len: 0 */
 /* **********************************************************
 * File: test/reducers/devicesReducer.spec.js
 *
 * Brief: testing deviceReducer.js
 *
-* Author: George Whitfield
-* Date: 2017.07.25
+* Authors: George Whitfield, Craig Cheney
+*
+* 2017.09.03 CC - Updated for correct flow usage
+* 2017.07.25 GW - Document created
 *
 **********************************************************/
+import faker from 'faker';
 import reducer from '../../app/reducers/devicesReducer';
-import { FOUND_ADVERTISING_DEVICE } from '../../app/actions/devicesActions';
+import {
+  FOUND_ADVERTISING_DEVICE,
+  CLEAR_ADVERTISING_LIST
+} from '../../app/actions/devicesActions';
+import { micaServiceUuid } from '../../app/utils/mica/micaConstants';
 import type { devicesStateType } from '../../app/types/stateTypes';
 import type { noblePeripheralType } from '../../app/types/paramTypes';
-import type { foundDeviceActionType } from '../../app/types/actionTypes';
+import type {
+  foundDeviceActionType,
+  clearAdvertisingActionType,
+} from '../../app/types/actionTypes';
 
 /* Default state for the reducer */
 const defaultState: devicesStateType = {
@@ -29,21 +37,30 @@ const defaultState: devicesStateType = {
   }
 };
 
-/* Default noblePeripehral */
-const dummyBle: noblePeripheralType = {
-  address: 'CBAC123456',
-  addressType: 'public',
-  advertisement: {
-    localName: 'IMU1',
-    serviceData: [],
-    serviceUuids: [],
-  },
-  connectable: true,
-  id: '1234567890',
-  rssi: -56,
-  services: [],
-  uuid: '1234567890'
-};
+/* Create a noblePeripheralType from the specified action and payload  */
+function nobleDeviceFactory(userSpecifiedParams: ?{}): noblePeripheralType {
+  /* Create a default */
+  const uuidVal = faker.random.uuid();
+  let peripheral = {
+    address: faker.internet.ipv6(),
+    addressType: 'public',
+    advertisement: {
+      localName: faker.internet.userName(),
+      serviceData: [],
+      serviceUuids: [micaServiceUuid],
+    },
+    connectable: true,
+    id: uuidVal,
+    uuid: uuidVal,
+    rssi: -1 * faker.random.number(),
+    services: []
+  };
+  /* apply any user params */
+  if (userSpecifiedParams != null) {
+    peripheral = { ...peripheral, ...userSpecifiedParams };
+  }
+  return peripheral;
+}
 
 /* Test Suite */
 describe('devicesReducer.spec.js', () => {
@@ -53,17 +70,53 @@ describe('devicesReducer.spec.js', () => {
       const action: foundDeviceActionType = {
         type: FOUND_ADVERTISING_DEVICE,
         payload: {
-          peripheral: dummyBle
+          peripheral: nobleDeviceFactory()
+        }
+      };
+      const action1: foundDeviceActionType = {
+        type: FOUND_ADVERTISING_DEVICE,
+        payload: {
+          peripheral: nobleDeviceFactory()
         }
       };
       /* Call the reducer */
       const newState = reducer(defaultState, action);
       expect(defaultState.advertising.length).toEqual(0);
-      //$flowFixMe
+      // $FlowFixMe /* .advertising is not specified statically */
+      expect(newState.advertising.length).toEqual(1);
+      /* Add second device */
+      const newState1 = reducer(newState, action1);
+      // $FlowFixMe /* .advertising is not specified statically */
+      expect(newState.advertising.length).toEqual(1);
+      // $FlowFixMe /* .advertising is not specified statically */
+      expect(newState1.advertising.length).toEqual(2);
+    });
+  });
+  describe('CLEAR_ADVERTISING_DEVICE', () => {
+    it('should clear the list of devices', () => {
+      /* Create the actions */
+      const addAction: foundDeviceActionType = {
+        type: FOUND_ADVERTISING_DEVICE,
+        payload: {
+          peripheral: nobleDeviceFactory()
+        }
+      };
+      const clearAction: clearAdvertisingActionType = { type: CLEAR_ADVERTISING_LIST };
+      /* Call the reducer */
+      const newState = reducer(defaultState, addAction);
+      expect(defaultState.advertising.length).toEqual(0);
+      // $FlowFixMe /* .advertising is not specified statically */
+      expect(newState.advertising.length).toEqual(1);
+      /* Clear the list */
+      const newState1 = reducer(newState, clearAction);
+      // $FlowFixMe /* .advertising is not specified statically */
+      expect(newState1.advertising.length).toEqual(0);
+      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState.advertising.length).toEqual(1);
     });
   });
   /* Written by GW - needs refactoring for correctness */
+
   // describe('Testing deviceHandlers', () => {
   //   describe('Testing CLEAR_ADVERTISING_LIST', () => {
   //     it('Return the correct information', () => {

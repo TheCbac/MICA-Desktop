@@ -40,7 +40,7 @@ export const defaultState = {
 };
 
 /* Handlers to create reducers  */
-export const deviceHandlers = {
+const deviceHandlers = {
   /* Clear the advertising list */
   CLEAR_ADVERTISING_LIST(
     state: devicesStateType,
