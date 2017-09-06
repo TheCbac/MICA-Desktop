@@ -8,7 +8,7 @@
 * Author: Craig Cheney
 * Date: 2017.04.27
 *
-**********************************************************/
+********************************************************* */
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';

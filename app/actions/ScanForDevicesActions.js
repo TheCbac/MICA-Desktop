@@ -119,10 +119,8 @@ export function connectToDevice(advertisingDeviceId: nobleIdType) {
       /* Move to advertising list */
       dispatch(connectingToDevice(peripheral.id));
       /* Connect to the peripheral - pass the ID to the callback */
-      // $FlowFixMe
       peripheral.connect(connectCallBack.bind(null, peripheral.id));
       /* Register a callback function for a disconnect event */
-      // $FlowFixMe
       peripheral.once('disconnect', disconnectCallback.bind(null, peripheral.id));
     }
   };
@@ -190,6 +188,7 @@ function disconnectCallback(id: nobleIdType): void {
   if (lostDevice) {
     /* Dispatch a disconnect event */
     store.dispatch(lostConnectionFromDevice(id));
+    /* Update the meta data */
     return;
   }
   /* Cancel con */

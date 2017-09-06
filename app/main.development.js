@@ -52,6 +52,8 @@ app.on('ready', async () => {
     show: false,
     width: 1024,
     height: 728,
+    minWidth: 475,
+    minHeight: 475,
     webPreferences: {
       // This should be set to false once we find a way to change NODE_ENV to development mode automatically
       // For now, we can just set it to false manually every time we want to build the app

@@ -207,7 +207,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
     "react": "^15.5.4",
-    "react-bootstrap": "^0.31.0",
+    "react-bootstrap": "^0.31.2",
     "react-bootstrap-table": "^3.4.2",
     "react-desktop": "^0.3.0",
     "react-dock": "^0.2.4",

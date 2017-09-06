@@ -10,14 +10,14 @@
 *
 **********************************************************/
 import React, { Component } from 'react';
-import { Grid, Col, Row, Dropdown, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Grid, Col, Row, Dropdown, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import type { Element } from 'react';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
 import log from '../utils/loggingUtils';
 // import { getSelectedDevices } from '../actions/senGenActions';
-
+import SenGen from './senGenComponent';
 
 log.debugLevel = 5;
 
@@ -36,11 +36,16 @@ export default class sensorSettings extends Component {
     setSelectedDevices: () => mixed
   };
 
+  state: {
+    open: boolean
+  };
   constructor(props) {
     super(props);
-    log.debug('constructor of sensorSettings');
     /* Trigger the selected devices to occur */
     props.getSelectedDevices();
+    this.state = {
+      open: false
+    };
   }
   /* Get the selected device */
   selectedDevice(type: 'sensor' | 'generator'): {text: string, style: {fontStyle: string}} {
@@ -71,14 +76,16 @@ export default class sensorSettings extends Component {
     if (len) {
       for (let i = 0; i < len; i += 1) {
         const name = this.props.unselected[type][i];
+        /* Create the element - should this be a new component? */
         const element = (<MenuItem
           style={deviceStyle}
           onClick={(e) => {
             e.preventDefault();
-            this.setDevices(type, name);
+            this.props.setSelectedDevices(type, name);
           }}
           key={i}
         >{name}</MenuItem>);
+        /* Populate the array */
         array.push(element);
       }
     } else {
@@ -87,10 +94,6 @@ export default class sensorSettings extends Component {
     }
 
     return array;
-  }
-
-  setDevices(type, name) {
-    this.props.setSelectedDevices(type, name);
   }
   /* Render function */
   render() {
@@ -102,11 +105,8 @@ export default class sensorSettings extends Component {
       fontSize: '1.5em',
       fontFamily: 'Franklin Gothic Book',
       marginTop: '15px',
-      color: '#7C7C7C'
-    };
-    const toggleStyle = {
-      fontFamily: 'Franklin Gothic Book',
-      color: '#7C7C7C'
+      color: '#7C7C7C',
+      // backgroundColor: 'blue'
     };
     const upStyle = {
       fontSize: '12px',
@@ -122,7 +122,6 @@ export default class sensorSettings extends Component {
       marginTop: '-4px',
       marginRight: '-30px'
     };
-
     return (
       <Grid fluid>
         <Row>
@@ -148,6 +147,8 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
+              <SenGen name={'Accelerometer'} />
+              <SenGen name={'Gyroscope'} />
             </Col>
           </Col>
           <Col md={6}>

@@ -12,9 +12,15 @@ body {
   overflow-y: scroll;
 }
 
-.glow:hover {
+.glow {
   text-shadow: white 0 0 20px;
   color: white !important;
+}
+
+.hoverGlow:hover {
+  text-shadow: white 0 0 20px;
+  color: white !important;
+  cursor: pointer;
   /* background-color: yellow;
   color:red; */
 }

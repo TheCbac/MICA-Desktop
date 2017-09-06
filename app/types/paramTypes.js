@@ -41,7 +41,10 @@ export type noblePeripheralType = {
   id: string,
   rssi: number,
   services: ?nobleServiceType[],
-  uuid: string
+  uuid: string,
+  connect: () => void,
+  disconnect: () => void,
+  once: () => void
 };
 
 

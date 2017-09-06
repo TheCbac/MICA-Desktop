@@ -43,7 +43,7 @@ export function moduleToName(module: moduleName, id: number): string {
   return moduleObj[id] || 'Unknown';
 }
 
-const micaIDs = {
+export const micaIDs = {
   actuation: {
     '1': 'Signal Voltage',
     '2': 'Signal Current',

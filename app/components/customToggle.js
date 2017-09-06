@@ -36,7 +36,7 @@ export default class CustomToggle extends Component {
       textDecoration: 'none'
     };
     return (
-      <a href="" style={style} className="glow" onClick={this.handleClick}>
+      <a href="" style={style} className="hoverGlow" onClick={this.handleClick}>
         {this.props.children}
       </a>
     );
