@@ -5,9 +5,10 @@
 * Brief: Utility functions for interacting with BLE devices
 *
 * Author: Craig Cheney
-* Date: 2017.08.27
 *
-**********************************************************/
+* 2017.08.27 CC - Document created
+*
+********************************************************* */
 import log from './loggingUtils';
 import type {
   noblePeripheralType,

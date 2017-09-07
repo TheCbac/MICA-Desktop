@@ -15,30 +15,54 @@ import { Col, ButtonToolbar } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 
+type optionsType = {
+  name: string,
+  value: number,
+  word: number,
+  display: string
+};
+
 type PropsType = {
   name: string,
-  default: number
-  // options: {
-  //   /* @TODO fill this in */
-  // }
+  display: string,
+  default: number,
+  options: optionsType[],
+  address: number
 };
 
 export default class ParamSelector extends Component {
   /* Type Defs */
   props: PropsType;
+  /* return the list of options */
+  getOptions() {
+    const buttonArray = [];
+    /* Iterate over all of the options */
+    for (let i = 0; i < this.props.options.length; i += 1) {
+      /* Get the option */
+      const option = this.props.options[i];
+      /* Create the toggle button element */
+      const btnElement = (
+        <ToggleButton value={option.word} key={i.toString()}>
+          {option.display}
+        </ToggleButton>
+      );
+      /* Add the element to the array */
+      buttonArray.push(btnElement);
+    }
+    /* Return the array of buttons */
+    return buttonArray;
+  }
 
   render() {
     return (
       <div>
         <ButtonToolbar>
           <Col md={2} xs={2}>
-            <label htmlFor="settings">{this.props.name}:</label>
+            <label htmlFor="settings">{this.props.display}:</label>
           </Col>
           <Col md={10} xs={10}>
             <ToggleButtonGroup bsSize="small" type="radio" name={this.props.name} defaultValue={this.props.default}>
-              <ToggleButton value={1}>1x</ToggleButton>
-              <ToggleButton value={2}>10x</ToggleButton>
-              <ToggleButton value={3}>100x</ToggleButton>
+              {this.getOptions()}
             </ToggleButtonGroup>
           </Col>
         </ButtonToolbar>

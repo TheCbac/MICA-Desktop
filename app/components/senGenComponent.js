@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: senGenComponent.js
+* File: components/senGenComponent.js
 *
 * Brief: React component displaying and interacting with
 *   the sensors and generators of a device.
@@ -17,7 +17,11 @@ import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import FontAwesome from 'react-fontawesome';
 import ParamSelector from './ParamSelector';
+import sensorParams from '../utils/mica/micaSensorParams';
 
+// Debugging only
+const accParam = sensorParams[1][0];
+console.log('senGenComponent:', accParam);
 type StateType = {
   open: boolean,
   on: boolean
@@ -117,8 +121,7 @@ export default class SenGenComponent extends Component {
             <div>
               <Well>
                 <div>
-                  <ParamSelector name={'Scale'} default={3} />
-                  <ParamSelector name={'Rate'} default={2} />
+                  <ParamSelector {...accParam} />
                 </div>
               </Well>
             </div>

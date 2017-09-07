@@ -6,12 +6,13 @@
 * Brief: Contains the constants for MICA
 *
 * Author: Craig Cheney
+*
+* 2017.09.07 CC - Add Name to ID function
 * 2017.08.29 CC - Added ID to Name functions
 *               - Changed name to 'micaConstants' from 'micaUuids'
 * 2017.06.26 CC - Document created
 *
-**********************************************************/
-import log from '../loggingUtils';
+********************************************************* */
 
 export const micaServiceUuid = 'cbac5416e0024988ab38aee966a7218f';
 
@@ -29,19 +30,6 @@ export const micaCharUuids = {
   controlMetadata: 'cbac64fd37f84f788e4b86689b59dbc3',
   controlCommands: 'cbac07a4b054467db95f773fa6bbb796'
 };
-
-type moduleName = 'energy' | 'actuation' | 'power' | 'sensing' | 'communication' | 'control';
-/* Wrapper function for mapping IDs to names  */
-export function moduleToName(module: moduleName, id: number): string {
-  /* No need to search for None */
-  if (id === 0) { return 'None'; }
-  /* Get the module */
-  const moduleObj = micaIDs[module];
-  /* Ensure it exists */
-  if (!moduleObj) { return 'Unknown'; }
-  /* Return the name if it exists */
-  return moduleObj[id] || 'Unknown';
-}
 
 export const micaIDs = {
   actuation: {
@@ -84,5 +72,50 @@ export const micaIDs = {
     '4': 'Bootloader'
   }
 };
+
+
+type moduleNameType = 'energy' | 'actuation' | 'power' | 'sensing' | 'communication' | 'control';
+/* Wrapper function for mapping IDs to names  */
+export function moduleToName(module: moduleNameType, id: number): string {
+  /* No need to search for None */
+  if (id === 0) { return 'None'; }
+  /* Get the module */
+  const moduleObj = micaIDs[module];
+  /* Ensure it exists */
+  if (!moduleObj) { return 'Unknown'; }
+  /* Return the name if it exists */
+  return moduleObj[id] || 'Unknown';
+}
+
+/* Get the ID number from the name of a device - not case sensitive */
+export function nameToId(name: string): {id: ?number, module: ?moduleNameType} {
+  /* Get the names of the modules */
+  const moduleNames = Object.keys(micaIDs);
+  /* Iterate over the module names */
+  for (let i = 0; i < moduleNames.length; i += 1) {
+    const moduleName = moduleNames[i];
+    const module = micaIDs[moduleName];
+    /* Get the IDs of the devices  */
+    const deviceIds = Object.keys(module);
+    /* Find the name in question */
+    for (let j = 0; j < deviceIds.length; j += 1) {
+      const deviceId = deviceIds[j];
+      const deviceName = module[deviceId];
+      /* Compare against desired value */
+      if (deviceName.toLowerCase() === name.toLowerCase()) {
+        return {
+          id: parseInt(deviceId, 10),
+          module: moduleName
+        };
+      }
+    }
+  }
+  /* Item was not found */
+  return {
+    id: undefined,
+    module: undefined
+  };
+}
+
 
 /* [] - END OF FILE */

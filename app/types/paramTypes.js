@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 * Date: 2017.07.10
 *
-**********************************************************/
+********************************************************* */
 /* Different scan types available */
 export type scanTypes = 'usb' | 'ble';
 
@@ -17,7 +17,8 @@ export type nobleCharacteristicType = {
   name: ?string,
   properties: ?string[],
   descriptors: ?string,
-  type: ?string
+  type: ?string,
+  read: () => void
 };
 /* Noble BLE services */
 export type nobleServiceType = {
