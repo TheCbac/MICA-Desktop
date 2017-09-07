@@ -6,12 +6,13 @@
 *   by the metadata fields
 *
 * Author: Craig Cheney
+*
+* 2017.09.07 CC - Refactored to move 'module' out of types
 * 2017.08.29 CC - Document created
 *
-**********************************************************/
+********************************************************* */
 /* Energy Meta data type */
 export type energyMetaObj = {
-  module: 'energy',
   id: number,
   type: string,
   name: ?string,
@@ -21,7 +22,6 @@ export type energyMetaObj = {
 };
 /* Actuation metadata type */
 export type actuationMetaObj = {
-  module: 'actuation',
   id: number,
   type: string,
   numChannels: number,
@@ -29,7 +29,6 @@ export type actuationMetaObj = {
 };
 /* Power metadata type */
 export type powerMetaObj = {
-  module: 'power',
   id: number,
   type: string,
   name: string,
@@ -37,7 +36,6 @@ export type powerMetaObj = {
 };
 /* Sensing metadata type */
 export type sensingMetaObj = {
-  module: 'sensing',
   id: number,
   type: string,
   numChannels: number,
@@ -49,7 +47,6 @@ export type sensingMetaObj = {
 };
 /* Communication Metadata type */
 export type commMetaObj = {
-  module: 'communication',
   id: number,
   type: string,
   numDevices: number,
@@ -57,7 +54,6 @@ export type commMetaObj = {
 };
 /* Control Metadata type */
 export type controlMetaObj = {
-  module: 'control',
   id: number,
   type: string,
   channelNames: ?string[]
@@ -71,5 +67,13 @@ export type metaDataType =
   sensingMetaObj[] |
   commMetaObj[] |
   controlMetaObj[];
+
+export type metaDataNameType =
+  'energy' |
+  'actuation' |
+  'power' |
+  'sensing' |
+  'communication' |
+  'control';
 
 /* [] - END OF FILE */
