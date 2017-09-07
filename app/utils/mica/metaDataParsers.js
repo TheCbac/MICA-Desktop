@@ -67,19 +67,20 @@ function parseEnergyMetadata(data: Buffer): energyMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id !== ID_NONE) {
-      /* Get the length of the name */
-      nameLength = data[i++];
-      /* Construct the source name according to length */
-      for (let k = 0; k < nameLength; k++) {
-        name += String.fromCharCode(data[i++]);
-      }
-      /* Get the battery meta information */
-      numCells = data[i++];
-      /* Encoded in units of 100 mV, convert to volts */
-      nomVoltage = data[i++] / 10;
-      energyFeatures = data[i++];
+    if (id === ID_NONE) {
+      return batteryArray;
     }
+    /* Get the length of the name */
+    nameLength = data[i++];
+    /* Construct the source name according to length */
+    for (let k = 0; k < nameLength; k++) {
+      name += String.fromCharCode(data[i++]);
+    }
+    /* Get the battery meta information */
+    numCells = data[i++];
+    /* Encoded in units of 100 mV, convert to volts */
+    nomVoltage = data[i++] / 10;
+    energyFeatures = data[i++];
     /* Store the energy source */
     batteryArray.push({
       module: 'energy',
@@ -96,7 +97,7 @@ function parseEnergyMetadata(data: Buffer): energyMetaObj[] {
 
 
 /* Parse the data reported by the Actuation meta data */
-function parseActuationMetadata(data: Buffer): actuationMetaObj[] {
+function parseActuationMetadata(data: Buffer): ?actuationMetaObj[] {
   const actuationArray = [];
   const channelNameLength = [];
   const channelNames = [];
@@ -108,22 +109,21 @@ function parseActuationMetadata(data: Buffer): actuationMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id !== ID_NONE) {
-      /* Get the number of channels */
-      numChannels = data[i++];
-      /* Get the length of the name of each channel */
-      for (let j = 0; j < numChannels; j++) {
-        channelNameLength.push(data[i++]);
+    if (id === ID_NONE) { return null; }
+    /* Get the number of channels */
+    numChannels = data[i++];
+    /* Get the length of the name of each channel */
+    for (let j = 0; j < numChannels; j++) {
+      channelNameLength.push(data[i++]);
+    }
+    /* Populate the sensor name list */
+    for (let chIndex = 0; chIndex < numChannels; chIndex++) {
+      let chanName = '';
+      /* Construct the channel name according to length */
+      for (let k = 0; k < channelNameLength[chIndex]; k++) {
+        chanName += String.fromCharCode(data[i++]);
       }
-      /* Populate the sensor name list */
-      for (let chIndex = 0; chIndex < numChannels; chIndex++) {
-        let chanName = '';
-        /* Construct the channel name according to length */
-        for (let k = 0; k < channelNameLength[chIndex]; k++) {
-          chanName += String.fromCharCode(data[i++]);
-        }
-        channelNames.push(chanName);
-      }
+      channelNames.push(chanName);
     }
     /* Store the Actuators */
     actuationArray.push({

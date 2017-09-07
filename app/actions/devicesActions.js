@@ -116,7 +116,7 @@ export function lostConnectionFromDevice(
 
 /* Report Metadata */
 export function reportMetaData(deviceId: nobleIdType,
-  metaData: metaDataType): reportMetaDataActionType {
+  metaData: ?metaDataType): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
     payload: {

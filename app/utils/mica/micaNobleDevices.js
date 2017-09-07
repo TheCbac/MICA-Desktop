@@ -122,10 +122,8 @@ function readMetaCharCallback(
   }
   /* Parse the metadata */
   const metaData = parseMetaData(charId, data);
-  if (metaData) {
-    log.debug('readMetaCharCallback: Parsed metadata:', metaData);
-    store.dispatch(reportMetaData(deviceId, metaData));
-  }
+  log.debug('readMetaCharCallback: Parsed metadata:', metaData);
+  store.dispatch(reportMetaData(deviceId, metaData));
 }
 
 /* [] - END OF FILE */

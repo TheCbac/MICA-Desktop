@@ -19,12 +19,8 @@ import log from '../utils/loggingUtils';
 // import { getSelectedDevices } from '../actions/senGenActions';
 import SenGen from './senGenComponent';
 import sensorParams from '../utils/mica/micaSensorParams';
-import { nameToId } from '../utils/mica/micaConstants';
+import generatorParams from '../utils/mica/micaGeneratorParams';
 import type { metadataType } from '../types/stateTypes';
-
-// Debugging only
-const accParams = sensorParams[1];
-const gyrParams = sensorParams[2];
 
 /* Props used in component */
 type propsType = {
@@ -104,16 +100,32 @@ export default class sensorSettings extends Component {
     return array;
   }
   /* Get the sensor and generators from the selected device */
-  getSensors(sensorId) {
-    console.log(sensorId);
-    // const senArray = [];
-    // const deviceName = this.props.selected.sensor;
-    // /* Get the sensor on the device */
-
-    // /* Iterate over the Sensors and generators */
-    // for (let i = 0; i < numSensors; i += 1) {
-    //   /* Get the objects */
-    // }
+  getSenGen(type: 'sensing' | 'actuation', name: ?string): [] {
+    const transducerArray = [];
+    let device;
+    /* Get the device */
+    if (name) { device = this.props.metadata[name]; }
+    if (device) {
+      const senGenList = device[type];
+      const numSenGen = senGenList.length;
+      /* Iterate through all of the sensors */
+      for (let i = 0; i < numSenGen; i += 1) {
+        /* Get the transducer in question */
+        const transducer = senGenList[i];
+        /* Make the react component */
+        let transducerComponent;
+        if (type === 'sensing') {
+          transducerComponent = (
+            <SenGen name={transducer.type} key={i} active params={sensorParams[transducer.id]} />
+          );
+        } else if (type === 'actuation') {
+          transducerComponent = (<div />);
+            // <SenGen name={transducer.type} active params={generatorParams[transducer.id]} />
+        }
+        transducerArray.push(transducerComponent);
+      }
+    }
+    return transducerArray;
   }
   /* Render function */
   render() {
@@ -166,9 +178,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              { this.getSensors(this.props.selected.sensor) }
-              <SenGen name={'Accelerometer'} active params={accParams} />
-              <SenGen name={'Gyroscope'} active={false} params={gyrParams} />
+              { this.getSenGen('sensing', this.props.selected.sensor) }
             </Col>
           </Col>
           <Col md={6}>
@@ -193,6 +203,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
+              { this.getSenGen('actuation', this.props.selected.generator) }
             </Col>
           </Col>
         </Row>

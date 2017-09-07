@@ -7,16 +7,15 @@
 * Author: Craig Cheney
 * Date: 2017.08.30
 *
-**********************************************************/
+********************************************************* */
 import type { stateType } from '../types/stateTypes';
 import type { updateSelectedDeviceAction } from '../types/actionTypes';
-import store from '../index';
 import log from '../utils/loggingUtils';
 
 export const UPDATE_SELECTED_DEVICES = 'UPDATE_SELECTED_DEVICES';
 
 /* Set the file debug level */
-log.debugLevel = 5;
+// log.debugLevel = 5;
 log.debug('senGenActions.js logging level set to:', log.debugLevel);
 
 

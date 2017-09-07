@@ -24,7 +24,7 @@ import type {
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  setSelectedDeviceAction
+  updateSelectedDeviceAction
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 
@@ -35,7 +35,8 @@ export const defaultState = {
   connecting: [],
   connected: [],
   disconnecting: [],
-  metadata: {},
+  metadata: {
+  },
   selected: {},
   unselected: {
     generators: [],
@@ -177,7 +178,9 @@ const deviceHandlers = {
     /* Ensure the peripheral was found */
     if (!peripheral) { return state; }
     /* Find the module name @TODO: this should be changed the metaObjType */
-    const module = action.payload.data[0].module;
+    const metadata = action.payload.data;
+    if (!metadata) { return state; }
+    const module = metadata[0].module;
     const deviceName = peripheral.advertisement.localName;
     /* Create an obj who has a key of the module in question */
     const deviceMetaObj = { };

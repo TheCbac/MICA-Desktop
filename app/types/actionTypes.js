@@ -107,7 +107,7 @@ export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {
     peripheralId: string,
-    data: metaDataType
+    data: ?metaDataType
   }
 };
 
