@@ -100,7 +100,7 @@ export default class sensorSettings extends Component {
     return array;
   }
   /* Get the sensor and generators from the selected device */
-  getSenGen(type: 'sensing' | 'actuation', name: ?string): [] {
+  getSenGen(type: 'sensing' | 'actuation', name: ?string): [] | string {
     const transducerArray = [];
     let device;
     /* Get the device */
@@ -108,6 +108,10 @@ export default class sensorSettings extends Component {
     if (device) {
       const senGenList = device[type];
       const numSenGen = senGenList.length;
+      /* No transducers */
+      if (!numSenGen) {
+        return 'NO DEVICES';
+      }
       /* Iterate through all of the sensors */
       for (let i = 0; i < numSenGen; i += 1) {
         /* Get the transducer in question */

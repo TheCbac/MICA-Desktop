@@ -19,7 +19,7 @@ export const UPDATE_SELECTED_DEVICES = 'UPDATE_SELECTED_DEVICES';
 log.debug('senGenActions.js logging level set to:', log.debugLevel);
 
 
-/* On Enter hook for the SenGen page - set the active device */
+/* On constructor for the SenGen page - set the active device */
 export function getSelectedDevices() {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
@@ -65,7 +65,7 @@ export function getSelectedDevices() {
         log.warn('getSelectedDevices: No metadata was found for device', deviceName);
       } else {
         /* If there are sensors, select as the active sensing device  */
-        if (deviceMeta && deviceMeta.sensing.length) {
+        // if (deviceMeta && deviceMeta.sensing.length) {
           /* Push first one to selected, all others to unselected */
           if (findSensor || device.advertisement.localName === sensor) {
             findSensor = false;
@@ -74,9 +74,8 @@ export function getSelectedDevices() {
             /* Push to unselected */
             unselected.sensors.push(device.advertisement.localName);
           }
-        }
         /* Check about the generators */
-        if (deviceMeta && deviceMeta.actuation.length) {
+        // if (deviceMeta && deviceMeta.actuation.length) {
           if (findGenerator || device.advertisement.localName === generator) {
             findGenerator = false;
             generator = device.advertisement.localName;
@@ -84,7 +83,7 @@ export function getSelectedDevices() {
             /* Push to unselected */
             unselected.generators.push(device.advertisement.localName);
           }
-        }
+        // }
       }
     }
     /* Dispatch the event */

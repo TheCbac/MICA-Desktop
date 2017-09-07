@@ -20,7 +20,7 @@ import type {
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType
 } from '../types/actionTypes';
-import type { metaDataType } from '../types/metaDataTypes';
+import type { metaDataType, metaDataNameType } from '../types/metaDataTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
@@ -115,13 +115,17 @@ export function lostConnectionFromDevice(
 }
 
 /* Report Metadata */
-export function reportMetaData(deviceId: nobleIdType,
-  metaData: ?metaDataType): reportMetaDataActionType {
+export function reportMetaData(
+  deviceId: nobleIdType,
+  metaData: ?metaDataType,
+  moduleName: ?metaDataNameType
+): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
     payload: {
       peripheralId: deviceId,
-      data: metaData
+      data: metaData,
+      moduleName
     }
   };
 }

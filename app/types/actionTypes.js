@@ -13,7 +13,7 @@ import type {
   noblePeripheralType,
   nobleIdType
 } from './paramTypes';
-import type { metaDataType } from './metaDataTypes';
+import type { metaDataType, metaDataNameType } from './metaDataTypes';
 
 /* Type for changing the scanning type */
 export type changeScanActionType = {
@@ -107,7 +107,8 @@ export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {
     peripheralId: string,
-    data: ?metaDataType
+    data: ?metaDataType,
+    moduleName: ?metaDataNameType
   }
 };
 

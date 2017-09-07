@@ -178,13 +178,18 @@ const deviceHandlers = {
     /* Ensure the peripheral was found */
     if (!peripheral) { return state; }
     /* Find the module name @TODO: this should be changed the metaObjType */
-    const metadata = action.payload.data;
-    if (!metadata) { return state; }
-    const module = metadata[0].module;
+    let metadata = action.payload.data;
+    /* If there are no devices in a module, populate as empty array */
+    if (metadata == null) {
+      metadata = [];
+    }
+    const moduleName = action.payload.moduleName;
+    /* Ensure valid data was reported */
+    if (!moduleName) { return state; }
     const deviceName = peripheral.advertisement.localName;
     /* Create an obj who has a key of the module in question */
     const deviceMetaObj = { };
-    deviceMetaObj[module] = action.payload.data;
+    deviceMetaObj[moduleName] = metadata;
     /* Update the stored Metadata object.  */
     return update(state, { metadata: { [deviceName]: { $merge: deviceMetaObj } } });
   },

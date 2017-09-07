@@ -8,7 +8,7 @@
 * Author: Craig Cheney
 *
 * 2017.08.28 CC - Document created
-**********************************************************/
+********************************************************* */
 import type { nobleIdType } from '../../types/paramTypes';
 import store from '../../index';
 import { micaServiceUuid, micaCharUuids } from './micaConstants';
@@ -121,9 +121,9 @@ function readMetaCharCallback(
     return;
   }
   /* Parse the metadata */
-  const metaData = parseMetaData(charId, data);
-  log.debug('readMetaCharCallback: Parsed metadata:', metaData);
-  store.dispatch(reportMetaData(deviceId, metaData));
+  const { metadata, moduleName } = parseMetaData(charId, data);
+  log.debug('readMetaCharCallback: Parsed metadata:', moduleName, metadata);
+  store.dispatch(reportMetaData(deviceId, metadata, moduleName));
 }
 
 /* [] - END OF FILE */
