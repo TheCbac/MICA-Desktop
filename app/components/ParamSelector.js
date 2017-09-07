@@ -11,28 +11,14 @@
 *
 ********************************************************* */
 import React, { Component } from 'react';
-import { Col, ButtonToolbar } from 'react-bootstrap';
+import { Col, ButtonToolbar, Row } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
-
-type optionsType = {
-  name: string,
-  value: number,
-  word: number,
-  display: string
-};
-
-type PropsType = {
-  name: string,
-  display: string,
-  default: number,
-  options: optionsType[],
-  address: number
-};
+import type { deviceParamType } from '../types/paramTypes';
 
 export default class ParamSelector extends Component {
   /* Type Defs */
-  props: PropsType;
+  props: deviceParamType;
   /* return the list of options */
   getOptions() {
     const buttonArray = [];
@@ -57,10 +43,11 @@ export default class ParamSelector extends Component {
     return (
       <div>
         <ButtonToolbar>
-          <Col md={2} xs={2}>
+          <Col md={12} xs={12}>
             <label htmlFor="settings">{this.props.display}:</label>
           </Col>
-          <Col md={10} xs={10}>
+          <Row />
+          <Col md={12} xs={12}>
             <ToggleButtonGroup bsSize="small" type="radio" name={this.props.name} defaultValue={this.props.default}>
               {this.getOptions()}
             </ToggleButtonGroup>

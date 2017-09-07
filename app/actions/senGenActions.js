@@ -50,8 +50,7 @@ export function getSelectedDevices() {
         findGenerator = false;
       }
     }
-    /* See if further work is needed*/
-    // if (!sensor || !generator) {
+    /* See if further work is needed */
     const devices = state.devices;
     const connectedDevices = devices.connected;
     const metadata = devices.metadata;
@@ -59,12 +58,12 @@ export function getSelectedDevices() {
     for (let i = 0; i < connectedDevices.length; i += 1) {
       /* Get the device id */
       const device = connectedDevices[i];
-      const deviceId = device.id;
+      const deviceName = device.advertisement.localName;
       /* see if the device has sensors */
-      const deviceMeta = metadata[deviceId];
+      const deviceMeta = metadata[deviceName];
       /* Ensure valid metadata */
       if (!deviceMeta.sensing || !deviceMeta.actuation) {
-        log.warn('getSelectedDevices: No metadata was found for device', deviceId);
+        log.warn('getSelectedDevices: No metadata was found for device', deviceName);
       } else {
         /* If there are sensors, select as the active sensing device  */
         if (deviceMeta && deviceMeta.sensing.length) {

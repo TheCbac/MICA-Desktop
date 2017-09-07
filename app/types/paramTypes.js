@@ -51,4 +51,20 @@ export type noblePeripheralType = {
 
 export type nobleIdType = string;
 
+/* Options for the parameter settings */
+export type deviceOptionsType = {
+  name: string,
+  value: number,
+  word: number,
+  display: string
+};
+
+/* Parameter settings for devices */
+export type deviceParamType = {
+  name: string,
+  display: string,
+  default: number,
+  options: deviceOptionsType[],
+  address: number
+};
 /* [] - END OF FILE */

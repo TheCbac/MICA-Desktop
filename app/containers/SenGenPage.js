@@ -8,7 +8,7 @@
 *
 * 2017.08.30 CC - Document created
 *
-**********************************************************/
+********************************************************* */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import sensorSettings from '../components/sensorSettingsComponent';
@@ -21,7 +21,8 @@ import {
 function mapStateToProps(state) {
   return {
     selected: state.devices.selected,
-    unselected: state.devices.unselected
+    unselected: state.devices.unselected,
+    metadata: state.devices.metadata
   };
 }
 

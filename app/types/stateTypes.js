@@ -20,12 +20,14 @@ export type scanStateType = {
   scanning: boolean
 };
 
+export type metadataType = {};
+
 export type devicesStateType = {
   advertising: noblePeripheralType[],
   connecting: noblePeripheralType[],
   connected: noblePeripheralType[],
   disconnecting: noblePeripheralType[],
-  metadata: {},
+  metadata: metadataType,
   selected: { sensor: ?string, generator: ?string},
   unselected: { sensors: string[], generators: string[]}
 };

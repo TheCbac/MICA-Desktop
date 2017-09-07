@@ -18,28 +18,36 @@ import CustomMenu from './customMenu';
 import log from '../utils/loggingUtils';
 // import { getSelectedDevices } from '../actions/senGenActions';
 import SenGen from './senGenComponent';
+import sensorParams from '../utils/mica/micaSensorParams';
+import { nameToId } from '../utils/mica/micaConstants';
+import type { metadataType } from '../types/stateTypes';
 
-log.debugLevel = 5;
+// Debugging only
+const accParams = sensorParams[1];
+const gyrParams = sensorParams[2];
+
+/* Props used in component */
+type propsType = {
+  selected: {
+    generator: ?string,
+    sensor: ?string
+  },
+  unselected: {
+    generators: string[],
+    sensors: string[]
+  },
+  getSelectedDevices: () => mixed,
+  setSelectedDevices: () => mixed,
+  metadata: metadataType
+};
 
 export default class sensorSettings extends Component {
   /* Component properties */
-  props: {
-    selected: {
-      generator: ?string,
-      sensor: ?string
-    },
-    unselected: {
-      generators: string[],
-      sensors: string[]
-    },
-    getSelectedDevices: () => mixed,
-    setSelectedDevices: () => mixed
-  };
-
+  props: propsType;
   state: {
     open: boolean
   };
-  constructor(props) {
+  constructor(props: propsType) {
     super(props);
     /* Trigger the selected devices to occur */
     props.getSelectedDevices();
@@ -95,6 +103,18 @@ export default class sensorSettings extends Component {
 
     return array;
   }
+  /* Get the sensor and generators from the selected device */
+  getSensors(sensorId) {
+    console.log(sensorId);
+    // const senArray = [];
+    // const deviceName = this.props.selected.sensor;
+    // /* Get the sensor on the device */
+
+    // /* Iterate over the Sensors and generators */
+    // for (let i = 0; i < numSensors; i += 1) {
+    //   /* Get the objects */
+    // }
+  }
   /* Render function */
   render() {
     const sensorBoxStyle = {
@@ -106,7 +126,6 @@ export default class sensorSettings extends Component {
       fontFamily: 'Franklin Gothic Book',
       marginTop: '15px',
       color: '#7C7C7C',
-      // backgroundColor: 'blue'
     };
     const upStyle = {
       fontSize: '12px',
@@ -147,8 +166,9 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              <SenGen name={'Accelerometer'} />
-              <SenGen name={'Gyroscope'} />
+              { this.getSensors(this.props.selected.sensor) }
+              <SenGen name={'Accelerometer'} active params={accParams} />
+              <SenGen name={'Gyroscope'} active={false} params={gyrParams} />
             </Col>
           </Col>
           <Col md={6}>

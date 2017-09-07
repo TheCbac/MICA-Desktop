@@ -262,7 +262,7 @@ function parseCommMetadata(data: Buffer): commMetaObj[] {
         /* Reset and fill the name length array */
         nameLengthArray = [];
         for (let j = 0; j < numDevices; j++) {
-          /* Get the length of the Comm device name*/
+          /* Get the length of the Comm device name */
           nameLengthArray.push(data[i++]);
         }
         /* Get the names */

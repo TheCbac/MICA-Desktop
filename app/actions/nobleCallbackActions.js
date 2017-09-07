@@ -9,7 +9,6 @@
 * Date: 2017.07.10
 *
 **********************************************************/
-// import Noble from 'noble';
 import { Noble } from '../utils/nativeModules';
 import {
   changeScanState,
@@ -17,7 +16,7 @@ import {
 } from './ScanForDevicesActions';
 import { foundAdvertisingDevice } from './devicesActions';
 import store from '../index';
-// import store from '../createNewStore';
+import log from '../utils/loggingUtils';
 
 /* Noble callback */
 export function stateChange() {
@@ -26,6 +25,7 @@ export function stateChange() {
     if (state === 'poweredOn') {
       enabled = true;
     }
+    log.verbose('Noble state:', state);
   /* Dispatch the action */
     store.dispatch(enableScanMethod('ble', enabled));
   });

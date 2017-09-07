@@ -76,6 +76,10 @@ updating to 1.6.7 was done by
 
 ## Noble
 Installing noble in the app/ package. Rebuild for current version: 
+ The electron target number of `postinstall` in /app/ must match the
+ electron package version.
+
+DEPRECATED: 
 
 `$ npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=50`
 
@@ -100,11 +104,7 @@ To avoid errors about colors, put winston in dependencies in /app
  ```
 
 # Left off:
-* Just finished populating the advertisement list
-* Next: write unit tests for the advertisement list
-* Click to connect 
-* Maybe rethink how the list will work
-
+=
 ## TODO: Long term
 * Write operating system for MICA Cube
 	* Dynamically load programs from MICA app

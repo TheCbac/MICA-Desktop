@@ -11,25 +11,20 @@
 *
 ********************************************************* */
 import React, { Component } from 'react';
-import { Col, Row, Collapse, Well,
-  ButtonToolbar } from 'react-bootstrap';
-import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
-import ToggleButton from 'react-bootstrap/lib/ToggleButton';
+import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ParamSelector from './ParamSelector';
-import sensorParams from '../utils/mica/micaSensorParams';
+import type { deviceParamType } from '../types/paramTypes';
 
-// Debugging only
-const accParam = sensorParams[1][0];
-console.log('senGenComponent:', accParam);
+
 type StateType = {
-  open: boolean,
-  on: boolean
+  open: boolean
 };
 
-
 type PropsType = {
-  name: string
+  name: string,
+  active: boolean,
+  params: deviceParamType[]
 };
 
 export default class SenGenComponent extends Component {
@@ -41,8 +36,7 @@ export default class SenGenComponent extends Component {
     super(props);
     /* set the default state */
     this.state = {
-      open: false,
-      on: false
+      open: this.props.active,
     };
   }
   /*  */
@@ -73,7 +67,7 @@ export default class SenGenComponent extends Component {
       color: 'black',
       textShadow: ''
     };
-    if (this.state.on) {
+    if (this.props.active) {
       style.transform = '';
       style.textShadow = 'white 0 0 20px';
       style.color = 'white';
@@ -86,13 +80,29 @@ export default class SenGenComponent extends Component {
       color: '',
       textShadow: ''
     };
-    if (this.state.on) {
+    if (this.props.active) {
       style.color = 'white';
       style.textShadow = 'white 0 0 20px';
     }
     return style;
   }
   /* Returns the list of sensor params */
+  getParams() {
+    const paramsArray = [];
+    /* iterate over the params */
+    for (let i = 0; i < this.props.params.length; i += 1) {
+      /* Get the parameter */
+      const paramObj = this.props.params[i];
+      /* Create the param selector element */
+      const paramElement = (
+        <ParamSelector {...paramObj} key={i} />
+      );
+      /* Add to the array */
+      paramsArray.push(paramElement);
+    }
+    /* Return the list of elements */
+    return paramsArray;
+  }
   /* Render function */
   render() {
     const sensorStyle = {
@@ -112,7 +122,7 @@ export default class SenGenComponent extends Component {
         </Col>
         <Col md={1} xs={1} mdOffset={0} style={sensorStyle}>
           <span className={'pull-right'} style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
-            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.setState({ on: !this.state.on })} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
+            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.setState({ on: !this.props.active })} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
           </span>
         </Col>
         <Row />
@@ -121,7 +131,7 @@ export default class SenGenComponent extends Component {
             <div>
               <Well>
                 <div>
-                  <ParamSelector {...accParam} />
+                  {this.getParams()}
                 </div>
               </Well>
             </div>
