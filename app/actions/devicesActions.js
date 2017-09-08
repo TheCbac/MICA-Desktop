@@ -8,6 +8,7 @@
 * Date: 2017.07.10
 *
 ********************************************************* */
+import { getSelectedDevices } from './senGenActions';
 import type { noblePeripheralType, nobleIdType, deviceSettingsType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
@@ -147,9 +148,12 @@ export function metaDataReadComplete(
     const state = getState();
     /* Get the metadata for a device */
     const deviceMetadata = state.devices.metadata[deviceId];
-
-
-  }
+    /* get the number of metadata reads */
+    const numMetadata = Object.keys(deviceMetadata).length;
+    if (numMetadata === 6) {
+      dispatch(getSelectedDevices());
+    }
+  };
 }
 
 
