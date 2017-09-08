@@ -136,7 +136,7 @@ export default class SenGenComponent extends Component {
             <div>
               <Well>
                 <div>
-                  {this.getParams()}
+                  { this.getParams() }
                 </div>
               </Well>
             </div>

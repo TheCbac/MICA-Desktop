@@ -15,6 +15,7 @@ import type {
   deviceSettingsType
 } from './paramTypes';
 import type { metaDataType, metaDataNameType } from './metaDataTypes';
+import type { selectType } from './stateTypes';
 
 /* Type for changing the scanning type */
 export type changeScanActionType = {
@@ -117,11 +118,11 @@ export type reportMetaDataActionType = {
 export type updateSelectedDeviceAction = {
   type: 'UPDATE_SELECTED_DEVICES',
   payload: {
-    sensor: ?string,
-    generator: ?string,
+    sensor: selectType,
+    generator: selectType,
     unselected: {
-      sensors: string[],
-      generators: string[]
+      sensors: selectType[],
+      generators: selectType[]
     }
   }
 };

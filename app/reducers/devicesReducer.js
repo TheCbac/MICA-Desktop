@@ -38,7 +38,16 @@ export const defaultState = {
   disconnecting: [],
   metadata: {
   },
-  selected: {},
+  selected: {
+    sensor: {
+      name: undefined,
+      id: undefined
+    },
+    generator: {
+      name: undefined,
+      id: undefined
+    }
+  },
   unselected: {
     generators: [],
     sensors: []
@@ -98,8 +107,7 @@ const deviceHandlers = {
     });
     /* Create a metadata object for the device - Overrides previous */
     const metaObj = { };
-    const deviceName = peripheral.advertisement.localName;
-    metaObj[deviceName] = {};
+    metaObj[action.payload.peripheralId] = {};
     return update(state1, { metadata: { $merge: metaObj } });
   },
   /* Cancel a pending connection */
@@ -188,12 +196,11 @@ const deviceHandlers = {
     const moduleName = action.payload.moduleName;
     /* Ensure valid data was reported */
     if (!moduleName) { return state; }
-    const deviceName = peripheral.advertisement.localName;
     /* Create an obj who has a key of the module in question */
     const deviceMetaObj = { };
     deviceMetaObj[moduleName] = metadata;
     /* Update the stored Metadata object.  */
-    return update(state, { metadata: { [deviceName]: { $merge: deviceMetaObj } } });
+    return update(state, { metadata: { [deviceId]: { $merge: deviceMetaObj } } });
   },
   /* Get the devices that have been selected */
   UPDATE_SELECTED_DEVICES(

@@ -15,20 +15,23 @@ import FontAwesome from 'react-fontawesome';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
 import SenGen from './senGenComponent';
-import sensorParams from '../utils/mica/micaSensorParams';
+import micaSensorParams from '../utils/mica/micaSensorParams';
 import generatorParams from '../utils/mica/micaGeneratorParams';
-import type { metadataType } from '../types/stateTypes';
+import log from '../utils/loggingUtils';
+import type { metadataType, selectType } from '../types/stateTypes';
 import type { deviceSettingsType } from '../types/paramTypes';
 
+// log.debugLevel = 5;
+log.debug('sensorSettingsComponent: debug level', log.debugLevel);
 /* Props used in component */
 type propsType = {
   selected: {
-    generator: ?string,
-    sensor: ?string
+    generator: selectType,
+    sensor: selectType
   },
   unselected: {
-    generators: string[],
-    sensors: string[]
+    generators: selectType[],
+    sensors: selectType[]
   },
   deviceSettings: deviceSettingsType[],
   getSelectedDevices: () => mixed,
@@ -57,8 +60,8 @@ export default class sensorSettings extends Component {
     let text = 'NO DEVICES';
     let style = 'italic';
     /* If the device is present */
-    if (device) {
-      text = device;
+    if (device.name) {
+      text = device.name;
       style = 'normal';
     }
     return {
@@ -79,16 +82,16 @@ export default class sensorSettings extends Component {
     const len = this.props.unselected[type].length;
     if (len) {
       for (let i = 0; i < len; i += 1) {
-        const name = this.props.unselected[type][i];
+        const selectObj = this.props.unselected[type][i];
         /* Create the element - should this be a new component? */
         const element = (<MenuItem
           style={deviceStyle}
           onClick={(e) => {
             e.preventDefault();
-            this.props.setSelectedDevices(type, name);
+            this.props.setSelectedDevices(type, selectObj);
           }}
           key={i}
-        >{name}</MenuItem>);
+        >{selectObj.name}</MenuItem>);
         /* Populate the array */
         array.push(element);
       }
@@ -100,33 +103,40 @@ export default class sensorSettings extends Component {
     return array;
   }
   /* Get the sensor and generators from the selected device */
-  getSenGen(type: 'sensing' | 'actuation', name: ?string): [] | string {
+  getSenGen(type: 'sensing' | 'actuation', selectDevice: selectType): [] | string {
     const transducerArray = [];
-    let device;
+    let deviceMeta;
     /* Get the device */
-    if (name) { device = this.props.metadata[name]; }
-    if (device) {
-      const senGenList = device[type];
+    if (selectDevice.id) { deviceMeta = this.props.metadata[selectDevice.id]; }
+    if (deviceMeta) {
+      /* Get the list of either sensor or generators from the  */
+      const senGenList = deviceMeta[type];
       const numSenGen = senGenList.length;
       /* No transducers */
       if (!numSenGen) {
         let senGenType = 'SENSORS';
         if (type === 'actuation') { senGenType = 'GENERATORS'; }
-        if (name) {
-          return `${name} CONTAINS NO ${senGenType}`;
+        if (selectDevice.name) {
+          return `${selectDevice.name} CONTAINS NO ${senGenType}`;
         }
       }
-      if (!name) { return ''; }
+      /* No Sensors or generators - this is an error */
+      if (!selectDevice.name) {
+        log.warn('sensorSettingsComponent: no name found');
+        return '';
+      }
+      /* ***** REFACTOR INTO SEPARATE FUNCTION ***** */
       /* Get the device settings */
-      let deviceSettings;
-      for (let j = 0; j < this.props.deviceSettings.length; j += 1) {
-        const currentDevice = this.props.deviceSettings[j];
-        /* If the names match */
-        if (currentDevice.deviceName === device) {
-          deviceSettings = currentDevice.settings;
-          break;
-        }
-      }
+      // const deviceSettings = this.props.deviceSettings[selectDevice.id];
+
+      // for (let j = 0; j < this.props.deviceSettings.length; j += 1) {
+      //   const currentDevice = this.props.deviceSettings[j];
+      //   /* If the names match */
+      //   if (currentDevice.deviceName === device) {
+      //     deviceSettings = currentDevice.settings;
+      //     break;
+      //   }
+      // }
       /* Iterate through all of the sensors */
       for (let i = 0; i < numSenGen; i += 1) {
         /* Get the transducer in question */
@@ -137,10 +147,10 @@ export default class sensorSettings extends Component {
           transducerComponent = (
             <SenGen
               name={transducer.type}
-              device={name}
+              device={selectDevice.name}
               key={i}
               active
-              params={sensorParams[transducer.id]}
+              params={micaSensorParams[transducer.id]}
               updateSenGenParams={this.props.updateSenGenParams}
             />
           );
@@ -153,6 +163,7 @@ export default class sensorSettings extends Component {
     }
     return transducerArray;
   }
+
   /* Render function */
   render() {
     const sensorBoxStyle = {
@@ -182,6 +193,7 @@ export default class sensorSettings extends Component {
     return (
       <Grid fluid>
         <Row>
+
           <Col md={6}>
             <Col md={12} mdOffset={0} style={sensorBoxStyle}>
               <Col md={6} style={headerTextStyle}>
@@ -199,7 +211,7 @@ export default class sensorSettings extends Component {
                     </CustomToggle>
 
                     <CustomMenu bsRole="menu">
-                      {this.unselectedDevices('sensors')}
+                      { this.unselectedDevices('sensors') }
                     </CustomMenu>
                   </Dropdown>
                 </div>

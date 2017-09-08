@@ -20,8 +20,7 @@ import {
 } from '../deviceUtils';
 import parseMetaData from './metaDataParsers';
 import log from '../loggingUtils';
-import { reportMetaData } from '../../actions/devicesActions';
-import { getSelectedDevices } from '../../actions/senGenActions';
+import { metaDataReadComplete } from '../../actions/devicesActions';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -117,15 +116,13 @@ function readMetaCharCallback(
   data: Buffer
 ): void {
   if (error) {
-    log.error('readMetaCharCallback', charId, 'failed on device', deviceId, 'with error', error);
+    log.error('readCharCallback', charId, 'failed on device', deviceId, 'with error', error);
     return;
   }
   /* Parse the metadata */
   const { metadata, moduleName } = parseMetaData(charId, data);
   log.debug('readMetaCharCallback: Parsed metadata:', moduleName, metadata);
-  store.dispatch(reportMetaData(deviceId, metadata, moduleName));
-  /* Update the selected items */
-  store.dispatch(getSelectedDevices());
+  store.dispatch(metaDataReadComplete(deviceId, metadata, moduleName));
 }
 
 /* [] - END OF FILE */

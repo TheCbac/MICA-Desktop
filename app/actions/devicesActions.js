@@ -8,6 +8,7 @@
 * Date: 2017.07.10
 *
 ********************************************************* */
+import { getSelectedDevices } from './senGenActions';
 import type { noblePeripheralType, nobleIdType, deviceSettingsType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
@@ -21,6 +22,7 @@ import type {
   reportMetaDataActionType,
   updateSenGenParamActionType
 } from '../types/actionTypes';
+import type { stateType } from '../types/stateTypes';
 import type { metaDataType, metaDataNameType } from '../types/metaDataTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
@@ -131,6 +133,29 @@ export function reportMetaData(
     }
   };
 }
+
+/* Wrapper for reporting metadata - check to see if the metadata is complete */
+export function metaDataReadComplete(
+  deviceId: nobleIdType,
+  metaData: ?metaDataType,
+  moduleName: ?metaDataNameType
+) {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Report the metadata */
+    dispatch(reportMetaData(deviceId, metaData, moduleName));
+    /* Get the state  */
+    const state = getState();
+    /* Get the metadata for a device */
+    const deviceMetadata = state.devices.metadata[deviceId];
+    /* get the number of metadata reads */
+    const numMetadata = Object.keys(deviceMetadata).length;
+    if (numMetadata === 6) {
+      dispatch(getSelectedDevices());
+    }
+  };
+}
+
 
 /* Change the active parameters */
 export function updateSenGenParams(
