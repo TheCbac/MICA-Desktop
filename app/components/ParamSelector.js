@@ -18,7 +18,7 @@ import type { deviceParamType } from '../types/paramTypes';
 
 export default class ParamSelector extends Component {
   /* Type Defs */
-  props: deviceParamType;
+  props: deviceParamType & {sensor: string} & {device: string};
   /* return the list of options */
   getOptions() {
     const buttonArray = [];
@@ -28,7 +28,13 @@ export default class ParamSelector extends Component {
       const option = this.props.options[i];
       /* Create the toggle button element */
       const btnElement = (
-        <ToggleButton value={option.word} key={i.toString()}>
+        <ToggleButton
+          value={option.word}
+          key={i.toString()}
+          onClick={() =>
+            console.log(this.props.device, this.props.sensor, this.props.name)
+          }
+        >
           {option.display}
         </ToggleButton>
       );
@@ -48,7 +54,7 @@ export default class ParamSelector extends Component {
           </Col>
           <Row />
           <Col md={12} xs={12}>
-            <ToggleButtonGroup bsSize="small" type="radio" name={this.props.name} defaultValue={this.props.default}>
+            <ToggleButtonGroup bsSize="small" type={this.props.btnType} name={this.props.name} defaultValue={this.props.default}>
               {this.getOptions()}
             </ToggleButtonGroup>
           </Col>

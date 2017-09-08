@@ -7,8 +7,8 @@
 * Author: Craig Cheney
 * Date: 2017.07.10
 *
-**********************************************************/
-import type { noblePeripheralType, nobleIdType } from '../types/paramTypes';
+********************************************************* */
+import type { noblePeripheralType, nobleIdType, deviceSettingsType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
@@ -18,7 +18,8 @@ import type {
   disconnectedFromDeviceActionType,
   disconnectingFromDeviceActionType,
   lostConnectionFromDeviceActionType,
-  reportMetaDataActionType
+  reportMetaDataActionType,
+  updateSenGenParamActionType
 } from '../types/actionTypes';
 import type { metaDataType, metaDataNameType } from '../types/metaDataTypes';
 
@@ -31,6 +32,7 @@ export const DISCONNECTING_FROM_DEVICE = 'DISCONNECTING_FROM_DEVICE';
 export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
 export const LOST_CONNECTION_FROM_DEVICE = 'LOST_CONNECTION_FROM_DEVICE';
 export const REPORT_META_DATA = 'REPORT_META_DATA';
+export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
@@ -126,6 +128,18 @@ export function reportMetaData(
       peripheralId: deviceId,
       data: metaData,
       moduleName
+    }
+  };
+}
+
+/* Change the active parameters */
+export function updateSenGenParams(
+  deviceSettings: deviceSettingsType
+): updateSenGenParamActionType {
+  return {
+    type: UPDATE_SEN_GEN_PARAMS,
+    payload: {
+      deviceSettings
     }
   };
 }

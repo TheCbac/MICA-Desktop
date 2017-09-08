@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-bitwise: "off" */
 /* **********************************************************
 * File: utils/mica/micaSensorParams.js
 *
@@ -11,6 +12,7 @@
 *
 ********************************************************* */
 import { nameToId } from './micaConstants';
+import type { deviceParamType } from '../../types/paramTypes';
 
 /* Object to be passed to Sensor Settings Component */
 const sensorParams = {};
@@ -20,7 +22,7 @@ const sensorParams = {};
 const accId = nameToId('Accelerometer').id;
 sensorParams[accId] = [];
 /* Range */
-const accRange = {
+const accRange: deviceParamType = {
   display: 'Range (g)',
   name: 'range',
   address: 0x0F,
@@ -33,11 +35,12 @@ const accRange = {
     value: range[0],
     word: range[1],
     display: `±${range[0]}`,
-  }))
+  })),
+  btnType: 'radio'
 };
 
 /* Accelerometer bandwidth */
-const accBandwidth = {
+const accBandwidth: deviceParamType = {
   display: 'Low Pass Filter Bandwidth (Hz)',
   name: 'filterBw',
   default: 11,
@@ -57,9 +60,29 @@ const accBandwidth = {
     word: cutoff[1],
     display: `${cutoff[0]}`,
   })),
+  btnType: 'radio'
+};
+/* Channels available on the accelerometer - needs to be
+* reconciled with metadata */
+const accChannels: deviceParamType = {
+  display: 'Data Channels',
+  name: 'channels',
+  address: undefined,
+  default: 1,
+  options: [
+    ['X', 0],
+    ['Y', 1],
+    ['Z', 2]
+  ].map(channel => ({
+    name: 'channels',
+    value: 1 << channel[1],
+    word: 1 << channel[1],
+    display: `${channel[0]}`
+  })),
+  btnType: 'checkbox'
 };
 /* Push the Accelerometer settings */
-sensorParams[accId].push(accRange, accBandwidth);
+sensorParams[accId].push(accRange, accBandwidth, accChannels);
 
 /* *********** Gyroscope *********** */
 /* Add the Gyroscope key */
@@ -67,7 +90,7 @@ const gyrId = nameToId('Gyroscope').id;
 sensorParams[gyrId] = [];
 
 /* Gyroscope range */
-const gyrRange = {
+const gyrRange: deviceParamType = {
   display: 'Range (°/s)',
   name: 'range',
   address: 0x0F,
@@ -87,10 +110,28 @@ const gyrRange = {
     word: range[1],
     display: `±${range[0]}`,
   })),
+  btnType: 'radio'
 };
-
+/* Channels available on the gyroscope */
+const gyrChannels: deviceParamType = {
+  display: 'Data Channels',
+  name: 'channels',
+  address: undefined,
+  default: 1,
+  options: [
+    ['X', 0],
+    ['Y', 1],
+    ['Z', 2]
+  ].map(channel => ({
+    name: 'channels',
+    value: 1 << channel[1],
+    word: 1 << channel[1],
+    display: `${channel[0]}`
+  })),
+  btnType: 'checkbox'
+};
 /* Push the Gyroscope Settings */
-sensorParams[gyrId].push(gyrRange);
+sensorParams[gyrId].push(gyrRange, gyrChannels);
 
 /* Export the sensor list */
 export { sensorParams as default };

@@ -46,7 +46,8 @@ export type noblePeripheralType = {
   uuid: string,
   connect: () => void,
   disconnect: () => void,
-  once: () => void
+  once: () => void,
+  discoverSomeServicesAndCharacteristics: () => void
 };
 
 
@@ -66,6 +67,30 @@ export type deviceParamType = {
   display: string,
   default: number,
   options: deviceOptionsType[],
-  address: number
+  address: ?number,
+  btnType: 'radio' | 'checkbox'
 };
+
+/* Dynamic Sensor parameters */
+export type dynamicParamType = {
+  address: number,
+  value: number
+};
+
+/* Parameter type for updating a sensor or generator */
+export type senGenParamType = {
+  sensor: string,
+  active: boolean,
+  params: {
+    channel: number,
+    dynamicParams: dynamicParamType[]
+  }
+};
+
+/* Top-level Device settings */
+export type deviceSettingsType = {
+  deviceName: string,
+  settings: senGenParamType[]
+};
+
 /* [] - END OF FILE */

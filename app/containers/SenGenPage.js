@@ -1,4 +1,4 @@
-// @flow
+/* @flow */
 /* **********************************************************
 * File: senGenPage.js
 *
@@ -14,15 +14,17 @@ import { connect } from 'react-redux';
 import sensorSettings from '../components/sensorSettingsComponent';
 import {
   getSelectedDevices,
-  setSelectedDevices
+  setSelectedDevices,
 } from '../actions/senGenActions';
+import { updateSenGenParams } from '../actions/devicesActions';
 
 
 function mapStateToProps(state) {
   return {
     selected: state.devices.selected,
     unselected: state.devices.unselected,
-    metadata: state.devices.metadata
+    metadata: state.devices.metadata,
+    deviceSettings: state.devices.deviceSettings
   };
 }
 
@@ -30,7 +32,8 @@ function mapStateToProps(state) {
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   getSelectedDevices,
-  setSelectedDevices
+  setSelectedDevices,
+  updateSenGenParams
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(sensorSettings);
