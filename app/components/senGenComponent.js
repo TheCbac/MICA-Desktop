@@ -22,6 +22,7 @@ type StateType = {
 };
 
 type PropsType = {
+  device: string,
   name: string,
   active: boolean,
   params: deviceParamType[]
@@ -95,13 +96,17 @@ export default class SenGenComponent extends Component {
       const paramObj = this.props.params[i];
       /* Create the param selector element */
       const paramElement = (
-        <ParamSelector {...paramObj} key={i} />
+        <ParamSelector {...paramObj} device={this.props.device} sensor={this.props.name} key={i} />
       );
       /* Add to the array */
       paramsArray.push(paramElement);
     }
     /* Return the list of elements */
     return paramsArray;
+  }
+  /* Toggle sensor power */
+  toggleSensorPower() {
+    console.log(this.props);
   }
   /* Render function */
   render() {
@@ -122,7 +127,7 @@ export default class SenGenComponent extends Component {
         </Col>
         <Col md={1} xs={1} mdOffset={0} style={sensorStyle}>
           <span className={'pull-right'} style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
-            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.setState({ on: !this.props.active })} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
+            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleSensorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
           </span>
         </Col>
         <Row />

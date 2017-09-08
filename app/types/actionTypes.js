@@ -11,7 +11,8 @@
 import type {
   scanTypes,
   noblePeripheralType,
-  nobleIdType
+  nobleIdType,
+  deviceSettingsType
 } from './paramTypes';
 import type { metaDataType, metaDataNameType } from './metaDataTypes';
 
@@ -122,6 +123,14 @@ export type updateSelectedDeviceAction = {
       sensors: string[],
       generators: string[]
     }
+  }
+};
+
+/* Update the settings of a device */
+export type updateSenGenParamActionType = {
+  type: 'UPDATE_SEN_GEN_PARAMS',
+  payload: {
+    deviceSettings: deviceSettingsType
   }
 };
 /* [] - END OF FILE */

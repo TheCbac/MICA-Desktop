@@ -21,6 +21,7 @@ import {
 import parseMetaData from './metaDataParsers';
 import log from '../loggingUtils';
 import { reportMetaData } from '../../actions/devicesActions';
+import { getSelectedDevices } from '../../actions/senGenActions';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -39,7 +40,6 @@ export function discoverMicaNoble(id: nobleIdType): void {
   /* Convert the uuids to an array */
   const micaCharArray = shallowObjToArray(micaCharUuids);
   /* Discover the MICA characteristics & Subscribe to them */
-  // $FlowFixMe
   device.discoverSomeServicesAndCharacteristics(
     [micaServiceUuid],
     micaCharArray,
@@ -124,6 +124,8 @@ function readMetaCharCallback(
   const { metadata, moduleName } = parseMetaData(charId, data);
   log.debug('readMetaCharCallback: Parsed metadata:', moduleName, metadata);
   store.dispatch(reportMetaData(deviceId, metadata, moduleName));
+  /* Update the selected items */
+  store.dispatch(getSelectedDevices());
 }
 
 /* [] - END OF FILE */

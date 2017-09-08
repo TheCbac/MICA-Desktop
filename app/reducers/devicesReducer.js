@@ -1,5 +1,5 @@
 // @flow
-/* eslint no-unused-vars: ["error", { "args": "none" }]*/
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
 /* **********************************************************
 * File: reducers/devicesReducer.js
 *
@@ -8,7 +8,7 @@
 * Author: Craig Cheney
 * Date: 2017.07.10
 *
-**********************************************************/
+********************************************************* */
 import update from 'immutability-helper';
 import createReducer from './createReducer';
 import type {
@@ -24,7 +24,8 @@ import type {
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  updateSelectedDeviceAction
+  updateSelectedDeviceAction,
+  updateSenGenParamActionType
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
 
@@ -41,7 +42,8 @@ export const defaultState = {
   unselected: {
     generators: [],
     sensors: []
-  }
+  },
+  deviceSettings: []
 };
 
 /* Handlers to create reducers  */
@@ -207,6 +209,34 @@ const deviceHandlers = {
       unselected: { $set: action.payload.unselected }
     });
   },
+  /* Update the active settings for a device */
+  UPDATE_SEN_GEN_PARAMS(
+    state: devicesStateType,
+    action: updateSenGenParamActionType
+  ): devicesStateType {
+    const deviceSettingsList = state.deviceSettings;
+    const newDeviceSettings = action.payload.deviceSettings;
+    /* Find the device */
+    for (let i = 0; i < deviceSettingsList.length; i += 1) {
+      /* Find the name */
+      const device = deviceSettingsList[i];
+      /* See if the name matches */
+      if (device.deviceName === newDeviceSettings.deviceName) {
+        /* Remove the old settings, add the new */
+        return update(state, {
+          deviceSettings: { $splice:
+            [[i, 1, newDeviceSettings]]
+          }
+        });
+      }
+    }
+    /* Device was not found, push new settings */
+    return update(state, {
+      deviceSettings: { $push:
+        [newDeviceSettings]
+      }
+    });
+  }
 
 };
 

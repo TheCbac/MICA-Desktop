@@ -10,7 +10,8 @@
 **********************************************************/
 import type {
   scanTypes,
-  noblePeripheralType
+  noblePeripheralType,
+  deviceSettingsType
 } from './paramTypes';
 
 /* State Type for the ScanForDevicesComponent */
@@ -29,7 +30,8 @@ export type devicesStateType = {
   disconnecting: noblePeripheralType[],
   metadata: metadataType,
   selected: { sensor: ?string, generator: ?string},
-  unselected: { sensors: string[], generators: string[]}
+  unselected: { sensors: string[], generators: string[]},
+  deviceSettings: deviceSettingsType[]
 };
 
 /* State of the app  */

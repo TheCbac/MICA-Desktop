@@ -8,19 +8,17 @@
 *
 * 2017.08.30 CC - Document created
 *
-**********************************************************/
+********************************************************* */
 import React, { Component } from 'react';
 import { Grid, Col, Row, Dropdown, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
-import type { Element } from 'react';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
-import log from '../utils/loggingUtils';
-// import { getSelectedDevices } from '../actions/senGenActions';
 import SenGen from './senGenComponent';
 import sensorParams from '../utils/mica/micaSensorParams';
 import generatorParams from '../utils/mica/micaGeneratorParams';
 import type { metadataType } from '../types/stateTypes';
+import type { deviceSettingsType } from '../types/paramTypes';
 
 /* Props used in component */
 type propsType = {
@@ -32,8 +30,10 @@ type propsType = {
     generators: string[],
     sensors: string[]
   },
+  deviceSettings: deviceSettingsType[],
   getSelectedDevices: () => mixed,
   setSelectedDevices: () => mixed,
+  updateSenGenParams: () => mixed,
   metadata: metadataType
 };
 
@@ -110,7 +110,22 @@ export default class sensorSettings extends Component {
       const numSenGen = senGenList.length;
       /* No transducers */
       if (!numSenGen) {
-        return 'NO DEVICES';
+        let senGenType = 'SENSORS';
+        if (type === 'actuation') { senGenType = 'GENERATORS'; }
+        if (name) {
+          return `${name} CONTAINS NO ${senGenType}`;
+        }
+      }
+      if (!name) { return ''; }
+      /* Get the device settings */
+      let deviceSettings;
+      for (let j = 0; j < this.props.deviceSettings.length; j += 1) {
+        const currentDevice = this.props.deviceSettings[j];
+        /* If the names match */
+        if (currentDevice.deviceName === device) {
+          deviceSettings = currentDevice.settings;
+          break;
+        }
       }
       /* Iterate through all of the sensors */
       for (let i = 0; i < numSenGen; i += 1) {
@@ -120,7 +135,14 @@ export default class sensorSettings extends Component {
         let transducerComponent;
         if (type === 'sensing') {
           transducerComponent = (
-            <SenGen name={transducer.type} key={i} active params={sensorParams[transducer.id]} />
+            <SenGen
+              name={transducer.type}
+              device={name}
+              key={i}
+              active
+              params={sensorParams[transducer.id]}
+              updateSenGenParams={this.props.updateSenGenParams}
+            />
           );
         } else if (type === 'actuation') {
           transducerComponent = (<div />);

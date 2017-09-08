@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 * Date: 2017.04.28
 *
-**********************************************************/
+********************************************************* */
 import type { stateType } from '../types/stateTypes';
 import type { scanTypes, nobleIdType } from '../types/paramTypes';
 import type {
@@ -30,6 +30,7 @@ import {
   disconnectedFromDevice,
   lostConnectionFromDevice
 } from './devicesActions';
+import { getSelectedDevices } from './senGenActions';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -94,7 +95,7 @@ export function startStopScan() {
             /* Dispatch the event */
             dispatch(clearAdvertisingList());
           } else {
-            /* Stop scanning - triggers callback that updates the state*/
+            /* Stop scanning - triggers callback that updates the state */
             Noble.stopScanning();
           }
           break;
@@ -166,7 +167,7 @@ export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
       /* Move to disconnecting list */
       dispatch(disconnectingFromDevice(peripheral.id));
       /* Connect to the peripheral
-      Disconnect call back was registered when the device connected */
+      * Disconnect call back was registered when the device connected */
       peripheral.disconnect();
     }
   };
@@ -174,21 +175,22 @@ export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
 
 /* Callback for when a device becomes disconnected */
 function disconnectCallback(id: nobleIdType): void {
-  /* Get the state*/
+  /* Get the state */
   const deviceList = store.getState().devices;
-  /* Disconnection was planned*/
+  /* Disconnection was planned */
   const disconnectingDevice = getPeripheralFromList(deviceList.disconnecting, id).peripheral;
   if (disconnectingDevice) {
     /* Dispatch a disconnect event */
     store.dispatch(disconnectedFromDevice(id));
     return;
   }
-  /* Disconnection was not planned*/
+  /* Disconnection was not planned */
   const lostDevice = getPeripheralFromList(deviceList.connected, id).peripheral;
   if (lostDevice) {
     /* Dispatch a disconnect event */
     store.dispatch(lostConnectionFromDevice(id));
     /* Update the meta data */
+    store.dispatch(getSelectedDevices());
     return;
   }
   /* Cancel con */
