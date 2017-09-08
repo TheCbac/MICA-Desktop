@@ -18,7 +18,7 @@ import SenGen from './senGenComponent';
 import micaSensorParams from '../utils/mica/micaSensorParams';
 import generatorParams from '../utils/mica/micaGeneratorParams';
 import log from '../utils/loggingUtils';
-import type { metadataType, selectType } from '../types/stateTypes';
+import type { metaDataType, selectType } from '../types/stateTypes';
 import type { deviceSettingsType } from '../types/paramTypes';
 
 // log.debugLevel = 5;
@@ -33,11 +33,11 @@ type propsType = {
     generators: selectType[],
     sensors: selectType[]
   },
-  deviceSettings: deviceSettingsType[],
+  deviceSettings: deviceSettingsType,
   getSelectedDevices: () => mixed,
   setSelectedDevices: () => mixed,
   updateSenGenParams: () => mixed,
-  metadata: metadataType
+  metadata: metaDataType
 };
 
 export default class sensorSettings extends Component {

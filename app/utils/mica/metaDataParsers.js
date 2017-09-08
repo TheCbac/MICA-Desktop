@@ -23,8 +23,8 @@ import type {
   sensingMetaObj,
   commMetaObj,
   controlMetaObj,
-  metaDataType,
-  metaDataNameType
+  metaDataObjType,
+  moduleNameType
 } from '../../types/metaDataTypes';
 
 const ID_NONE = 0;
@@ -33,7 +33,7 @@ const ID_NONE = 0;
  * this can be consolidated at some point */
 export default function parseMetaData(
   charId: string, data: Buffer
-): {metadata: ?metaDataType, moduleName: ?metaDataNameType} {
+): {metadata: ?metaDataObjType, moduleName: ?moduleNameType} {
   /* Act according to the type */
   switch (charId) {
     case micaCharUuids.energyMetadata:

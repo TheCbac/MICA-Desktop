@@ -12,9 +12,9 @@ import type {
   scanTypes,
   noblePeripheralType,
   nobleIdType,
-  deviceSettingsType
+  deviceSettingsObjType
 } from './paramTypes';
-import type { metaDataType, metaDataNameType } from './metaDataTypes';
+import type { metaDataObjType, moduleNameType } from './metaDataTypes';
 import type { selectType } from './stateTypes';
 
 /* Type for changing the scanning type */
@@ -109,8 +109,8 @@ export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {
     peripheralId: string,
-    data: ?metaDataType,
-    moduleName: ?metaDataNameType
+    data: ?metaDataObjType,
+    moduleName: ?moduleNameType
   }
 };
 
@@ -131,7 +131,7 @@ export type updateSelectedDeviceAction = {
 export type updateSenGenParamActionType = {
   type: 'UPDATE_SEN_GEN_PARAMS',
   payload: {
-    deviceSettings: deviceSettingsType
+    deviceSettings: deviceSettingsObjType
   }
 };
 /* [] - END OF FILE */

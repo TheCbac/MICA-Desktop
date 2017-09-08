@@ -52,7 +52,7 @@ export const defaultState = {
     generators: [],
     sensors: []
   },
-  deviceSettings: []
+  deviceSettings: {}
 };
 
 /* Handlers to create reducers  */
@@ -109,6 +109,9 @@ const deviceHandlers = {
     const metaObj = { };
     metaObj[action.payload.peripheralId] = {};
     return update(state1, { metadata: { $merge: metaObj } });
+    /* Create the default sensor and generator settings */
+
+    // return update(state2, { deviceSettings: { $push:}})
   },
   /* Cancel a pending connection */
   CANCEL_CONNECT_TO_DEVICE(

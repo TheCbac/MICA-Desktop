@@ -1,15 +1,17 @@
-// @flow
+/* @flow */
 /* **********************************************************
 * File: actions/devicesActions.js
 *
 * Brief: Actions for the scanning devices
 *
-* Author: Craig Cheney
-* Date: 2017.07.10
+* Authors: Craig Cheney
+*
+* 2017.09.08 CC - Update for saving device settings
+* 2017.07.10 CC - Document created
 *
 ********************************************************* */
 import { getSelectedDevices } from './senGenActions';
-import type { noblePeripheralType, nobleIdType, deviceSettingsType } from '../types/paramTypes';
+import type { noblePeripheralType, nobleIdType, deviceSettingsObjType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
@@ -23,7 +25,7 @@ import type {
   updateSenGenParamActionType
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
-import type { metaDataType, metaDataNameType } from '../types/metaDataTypes';
+import type { metaDataObjType, moduleNameType } from '../types/metaDataTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
@@ -121,8 +123,8 @@ export function lostConnectionFromDevice(
 /* Report Metadata */
 export function reportMetaData(
   deviceId: nobleIdType,
-  metaData: ?metaDataType,
-  moduleName: ?metaDataNameType
+  metaData: ?metaDataObjType,
+  moduleName: ?moduleNameType
 ): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
@@ -137,8 +139,8 @@ export function reportMetaData(
 /* Wrapper for reporting metadata - check to see if the metadata is complete */
 export function metaDataReadComplete(
   deviceId: nobleIdType,
-  metaData: ?metaDataType,
-  moduleName: ?metaDataNameType
+  metaData: ?metaDataObjType,
+  moduleName: ?moduleNameType
 ) {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
@@ -159,7 +161,7 @@ export function metaDataReadComplete(
 
 /* Change the active parameters */
 export function updateSenGenParams(
-  deviceSettings: deviceSettingsType
+  deviceSettings: deviceSettingsObjType
 ): updateSenGenParamActionType {
   return {
     type: UPDATE_SEN_GEN_PARAMS,

@@ -71,6 +71,9 @@ export type deviceParamType = {
   btnType: 'radio' | 'checkbox'
 };
 
+/* A bit field */
+export type bitField = number;
+
 /* Dynamic Sensor parameters */
 export type dynamicParamType = {
   address: number,
@@ -81,16 +84,23 @@ export type dynamicParamType = {
 export type senGenParamType = {
   sensor: string,
   active: boolean,
+  channels: bitField,
   params: {
     channel: number,
     dynamicParams: dynamicParamType[]
   }
 };
 
-/* Top-level Device settings */
+/* Specific object for device settings */
+export type deviceSettingsObjType = {
+  name: string,
+  sensors: senGenParamType[],
+  generators: senGenParamType[]
+};
+
+/* Top level state type */
 export type deviceSettingsType = {
-  deviceName: string,
-  settings: senGenParamType[]
+  [deviceId: string]: deviceSettingsObjType
 };
 
 /* [] - END OF FILE */

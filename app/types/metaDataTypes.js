@@ -60,7 +60,7 @@ export type controlMetaObj = {
 };
 /* All of the metadata types for wrapper functions. Hopefully this can
  * can be consolidated at some point */
-export type metaDataType =
+export type metaDataObjType =
   energyMetaObj[] |
   actuationMetaObj[] |
   powerMetaObj[] |
@@ -68,12 +68,19 @@ export type metaDataType =
   commMetaObj[] |
   controlMetaObj[];
 
-export type metaDataNameType =
+export type moduleNameType =
   'energy' |
   'actuation' |
   'power' |
   'sensing' |
   'communication' |
   'control';
+
+/* Overarching metadata type */
+export type metaDataType = {
+  [deviceId: string]: {
+    [moduleName: moduleNameType]: metaDataObjType
+  }
+};
 
 /* [] - END OF FILE */
