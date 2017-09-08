@@ -17,18 +17,21 @@ import CustomMenu from './customMenu';
 import SenGen from './senGenComponent';
 import sensorParams from '../utils/mica/micaSensorParams';
 import generatorParams from '../utils/mica/micaGeneratorParams';
-import type { metadataType } from '../types/stateTypes';
+import log from '../utils/loggingUtils';
+import type { metadataType, selectType } from '../types/stateTypes';
 import type { deviceSettingsType } from '../types/paramTypes';
 
+log.debugLevel = 5;
+log.debug('sensorSettingsComponent: debug level', log.debugLevel);
 /* Props used in component */
 type propsType = {
   selected: {
-    generator: ?string,
-    sensor: ?string
+    generator: selectType,
+    sensor: selectType
   },
   unselected: {
-    generators: string[],
-    sensors: string[]
+    generators: selectType[],
+    sensors: selectType[]
   },
   deviceSettings: deviceSettingsType[],
   getSelectedDevices: () => mixed,
@@ -57,10 +60,11 @@ export default class sensorSettings extends Component {
     let text = 'NO DEVICES';
     let style = 'italic';
     /* If the device is present */
-    if (device) {
-      text = device;
+    if (device.name) {
+      text = device.name;
       style = 'normal';
     }
+    console.log('selectedDevice:', device, text);
     return {
       text: text.toUpperCase(),
       style: { fontStyle: style }
@@ -100,23 +104,29 @@ export default class sensorSettings extends Component {
     return array;
   }
   /* Get the sensor and generators from the selected device */
-  getSenGen(type: 'sensing' | 'actuation', name: ?string): [] | string {
+  getSenGen(type: 'sensing' | 'actuation', selectDevice: selectType): [] | string {
     const transducerArray = [];
-    let device;
+    let deviceMeta;
     /* Get the device */
-    if (name) { device = this.props.metadata[name]; }
-    if (device) {
-      const senGenList = device[type];
+    // return selectDevice.name || 'NONE';
+    if (selectDevice.id) { deviceMeta = this.props.metadata[selectDevice.id]; }
+    if (deviceMeta) {
+      /* Get the list of either sensor or generators from the  */
+      const senGenList = deviceMeta[type];
       const numSenGen = senGenList.length;
       /* No transducers */
       if (!numSenGen) {
         let senGenType = 'SENSORS';
         if (type === 'actuation') { senGenType = 'GENERATORS'; }
-        if (name) {
-          return `${name} CONTAINS NO ${senGenType}`;
+        if (selectDevice.name) {
+          return `${selectDevice.name} CONTAINS NO ${senGenType}`;
         }
       }
-      if (!name) { return ''; }
+      /* No Sensors or generators - this is an error */
+      if (!selectDevice.name) {
+        log.warn('sensorSettingsComponent: no name found');
+        return '';
+      }
       /* Get the device settings */
       let deviceSettings;
       for (let j = 0; j < this.props.deviceSettings.length; j += 1) {

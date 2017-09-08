@@ -22,6 +22,11 @@ export type scanStateType = {
 };
 
 export type metadataType = {};
+/* The type for determining which sensors are selected */
+export type selectType = {
+  name: ?string,
+  id: ?string
+};
 
 export type devicesStateType = {
   advertising: noblePeripheralType[],
@@ -29,8 +34,8 @@ export type devicesStateType = {
   connected: noblePeripheralType[],
   disconnecting: noblePeripheralType[],
   metadata: metadataType,
-  selected: { sensor: ?string, generator: ?string},
-  unselected: { sensors: string[], generators: string[]},
+  selected: { sensor: selectType, generator: selectType},
+  unselected: { sensors: selectType[], generators: selectType[]},
   deviceSettings: deviceSettingsType[]
 };
 

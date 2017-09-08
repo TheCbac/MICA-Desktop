@@ -117,7 +117,7 @@ function readMetaCharCallback(
   data: Buffer
 ): void {
   if (error) {
-    log.error('readMetaCharCallback', charId, 'failed on device', deviceId, 'with error', error);
+    log.error('readCharCallback', charId, 'failed on device', deviceId, 'with error', error);
     return;
   }
   /* Parse the metadata */

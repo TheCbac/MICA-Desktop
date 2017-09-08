@@ -131,4 +131,9 @@ export function bufferToFloat(buffer: Buffer): ?number {
   return new Buffer(floatBytes).readFloatBE(0);
 }
 
+// /* Get the name of a device from it's ID */
+// export function getNameFromId(id: ?string): ?string {
+
+// }
+
 /* [] - END OF FILE */

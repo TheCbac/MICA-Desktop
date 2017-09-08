@@ -8,7 +8,7 @@
 * Date: 2017.08.30
 *
 ********************************************************* */
-import type { stateType } from '../types/stateTypes';
+import type { stateType, selectType } from '../types/stateTypes';
 import type { updateSelectedDeviceAction } from '../types/actionTypes';
 import log from '../utils/loggingUtils';
 
@@ -28,8 +28,14 @@ export function getSelectedDevices() {
     /* use past values if present @TODO: rebuild this logic */
     const prevSensor = state.devices.selected.sensor;
     const prevGenerator = state.devices.selected.generator;
-    let sensor;
-    let generator;
+    let sensor = {
+      id: undefined,
+      name: undefined
+    };
+    let generator = {
+      id: undefined,
+      name: undefined
+    };
     const unselected = {
       sensors: [],
       generators: []
@@ -40,11 +46,11 @@ export function getSelectedDevices() {
     /* See if previous selection is valid */
     for (let index = 0; index < state.devices.connected.length; index += 1) {
       const device = state.devices.connected[index];
-      if (device.advertisement.localName === prevSensor) {
+      if (device.id === prevSensor.id) {
         sensor = prevSensor;
         findSensor = false;
       }
-      if (device.advertisement.localName === prevGenerator) {
+      if (device.id === prevGenerator.id) {
         generator = prevGenerator;
         findGenerator = false;
       }
@@ -57,32 +63,35 @@ export function getSelectedDevices() {
     for (let i = 0; i < connectedDevices.length; i += 1) {
       /* Get the device id */
       const device = connectedDevices[i];
-      const deviceName = device.advertisement.localName;
       /* see if the device has sensors */
-      const deviceMeta = metadata[deviceName];
+      const deviceMeta = metadata[device.id];
       /* Ensure valid metadata */
-      if (!deviceMeta.sensing || !deviceMeta.actuation) {
-        log.warn('getSelectedDevices: No metadata was found for device', deviceName);
+      if (!deviceMeta || !deviceMeta.sensing || !deviceMeta.actuation) {
+        log.warn('getSelectedDevices: No metadata was found for device', device.id);
       } else {
         /* If there are sensors, select as the active sensing device  */
         // if (deviceMeta && deviceMeta.sensing.length) {
-          /* Push first one to selected, all others to unselected */
-          if (findSensor || device.advertisement.localName === sensor) {
-            findSensor = false;
-            sensor = device.advertisement.localName;
-          } else {
-            /* Push to unselected */
-            unselected.sensors.push(device.advertisement.localName);
-          }
+        /* Push first one to selected, all others to unselected */
+        const selectObj = {
+          name: device.advertisement.localName,
+          id: device.id
+        };
+        if (findSensor || device.id === sensor.id) {
+          findSensor = false;
+          sensor = selectObj;
+        } else {
+          /* Push to unselected */
+          unselected.sensors.push(selectObj);
+        }
         /* Check about the generators */
         // if (deviceMeta && deviceMeta.actuation.length) {
-          if (findGenerator || device.advertisement.localName === generator) {
-            findGenerator = false;
-            generator = device.advertisement.localName;
-          } else {
-            /* Push to unselected */
-            unselected.generators.push(device.advertisement.localName);
-          }
+        if (findGenerator || device.id === generator.id) {
+          findGenerator = false;
+          generator = selectObj;
+        } else {
+          /* Push to unselected */
+          unselected.generators.push(selectObj);
+        }
         // }
       }
     }
@@ -94,7 +103,7 @@ export function getSelectedDevices() {
 /* A new active sensor has been selected */
 export function setSelectedDevices(
   type: 'sensors' | 'generators',
-  name: string
+  newDevice: selectType
 ) {
   /* Return a function for redux */
   return (dispatch: () => void, getState: () => stateType): void => {
@@ -104,14 +113,15 @@ export function setSelectedDevices(
     let generator = devices.selected.generator;
     if (type === 'sensors') {
       /* If there was a previously selected sensor */
-      if (sensor) {
+      if (sensor.id) {
         /* Move the previous to the unselected */
         unselected.sensors.push(sensor);
       }
       /* Set the unselected */
-      sensor = name;
+      sensor = newDevice;
+      /* Find the old sensor */
+      const index = unselected.sensors.findIndex(obj => obj.id === newDevice.id);
       /* Remove the sensor from the unselected list */
-      const index = unselected.sensors.indexOf(name);
       if (index >= 0) {
         unselected.sensors.splice(index, 1);
       }
@@ -121,9 +131,9 @@ export function setSelectedDevices(
         unselected.generators.push(generator);
       }
       /* Set the unselected */
-      generator = name;
+      generator = newDevice;
       /* Remove the sensor from the unselected list */
-      const index = unselected.generators.indexOf(name);
+      const index = unselected.generators.findIndex(obj => obj.id === newDevice.id);
       if (index >= 0) {
         unselected.generators.splice(index, 1);
       }
@@ -135,11 +145,11 @@ export function setSelectedDevices(
 
 /* Action creator to update the selected devices in the settings tab */
 export function updateSelectedDevices(
-  sensor: ?string,
-  generator: ?string,
+  sensor: selectType,
+  generator: selectType,
   unselected: {
-    sensors: string[],
-    generators: string[]
+    sensors: selectType[],
+    generators: selectType[]
   }
 ): updateSelectedDeviceAction {
   return {
