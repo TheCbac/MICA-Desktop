@@ -25,7 +25,7 @@ type PropsType = {
   device: string,
   name: string,
   active: boolean,
-  params: deviceParamType[]
+  params: deviceParamType[],
 };
 
 export default class SenGenComponent extends Component {

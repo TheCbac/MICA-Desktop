@@ -121,22 +121,11 @@ export default class sensorSettings extends Component {
         }
       }
       /* No Sensors or generators - this is an error */
-      if (!selectDevice.name) {
+      if (!selectDevice.name || !selectDevice.id) {
         log.warn('sensorSettingsComponent: no name found');
         return '';
       }
-      /* ***** REFACTOR INTO SEPARATE FUNCTION ***** */
-      /* Get the device settings */
-      // const deviceSettings = this.props.deviceSettings[selectDevice.id];
 
-      // for (let j = 0; j < this.props.deviceSettings.length; j += 1) {
-      //   const currentDevice = this.props.deviceSettings[j];
-      //   /* If the names match */
-      //   if (currentDevice.deviceName === device) {
-      //     deviceSettings = currentDevice.settings;
-      //     break;
-      //   }
-      // }
       /* Iterate through all of the sensors */
       for (let i = 0; i < numSenGen; i += 1) {
         /* Get the transducer in question */
@@ -144,12 +133,15 @@ export default class sensorSettings extends Component {
         /* Make the react component */
         let transducerComponent;
         if (type === 'sensing') {
+          /* Get the device settings */
+          const sensorParamSettings = this.props.deviceSettings[selectDevice.id];
           transducerComponent = (
             <SenGen
               name={transducer.type}
               device={selectDevice.name}
               key={i}
               active
+              settings={sensorParamSettings}
               params={micaSensorParams[transducer.id]}
               updateSenGenParams={this.props.updateSenGenParams}
             />
@@ -163,7 +155,10 @@ export default class sensorSettings extends Component {
     }
     return transducerArray;
   }
-
+  /* Refactoring of the senor/generator */
+  getSenGen2(type: 'sensing' | 'actuation', selectDevice: selectType): [] | string {
+    return 'test';
+  }
   /* Render function */
   render() {
     const sensorBoxStyle = {
@@ -216,7 +211,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              { this.getSenGen('sensing', this.props.selected.sensor) }
+              { this.getSenGen2('sensing', this.props.selected.sensor) }
             </Col>
           </Col>
           <Col md={6}>
@@ -241,7 +236,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              { this.getSenGen('actuation', this.props.selected.generator) }
+              { this.getSenGen2('actuation', this.props.selected.generator) }
             </Col>
           </Col>
         </Row>

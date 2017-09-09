@@ -131,6 +131,7 @@ export type updateSelectedDeviceAction = {
 export type updateSenGenParamActionType = {
   type: 'UPDATE_SEN_GEN_PARAMS',
   payload: {
+    deviceId: nobleIdType,
     deviceSettings: deviceSettingsObjType
   }
 };
