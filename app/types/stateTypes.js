@@ -7,12 +7,14 @@
 * Author: Craig Cheney
 * Date: 2017.07.10
 *
-**********************************************************/
+********************************************************* */
 import type {
   scanTypes,
   noblePeripheralType,
   deviceSettingsType
 } from './paramTypes';
+
+import type { metaDataType } from './metaDataTypes';
 
 /* State Type for the ScanForDevicesComponent */
 export type scanStateType = {
@@ -21,7 +23,6 @@ export type scanStateType = {
   scanning: boolean
 };
 
-export type metadataType = {};
 /* The type for determining which sensors are selected */
 export type selectType = {
   name: ?string,
@@ -33,10 +34,10 @@ export type devicesStateType = {
   connecting: noblePeripheralType[],
   connected: noblePeripheralType[],
   disconnecting: noblePeripheralType[],
-  metadata: metadataType,
+  metadata: metaDataType,
   selected: { sensor: selectType, generator: selectType},
   unselected: { sensors: selectType[], generators: selectType[]},
-  deviceSettings: deviceSettingsType[]
+  deviceSettings: deviceSettingsType
 };
 
 /* State of the app  */

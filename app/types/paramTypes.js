@@ -63,13 +63,31 @@ export type deviceOptionsType = {
 
 /* Parameter settings for devices */
 export type deviceParamType = {
-  name: string,
   display: string,
   default: number,
   options: deviceOptionsType[],
-  address: ?number,
+  address: number,
   btnType: 'radio' | 'checkbox'
 };
+
+export type deviceChannelType = {
+  display: string,
+  default: number[],
+  options: deviceOptionsType[],
+  btnType: 'checkbox'
+};
+
+export type deviceParamObj = {
+  [senGenId: number | string]: {
+    channels: deviceChannelType,
+    dynamicParams: {
+      [paramName: string]: deviceParamType
+    }
+  }
+};
+
+/* A bit field */
+export type bitField = number;
 
 /* Dynamic Sensor parameters */
 export type dynamicParamType = {
@@ -79,18 +97,31 @@ export type dynamicParamType = {
 
 /* Parameter type for updating a sensor or generator */
 export type senGenParamType = {
-  sensor: string,
+  name: string,
   active: boolean,
-  params: {
-    channel: number,
-    dynamicParams: dynamicParamType[]
+  channels: number[],
+  scalingConstant: number,
+  gain: number,
+  offset: number,
+  units: string,
+  dynamicParams: {
+    [paramName: string]: dynamicParamType
   }
 };
 
-/* Top-level Device settings */
+/* Specific object for device settings */
+export type deviceSettingsObjType = {
+  sensors: {
+    [sensorId: number | string]: senGenParamType
+  },
+  generators: {
+    [generatorId: number | string]: senGenParamType
+  }
+};
+
+/* Top level state type */
 export type deviceSettingsType = {
-  deviceName: string,
-  settings: senGenParamType[]
+  [deviceId: string]: deviceSettingsObjType
 };
 
 /* [] - END OF FILE */

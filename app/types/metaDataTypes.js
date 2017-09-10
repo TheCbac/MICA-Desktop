@@ -40,10 +40,10 @@ export type sensingMetaObj = {
   type: string,
   numChannels: number,
   channelNames: ?string[],
-  scalingConstant: ?number,
-  gain: ?number,
+  scalingConstant: number,
+  gain: number,
   units: string,
-  offset: ?number
+  offset: number
 };
 /* Communication Metadata type */
 export type commMetaObj = {
@@ -60,7 +60,7 @@ export type controlMetaObj = {
 };
 /* All of the metadata types for wrapper functions. Hopefully this can
  * can be consolidated at some point */
-export type metaDataType =
+export type metaDataObjType =
   energyMetaObj[] |
   actuationMetaObj[] |
   powerMetaObj[] |
@@ -68,12 +68,32 @@ export type metaDataType =
   commMetaObj[] |
   controlMetaObj[];
 
-export type metaDataNameType =
+export type moduleNameType =
   'energy' |
   'actuation' |
   'power' |
   'sensing' |
   'communication' |
   'control';
+
+  /* Overarching metadata type */
+export type metaDataType = {
+  [deviceId: string]: {
+    energy?: energyMetaObj[],
+    actuation?: actuationMetaObj[],
+    power?: powerMetaObj[],
+    sensing?: sensingMetaObj[],
+    communication?: commMetaObj[],
+    control?: controlMetaObj[]
+  }
+};
+
+
+// /* Overarching metadata type */
+// export type metaDataType = {
+//   [deviceId: string]: {
+//     [moduleName: moduleNameType]: metaDataObjType
+//   }
+// };
 
 /* [] - END OF FILE */

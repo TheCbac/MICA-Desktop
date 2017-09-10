@@ -1,4 +1,13 @@
-/* eslint flowtype-errors/show-errors: 0 */
+/* **********************************************************
+* File: index.js
+*
+* Brief: Top level file for the application
+*
+* Authors: George Whitfield, Craig Cheney
+*
+* 2017.06.08 CC - Document created
+*
+********************************************************* */
 import React from 'react';
 import { HashRouter as Router } from 'react-router-dom';
 import { Switch, Route, hashHistory } from 'react-router';
@@ -22,7 +31,7 @@ export default () => (
   </Router>
 );
 
-// <Route path="/" component={DevicesPage} must be last in the Route order
-// or else the tabs will not work correctly.
+/* GW - <Route path="/" component={DevicesPage} must be last in the Route order
+ or else the tabs will not work correctly. */
 
 /* [] - END OF FILE */

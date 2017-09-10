@@ -14,7 +14,7 @@ import React, { Component } from 'react';
 import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ParamSelector from './ParamSelector';
-import type { deviceParamType } from '../types/paramTypes';
+import type { deviceParamType, senGenParamType } from '../types/paramTypes';
 
 
 type StateType = {
@@ -22,10 +22,9 @@ type StateType = {
 };
 
 type PropsType = {
-  device: string,
-  name: string,
-  active: boolean,
-  params: deviceParamType[]
+  deviceId: string,
+  sensorId: string,
+  sensorSettings: senGenParamType
 };
 
 export default class SenGenComponent extends Component {
@@ -37,7 +36,7 @@ export default class SenGenComponent extends Component {
     super(props);
     /* set the default state */
     this.state = {
-      open: this.props.active,
+      open: this.props.sensorSettings.active,
     };
   }
   /*  */
@@ -68,7 +67,7 @@ export default class SenGenComponent extends Component {
       color: 'black',
       textShadow: ''
     };
-    if (this.props.active) {
+    if (this.props.sensorSettings.active) {
       style.transform = '';
       style.textShadow = 'white 0 0 20px';
       style.color = 'white';
@@ -87,22 +86,43 @@ export default class SenGenComponent extends Component {
     }
     return style;
   }
-  /* Returns the list of sensor params */
+  /* Return a component for selecting the channels */
+  getChannels() {
+    const channelVal = this.props.sensorSettings.channels;
+    return (
+      <ParamSelector
+        key={0}
+        deviceId={this.props.deviceId}
+        sensorId={this.props.sensorId}
+        paramName={'channels'}
+        paramValue={channelVal}
+      />
+    );
+  }
+  /* Returns the parameter selecting component */
   getParams() {
-    const paramsArray = [];
-    /* iterate over the params */
-    for (let i = 0; i < this.props.params.length; i += 1) {
-      /* Get the parameter */
-      const paramObj = this.props.params[i];
-      /* Create the param selector element */
-      const paramElement = (
-        <ParamSelector {...paramObj} device={this.props.device} sensor={this.props.name} key={i} />
-      );
-      /* Add to the array */
-      paramsArray.push(paramElement);
+    const dynamicParamsObj = this.props.sensorSettings.dynamicParams;
+    const dynamicParamsKeys = Object.keys(dynamicParamsObj);
+    /* return a list of components */
+    const componentArray = [];
+    /* Push all of the dynamic parameters */
+    for (let i = 0; i < dynamicParamsKeys.length; i++) {
+      /* Get the name (key) and value of each parameter */
+      const key = dynamicParamsKeys[i];
+      const { value } = dynamicParamsObj[key];
+      if (key && value != null) {
+        componentArray.push(
+          <ParamSelector
+            key={i + 1} /* Channel is 0 */
+            deviceId={this.props.deviceId}
+            sensorId={this.props.sensorId}
+            paramName={key}
+            paramValue={value}
+          />
+        );
+      }
     }
-    /* Return the list of elements */
-    return paramsArray;
+    return componentArray;
   }
   /* Toggle sensor power */
   toggleSensorPower() {
@@ -119,7 +139,7 @@ export default class SenGenComponent extends Component {
         <Row />
         <Col md={5} xs={5} mdOffset={0} style={sensorStyle}>
           <FontAwesome className={'hoverGlow'} style={this.caretStyle()} name={'angle-right'} size={'lg'} onClick={() => this.toggleOpen()} />
-          <span style={this.nameStyle()}> {this.props.name} </span>
+          <span style={this.nameStyle()}> {this.props.sensorSettings.name} </span>
           {/* <FontAwesome style={{ fontSize: '14px', verticalAlign: 'middle' }} name={'thumb-tack'} size={'lg'} /> */}
         </Col>
         <Col md={6} xs={6} mdOffset={0} style={sensorStyle}>
@@ -136,6 +156,7 @@ export default class SenGenComponent extends Component {
             <div>
               <Well>
                 <div>
+                  { this.getChannels() }
                   { this.getParams() }
                 </div>
               </Well>

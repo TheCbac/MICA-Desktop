@@ -4,9 +4,10 @@
 * Brief: Top level file for the application
 *
 * Author: Craig Cheney
-* Date: 2017.06.08
 *
-**********************************************************/
+* 2017.06.08 CC - Document created
+*
+********************************************************* */
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';

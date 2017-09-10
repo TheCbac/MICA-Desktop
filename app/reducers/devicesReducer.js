@@ -52,7 +52,7 @@ export const defaultState = {
     generators: [],
     sensors: []
   },
-  deviceSettings: []
+  deviceSettings: {}
 };
 
 /* Handlers to create reducers  */
@@ -109,6 +109,9 @@ const deviceHandlers = {
     const metaObj = { };
     metaObj[action.payload.peripheralId] = {};
     return update(state1, { metadata: { $merge: metaObj } });
+    /* Create the default sensor and generator settings */
+
+    // return update(state2, { deviceSettings: { $push:}})
   },
   /* Cancel a pending connection */
   CANCEL_CONNECT_TO_DEVICE(
@@ -221,30 +224,15 @@ const deviceHandlers = {
     state: devicesStateType,
     action: updateSenGenParamActionType
   ): devicesStateType {
-    const deviceSettingsList = state.deviceSettings;
-    const newDeviceSettings = action.payload.deviceSettings;
-    /* Find the device */
-    for (let i = 0; i < deviceSettingsList.length; i += 1) {
-      /* Find the name */
-      const device = deviceSettingsList[i];
-      /* See if the name matches */
-      if (device.deviceName === newDeviceSettings.deviceName) {
-        /* Remove the old settings, add the new */
-        return update(state, {
-          deviceSettings: { $splice:
-            [[i, 1, newDeviceSettings]]
-          }
-        });
-      }
-    }
-    /* Device was not found, push new settings */
+    /* set the new values */
     return update(state, {
-      deviceSettings: { $push:
-        [newDeviceSettings]
+      deviceSettings: {
+        [action.payload.deviceId]: {
+          $set: action.payload.deviceSettings
+        }
       }
     });
   }
-
 };
 
 export default createReducer(defaultState, deviceHandlers);
