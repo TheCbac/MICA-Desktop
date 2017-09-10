@@ -195,9 +195,9 @@ export function setDefaultSenGenParams(deviceId: nobleIdType) {
       for (let j = 0; j < dynamicParamKeys.length; j++) {
         /* Get the parameter */
         const key = dynamicParamKeys[j];
-        const { name, address } = dynamicParams[key];
+        const { address } = dynamicParams[key];
         const defaultVal = dynamicParams[key].default;
-        dynamicParamsDefault[name] = { address, value: defaultVal };
+        dynamicParamsDefault[key] = { address, value: defaultVal };
       }
       /* Construct the Sensor parameter object */
       const senParamObj: senGenParamType = {

@@ -63,7 +63,6 @@ export type deviceOptionsType = {
 
 /* Parameter settings for devices */
 export type deviceParamType = {
-  name: string,
   display: string,
   default: number,
   options: deviceOptionsType[],
@@ -72,7 +71,6 @@ export type deviceParamType = {
 };
 
 export type deviceChannelType = {
-  name: string,
   display: string,
   default: number[],
   options: deviceOptionsType[],
@@ -80,7 +78,7 @@ export type deviceChannelType = {
 };
 
 export type deviceParamObj = {
-  [senGenId: number]: {
+  [senGenId: number | string]: {
     channels: deviceChannelType,
     dynamicParams: {
       [paramName: string]: deviceParamType
@@ -114,10 +112,10 @@ export type senGenParamType = {
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
   sensors: {
-    [sensorId: number]: senGenParamType
+    [sensorId: number | string]: senGenParamType
   },
   generators: {
-    [generatorId: number]: senGenParamType
+    [generatorId: number | string]: senGenParamType
   }
 };
 

@@ -23,7 +23,6 @@ function mapStateToProps(state) {
   return {
     selected: state.devices.selected,
     unselected: state.devices.unselected,
-    metadata: state.devices.metadata,
     deviceSettings: state.devices.deviceSettings
   };
 }

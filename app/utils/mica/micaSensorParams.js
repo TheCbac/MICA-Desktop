@@ -4,7 +4,7 @@
 * File: utils/mica/micaSensorParams.js
 *
 * Brief: Contains the definitions for the available sensor
-* params
+* params.
 *
 * Authors: Craig Cheney
 *
@@ -22,27 +22,25 @@ const sensorParams: deviceParamObj = {};
 const accId = nameToId('Accelerometer').id;
 if (accId) {
   /* Range */
-  const accRange: deviceParamType = {
+  const range: deviceParamType = {
     display: 'Range (g)',
-    name: 'range',
     address: 0x0F,
     default: 3,
     gain(value) {
       return 1 / parseInt(value, 10);
     },
-    options: [[2, 3], [4, 5], [8, 8], [16, 12]].map(range => ({
+    options: [[2, 3], [4, 5], [8, 8], [16, 12]].map(option => ({
       name: 'range',
-      value: range[0],
-      word: range[1],
-      display: `±${range[0]}`,
+      value: option[0],
+      word: option[1],
+      display: `±${option[0]}`,
     })),
     btnType: 'radio'
   };
 
   /* Accelerometer bandwidth */
-  const accBandwidth: deviceParamType = {
+  const bandwidth: deviceParamType = {
     display: 'Low Pass Filter Bandwidth (Hz)',
-    name: 'filterBw',
     default: 11,
     address: 0x10,
     options: [
@@ -64,9 +62,8 @@ if (accId) {
   };
   /* Channels available on the accelerometer - needs to be
   * reconciled with metadata */
-  const accChannels: deviceChannelType = {
+  const channels: deviceChannelType = {
     display: 'Data Channels',
-    name: 'channels',
     default: [1],
     options: [
       ['X', 0],
@@ -82,10 +79,10 @@ if (accId) {
   };
   /* Construct the Accelerometer settings obj */
   sensorParams[accId] = {
-    channels: accChannels,
+    channels,
     dynamicParams: {
-      accRange,
-      accBandwidth
+      range,
+      bandwidth
     }
   };
 }
@@ -95,9 +92,8 @@ if (accId) {
 const gyrId = nameToId('Gyroscope').id;
 if (gyrId) {
   /* Gyroscope range */
-  const gyrRange: deviceParamType = {
+  const range: deviceParamType = {
     display: 'Range (°/s)',
-    name: 'range',
     address: 0x0F,
     default: 0,
     gain(value) {
@@ -109,18 +105,17 @@ if (gyrId) {
       [500, 2],
       [1000, 1],
       [2000, 0]
-    ].map(range => ({
+    ].map(option => ({
       name: 'range',
-      value: range[0],
-      word: range[1],
-      display: `±${range[0]}`,
+      value: option[0],
+      word: option[1],
+      display: `±${option[0]}`,
     })),
     btnType: 'radio'
   };
   /* Channels available on the gyroscope */
-  const gyrChannels: deviceChannelType = {
+  const channels: deviceChannelType = {
     display: 'Data Channels',
-    name: 'channels',
     default: [1],
     options: [
       ['X', 0],
@@ -136,9 +131,9 @@ if (gyrId) {
   };
   /* Push the Gyroscope Settings */
   sensorParams[gyrId] = {
-    channels: gyrChannels,
+    channels,
     dynamicParams: {
-      gyrRange
+      range
     }
   };
 }

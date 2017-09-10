@@ -14,25 +14,35 @@ import React, { Component } from 'react';
 import { Col, ButtonToolbar, Row } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
-import type { deviceParamType } from '../types/paramTypes';
+import micaSensorParams from '../utils/mica/micaSensorParams';
+import type { nobleIdType } from '../types/paramTypes';
+
+type propsType = {
+  deviceId: nobleIdType,
+  sensorId: string,
+  paramName: string,
+  paramValue: number | number[]
+};
 
 export default class ParamSelector extends Component {
   /* Type Defs */
-  props: deviceParamType & {sensor: string} & {device: string};
+  props: propsType;
   /* return the list of options */
   getOptions() {
     const buttonArray = [];
+    const paramOptions = this.getParam('options');
     /* Iterate over all of the options */
-    for (let i = 0; i < this.props.options.length; i += 1) {
+
+    for (let i = 0; i < paramOptions.length; i += 1) {
       /* Get the option */
-      const option = this.props.options[i];
+      const option = paramOptions[i];
       /* Create the toggle button element */
       const btnElement = (
         <ToggleButton
           value={option.word}
           key={i.toString()}
           onClick={() =>
-            console.log(this.props.device, this.props.sensor, this.props.name)
+            console.log(this.props.deviceId, this.props.sensorId, this.props.paramName)
           }
         >
           {option.display}
@@ -44,18 +54,24 @@ export default class ParamSelector extends Component {
     /* Return the array of buttons */
     return buttonArray;
   }
+  getParam(item: string): * {
+    if (this.props.paramName === 'channels') {
+      return micaSensorParams[this.props.sensorId].channels[item];
+    }
+    return micaSensorParams[this.props.sensorId].dynamicParams[this.props.paramName][item];
+  }
 
   render() {
     return (
       <div>
         <ButtonToolbar>
           <Col md={12} xs={12}>
-            <label htmlFor="settings">{this.props.display}:</label>
+            <label htmlFor="settings">{this.getParam('display')}:</label>
           </Col>
           <Row />
           <Col md={12} xs={12}>
-            <ToggleButtonGroup bsSize="small" type={this.props.btnType} name={this.props.name} defaultValue={this.props.default}>
-              {this.getOptions()}
+            <ToggleButtonGroup bsSize="small" type={this.getParam('btnType')} name={this.props.paramName} defaultValue={this.props.paramValue}>
+              { this.getOptions() }
             </ToggleButtonGroup>
           </Col>
         </ButtonToolbar>
