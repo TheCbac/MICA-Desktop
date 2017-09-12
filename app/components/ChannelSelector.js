@@ -57,31 +57,44 @@ export default class ChannelSelector extends Component {
     for (let i = 0; i < numChan; i++) {
       /* Create the button */
       buttonArray.push((
-        <ToggleButton
-          key={i.toString()} value={i}
-        >
-          {channelsObj.options[i].display}
+        <ToggleButton key={i.toString()} value={i}>
+          {channelsObj.options[i]}
         </ToggleButton>
       ));
     }
     return buttonArray;
   }
   /* Control the state */
-  onChange = (channels: number[]) => {
+  onChange = (channels: number[]): void => {
     /* Update the state */
     this.setState({ channels });
     /* Update the stored channels */
     const { deviceId, sensorId } = this.props;
     this.props.setSensorChannels(deviceId, sensorId, channels);
   }
+  /* At least one channel warning */
+  channelWarning() {
+    if (this.state.channels.length < 1) {
+      const warningText = {
+        color: 'red',
+        fontStyle: 'italic'
+      };
+      return (
+        <Col md={8} xs={8}>
+          <span style={warningText}>At least one channel must be active</span>
+        </Col>
+      );
+    }
+  }
   /* Render function */
   render() {
     return (
       <div>
         <ButtonToolbar>
-          <Col md={12} xs={12}>
+          <Col md={4} xs={4}>
             <label htmlFor="dataChannels">Data Channels:</label>
           </Col>
+          {this.channelWarning()}
           <Row />
           <Col md={12} xs={12}>
             <ToggleButtonGroup
