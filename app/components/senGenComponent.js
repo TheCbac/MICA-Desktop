@@ -13,18 +13,30 @@
 import React, { Component } from 'react';
 import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
+import ChannelSelector from './ChannelSelector';
 import ParamSelector from './ParamSelector';
-import type { deviceParamType, senGenParamType } from '../types/paramTypes';
-
+import type { nobleIdType, senGenParamType } from '../types/paramTypes';
+import type { thunkType } from '../types/functionTypes';
 
 type StateType = {
-  open: boolean
+  open: boolean,
+  active: boolean
 };
 
 type PropsType = {
   deviceId: string,
   sensorId: string,
-  sensorSettings: senGenParamType
+  sensorSettings: senGenParamType,
+  setSensorActive: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    newState: boolean
+  ) => thunkType,
+  setSensorChannels: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    newChannels: number[]
+  ) => thunkType
 };
 
 export default class SenGenComponent extends Component {
@@ -37,6 +49,7 @@ export default class SenGenComponent extends Component {
     /* set the default state */
     this.state = {
       open: this.props.sensorSettings.active,
+      active: this.props.sensorSettings.active
     };
   }
   /*  */
@@ -67,7 +80,7 @@ export default class SenGenComponent extends Component {
       color: 'black',
       textShadow: ''
     };
-    if (this.props.sensorSettings.active) {
+    if (this.state.active) {
       style.transform = '';
       style.textShadow = 'white 0 0 20px';
       style.color = 'white';
@@ -80,7 +93,7 @@ export default class SenGenComponent extends Component {
       color: '',
       textShadow: ''
     };
-    if (this.props.active) {
+    if (this.state.active) {
       style.color = 'white';
       style.textShadow = 'white 0 0 20px';
     }
@@ -90,12 +103,12 @@ export default class SenGenComponent extends Component {
   getChannels() {
     const channelVal = this.props.sensorSettings.channels;
     return (
-      <ParamSelector
+      <ChannelSelector
         key={0}
         deviceId={this.props.deviceId}
         sensorId={this.props.sensorId}
-        paramName={'channels'}
-        paramValue={channelVal}
+        channels={channelVal}
+        setSensorChannels={this.props.setSensorChannels}
       />
     );
   }
@@ -118,6 +131,7 @@ export default class SenGenComponent extends Component {
             sensorId={this.props.sensorId}
             paramName={key}
             paramValue={value}
+            setSensorChannels={this.props.setSensorChannels}
           />
         );
       }
@@ -126,7 +140,13 @@ export default class SenGenComponent extends Component {
   }
   /* Toggle sensor power */
   toggleSensorPower() {
-    console.log(this.props);
+    const newActive = !this.state.active;
+    this.props.setSensorActive(
+      this.props.deviceId,
+      this.props.sensorId,
+      newActive
+    );
+    this.setState({ active: newActive });
   }
   /* Render function */
   render() {
@@ -134,13 +154,17 @@ export default class SenGenComponent extends Component {
       fontFamily: 'Franklin Gothic Book',
       fontSize: '1.5em',
     };
+    const { name } = this.props.sensorSettings;
     return (
       <div>
         <Row />
         <Col md={5} xs={5} mdOffset={0} style={sensorStyle}>
           <FontAwesome className={'hoverGlow'} style={this.caretStyle()} name={'angle-right'} size={'lg'} onClick={() => this.toggleOpen()} />
-          <span style={this.nameStyle()}> {this.props.sensorSettings.name} </span>
-          {/* <FontAwesome style={{ fontSize: '14px', verticalAlign: 'middle' }} name={'thumb-tack'} size={'lg'} /> */}
+          <span style={this.nameStyle()}>{name}</span>
+          {/* <FontAwesome
+          style={{ fontSize: '14px', verticalAlign: 'middle' }}
+          name={'thumb-tack'} size={'lg'}
+          /> */}
         </Col>
         <Col md={6} xs={6} mdOffset={0} style={sensorStyle}>
           <hr style={{ borderColor: 'black', marginTop: '15px' }} />

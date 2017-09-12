@@ -28,6 +28,7 @@ import type {
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
 import type { metaDataObjType, moduleNameType } from '../types/metaDataTypes';
+import type { thunkType } from '../types/functionTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
 export const CLEAR_ADVERTISING_LIST = 'CLEAR_ADVERTISING_LIST';
@@ -138,12 +139,13 @@ export function reportMetaData(
   };
 }
 
+
 /* Wrapper for reporting metadata - check to see if the metadata is complete */
 export function metaDataReadComplete(
   deviceId: nobleIdType,
   metaData: ?metaDataObjType,
   moduleName: ?moduleNameType
-) {
+): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Report the metadata */
@@ -164,7 +166,7 @@ export function metaDataReadComplete(
 }
 
 /* Read the default sensor parameters from the device */
-export function setDefaultSenGenParams(deviceId: nobleIdType) {
+export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
@@ -218,8 +220,41 @@ export function setDefaultSenGenParams(deviceId: nobleIdType) {
       sensors: sensorObj,
       generators: generatorObj
     };
-    console.log('setDefaultSenGenParams', deviceSettingsObj);
     dispatch(updateSenGenParams(deviceId, deviceSettingsObj));
+  };
+}
+
+
+/* Set sensor on a device active or inactive  */
+export function setSensorActive(
+  deviceId: nobleIdType,
+  sensorId: number | string,
+  newState: boolean
+): thunkType {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Get the state of the device settings - its assumed but
+     * unverified if this provides a copy of the state object  */
+    const deviceSettings = getState().devices.deviceSettings[deviceId];
+    deviceSettings.sensors[sensorId].active = newState;
+    /* Update the object */
+    dispatch(updateSenGenParams(deviceId, deviceSettings));
+  };
+}
+
+/* Update the the state of the channel or dynamic params */
+export function setSensorChannels(
+  deviceId: nobleIdType,
+  sensorId: number | string,
+  newChannels: number[]
+): thunkType {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Get the state of the device settings */
+    const deviceSettings = getState().devices.deviceSettings[deviceId];
+    deviceSettings.sensors[sensorId].channels = newChannels;
+    /* Update the store */
+    dispatch(updateSenGenParams(deviceId, deviceSettings));
   };
 }
 
@@ -236,4 +271,5 @@ export function updateSenGenParams(
     }
   };
 }
+
 /* [] - END OF FILE */
