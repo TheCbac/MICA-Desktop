@@ -62,24 +62,14 @@ if (accId) {
   };
   /* Channels available on the accelerometer - needs to be
   * reconciled with metadata */
-  const channels: deviceChannelType = {
+  const accChannels: deviceChannelType = {
     display: 'Data Channels',
     default: [0],
-    options: [
-      ['X', 0],
-      ['Y', 1],
-      ['Z', 2]
-    ].map(channel => ({
-      name: 'channels',
-      value: 1 << channel[1],
-      word: 1 << channel[1],
-      display: `${channel[0]}`
-    })),
-    btnType: 'checkbox'
+    options: ['X', 'Y', 'Z']
   };
   /* Construct the Accelerometer settings obj */
   sensorParams[accId] = {
-    channels,
+    channels: accChannels,
     dynamicParams: {
       range,
       bandwidth
@@ -114,24 +104,14 @@ if (gyrId) {
     btnType: 'radio'
   };
   /* Channels available on the gyroscope */
-  const channels: deviceChannelType = {
+  const gyrChannels: deviceChannelType = {
     display: 'Data Channels',
     default: [0],
-    options: [
-      ['X', 0],
-      ['Y', 1],
-      ['Z', 2]
-    ].map(channel => ({
-      name: 'channels',
-      value: 1 << channel[1],
-      word: 1 << channel[1],
-      display: `${channel[0]}`
-    })),
-    btnType: 'checkbox'
+    options: ['X', 'Y', 'Z']
   };
   /* Push the Gyroscope Settings */
   sensorParams[gyrId] = {
-    channels,
+    channels: gyrChannels,
     dynamicParams: {
       range
     }

@@ -242,7 +242,7 @@ export function setSensorActive(
   };
 }
 
-/* Update the the state of the channel or dynamic params */
+/* Update the the state of the channel for a sensor */
 export function setSensorChannels(
   deviceId: nobleIdType,
   sensorId: number | string,
@@ -253,6 +253,23 @@ export function setSensorChannels(
     /* Get the state of the device settings */
     const deviceSettings = getState().devices.deviceSettings[deviceId];
     deviceSettings.sensors[sensorId].channels = newChannels;
+    /* Update the store */
+    dispatch(updateSenGenParams(deviceId, deviceSettings));
+  };
+}
+
+/* Update the dynamic parameters in the store */
+export function setSensorParams(
+  deviceId: nobleIdType,
+  sensorId: number | string,
+  paramName: string,
+  paramValue: number
+): thunkType {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Get the state of the device settings */
+    const deviceSettings = getState().devices.deviceSettings[deviceId];
+    deviceSettings.sensors[sensorId].dynamicParams[paramName].value = paramValue;
     /* Update the store */
     dispatch(updateSenGenParams(deviceId, deviceSettings));
   };

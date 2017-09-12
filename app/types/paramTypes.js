@@ -73,8 +73,7 @@ export type deviceParamType = {
 export type deviceChannelType = {
   display: string,
   default: number[],
-  options: deviceOptionsType[],
-  btnType: 'checkbox'
+  options: string[]
 };
 
 export type deviceParamObj = {

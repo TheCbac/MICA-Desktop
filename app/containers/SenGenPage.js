@@ -18,7 +18,8 @@ import {
 } from '../actions/senGenActions';
 import {
   setSensorActive,
-  setSensorChannels
+  setSensorChannels,
+  setSensorParams
 } from '../actions/devicesActions';
 
 
@@ -36,7 +37,8 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   getSelectedDevices,
   setSelectedDevices,
   setSensorActive,
-  setSensorChannels
+  setSensorChannels,
+  setSensorParams
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(sensorSettings);

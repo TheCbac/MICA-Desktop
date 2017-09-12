@@ -22,29 +22,31 @@ type propsType = {
   deviceId: nobleIdType,
   sensorId: string,
   paramName: string,
-  paramValue: number | number[],
-  setSensorChannels: (
+  paramValue: number,
+  /* Action Functions */
+  setSensorParams: (
     deviceId: nobleIdType,
     sensorId: number | string,
-    newChannels: number[]
+    paramName: string,
+    paramValue: number
   ) => thunkType
 };
 
-// type stateType = {
-//   value: number[]
-// };
+type stateType = {
+  value: number
+};
 
 export default class ParamSelector extends Component {
   /* Type Defs */
   props: propsType;
-  // state: stateType;
-  // /* constructor function */
-  // constructor(props: propsType) {
-  //   super(props);
-  //   this.state = {
-  //     value: props.paramValue
-  //   };
-  // }
+  state: stateType;
+  /* constructor function */
+  constructor(props: propsType) {
+    super(props);
+    this.state = {
+      value: props.paramValue
+    };
+  }
   /* return the list of options */
   getOptions() {
     const buttonArray = [];
@@ -56,13 +58,7 @@ export default class ParamSelector extends Component {
       const option = paramOptions[i];
       /* Create the toggle button element */
       const btnElement = (
-        <ToggleButton
-          value={option.word}
-          key={i.toString()}
-          onClick={() =>
-            console.log(this.props.deviceId, this.props.sensorId, this.props.paramName)
-          }
-        >
+        <ToggleButton value={option.word} key={i.toString()}>
           {option.display}
         </ToggleButton>
       );
@@ -73,10 +69,16 @@ export default class ParamSelector extends Component {
     return buttonArray;
   }
   getParam(item: string): * {
-    if (this.props.paramName === 'channels') {
-      return micaSensorParams[this.props.sensorId].channels[item];
-    }
-    return micaSensorParams[this.props.sensorId].dynamicParams[this.props.paramName][item];
+    const { sensorId, paramName } = this.props;
+    return micaSensorParams[sensorId].dynamicParams[paramName][item];
+  }
+  /* Triggered when a button is clicked */
+  onChange = (value: number): void => {
+    /* Update the state */
+    this.setState({ value });
+    /* Trigger an action to record the setting */
+    const { deviceId, sensorId, paramName } = this.props;
+    this.props.setSensorParams(deviceId, sensorId, paramName, value);
   }
 
   render() {
@@ -92,7 +94,8 @@ export default class ParamSelector extends Component {
               bsSize="small"
               type={this.getParam('btnType')}
               name={this.props.paramName}
-              defaultValue={this.props.paramValue}
+              value={this.state.value}
+              onChange={this.onChange}
             >
               { this.getOptions() }
             </ToggleButtonGroup>
