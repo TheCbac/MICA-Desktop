@@ -16,17 +16,35 @@ import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import micaSensorParams from '../utils/mica/micaSensorParams';
 import type { nobleIdType } from '../types/paramTypes';
+import type { thunkType } from '../types/functionTypes';
 
 type propsType = {
   deviceId: nobleIdType,
   sensorId: string,
   paramName: string,
-  paramValue: number | number[]
+  paramValue: number | number[],
+  setSensorChannels: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    newChannels: number[]
+  ) => thunkType
 };
+
+// type stateType = {
+//   value: number[]
+// };
 
 export default class ParamSelector extends Component {
   /* Type Defs */
   props: propsType;
+  // state: stateType;
+  // /* constructor function */
+  // constructor(props: propsType) {
+  //   super(props);
+  //   this.state = {
+  //     value: props.paramValue
+  //   };
+  // }
   /* return the list of options */
   getOptions() {
     const buttonArray = [];
@@ -70,7 +88,12 @@ export default class ParamSelector extends Component {
           </Col>
           <Row />
           <Col md={12} xs={12}>
-            <ToggleButtonGroup bsSize="small" type={this.getParam('btnType')} name={this.props.paramName} defaultValue={this.props.paramValue}>
+            <ToggleButtonGroup
+              bsSize="small"
+              type={this.getParam('btnType')}
+              name={this.props.paramName}
+              defaultValue={this.props.paramValue}
+            >
               { this.getOptions() }
             </ToggleButtonGroup>
           </Col>

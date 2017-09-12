@@ -88,12 +88,4 @@ export type metaDataType = {
   }
 };
 
-
-// /* Overarching metadata type */
-// export type metaDataType = {
-//   [deviceId: string]: {
-//     [moduleName: moduleNameType]: metaDataObjType
-//   }
-// };
-
 /* [] - END OF FILE */

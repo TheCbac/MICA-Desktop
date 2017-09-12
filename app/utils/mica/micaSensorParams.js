@@ -64,7 +64,7 @@ if (accId) {
   * reconciled with metadata */
   const channels: deviceChannelType = {
     display: 'Data Channels',
-    default: [1],
+    default: [0],
     options: [
       ['X', 0],
       ['Y', 1],
@@ -116,7 +116,7 @@ if (gyrId) {
   /* Channels available on the gyroscope */
   const channels: deviceChannelType = {
     display: 'Data Channels',
-    default: [1],
+    default: [0],
     options: [
       ['X', 0],
       ['Y', 1],

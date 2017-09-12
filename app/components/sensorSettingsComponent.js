@@ -16,8 +16,9 @@ import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
 import SenGen from './senGenComponent';
 import log from '../utils/loggingUtils';
+import type { thunkType } from '../types/functionTypes';
 import type { selectType } from '../types/stateTypes';
-import type { deviceSettingsType } from '../types/paramTypes';
+import type { deviceSettingsType, nobleIdType } from '../types/paramTypes';
 
 // log.debugLevel = 5;
 log.debug('sensorSettingsComponent: debug level', log.debugLevel);
@@ -32,9 +33,21 @@ type propsType = {
     sensors: selectType[]
   },
   deviceSettings: deviceSettingsType,
-  getSelectedDevices: () => mixed,
-  setSelectedDevices: () => mixed,
-  updateSenGenParams: () => mixed
+  getSelectedDevices: () => thunkType,
+  setSelectedDevices: (
+    type: 'sensors' | 'generators',
+    newDevice: selectType
+  ) => thunkType,
+  setSensorActive: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    newState: boolean
+  ) => thunkType,
+  setSensorChannels: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    newChannels: number[]
+  ) => thunkType
 };
 
 export default class sensorSettings extends Component {
@@ -123,10 +136,12 @@ export default class sensorSettings extends Component {
       const sensor = deviceSettings.sensors[sensorId];
       componentList.push(
         <SenGen
+          key={i}
           deviceId={selectDevice.id}
           sensorId={sensorId}
           sensorSettings={sensor}
-          key={i}
+          setSensorActive={this.props.setSensorActive}
+          setSensorChannels={this.props.setSensorChannels}
         />
     );
     }

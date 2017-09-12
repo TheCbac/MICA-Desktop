@@ -16,7 +16,10 @@ import {
   getSelectedDevices,
   setSelectedDevices,
 } from '../actions/senGenActions';
-import { updateSenGenParams } from '../actions/devicesActions';
+import {
+  setSensorActive,
+  setSensorChannels
+} from '../actions/devicesActions';
 
 
 function mapStateToProps(state) {
@@ -32,7 +35,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   getSelectedDevices,
   setSelectedDevices,
-  updateSenGenParams
+  setSensorActive,
+  setSensorChannels
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(sensorSettings);
