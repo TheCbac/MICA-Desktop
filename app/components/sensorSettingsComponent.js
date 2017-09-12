@@ -33,6 +33,7 @@ type propsType = {
     sensors: selectType[]
   },
   deviceSettings: deviceSettingsType,
+  /* Action Functions */
   getSelectedDevices: () => thunkType,
   setSelectedDevices: (
     type: 'sensors' | 'generators',
@@ -47,6 +48,12 @@ type propsType = {
     deviceId: nobleIdType,
     sensorId: number | string,
     newChannels: number[]
+  ) => thunkType,
+  setSensorParams: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    paramName: string,
+    paramValue: number
   ) => thunkType
 };
 
@@ -142,6 +149,7 @@ export default class sensorSettings extends Component {
           sensorSettings={sensor}
           setSensorActive={this.props.setSensorActive}
           setSensorChannels={this.props.setSensorChannels}
+          setSensorParams={this.props.setSensorParams}
         />
     );
     }

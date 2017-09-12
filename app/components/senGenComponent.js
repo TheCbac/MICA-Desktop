@@ -27,6 +27,7 @@ type PropsType = {
   deviceId: string,
   sensorId: string,
   sensorSettings: senGenParamType,
+  /* Action Functions */
   setSensorActive: (
     deviceId: nobleIdType,
     sensorId: number | string,
@@ -36,6 +37,12 @@ type PropsType = {
     deviceId: nobleIdType,
     sensorId: number | string,
     newChannels: number[]
+  ) => thunkType,
+  setSensorParams: (
+    deviceId: nobleIdType,
+    sensorId: number | string,
+    paramName: string,
+    paramValue: number
   ) => thunkType
 };
 
@@ -102,13 +109,13 @@ export default class SenGenComponent extends Component {
   /* Return a component for selecting the channels */
   getChannels() {
     const channelVal = this.props.sensorSettings.channels;
+    const { deviceId, sensorId, setSensorChannels } = this.props;
     return (
       <ChannelSelector
-        key={0}
-        deviceId={this.props.deviceId}
-        sensorId={this.props.sensorId}
+        deviceId={deviceId}
+        sensorId={sensorId}
         channels={channelVal}
-        setSensorChannels={this.props.setSensorChannels}
+        setSensorChannels={setSensorChannels}
       />
     );
   }
@@ -126,12 +133,12 @@ export default class SenGenComponent extends Component {
       if (key && value != null) {
         componentArray.push(
           <ParamSelector
-            key={i + 1} /* Channel is 0 */
+            key={i}
             deviceId={this.props.deviceId}
             sensorId={this.props.sensorId}
             paramName={key}
             paramValue={value}
-            setSensorChannels={this.props.setSensorChannels}
+            setSensorParams={this.props.setSensorParams}
           />
         );
       }
@@ -146,7 +153,8 @@ export default class SenGenComponent extends Component {
       this.props.sensorId,
       newActive
     );
-    this.setState({ active: newActive });
+    /* Toggle the state of the component and open/close the settings list */
+    this.setState({ active: newActive, open: newActive });
   }
   /* Render function */
   render() {
@@ -160,7 +168,7 @@ export default class SenGenComponent extends Component {
         <Row />
         <Col md={5} xs={5} mdOffset={0} style={sensorStyle}>
           <FontAwesome className={'hoverGlow'} style={this.caretStyle()} name={'angle-right'} size={'lg'} onClick={() => this.toggleOpen()} />
-          <span style={this.nameStyle()}>{name}</span>
+          <span style={this.nameStyle()}> {name}</span>
           {/* <FontAwesome
           style={{ fontSize: '14px', verticalAlign: 'middle' }}
           name={'thumb-tack'} size={'lg'}
