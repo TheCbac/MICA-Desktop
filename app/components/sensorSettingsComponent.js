@@ -2,7 +2,9 @@
 /* **********************************************************
 * File: sensorSettingsComponent.js
 *
-* Brief: React component for changing settings on sensors
+* Brief: React component for changing settings on sensors.
+*   this is a poor name - consider renaming as this component
+*   also includes generators.
 *
 * Authors: Craig Cheney
 *
@@ -14,7 +16,8 @@ import { Grid, Col, Row, Dropdown, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import CustomToggle from './customToggle';
 import CustomMenu from './customMenu';
-import SenGen from './senGenComponent';
+import SensorComponent from './SensorComponent';
+import GeneratorComponent from './GeneratorComponent';
 import log from '../utils/loggingUtils';
 import type { thunkType } from '../types/functionTypes';
 import type { selectType } from '../types/stateTypes';
@@ -120,20 +123,16 @@ export default class sensorSettings extends Component {
     return array;
   }
   /* Refactoring of the senor/generator */
-  getSenGen(type: 'sensing' | 'actuation', selectDevice: selectType): [] | string {
+  getSensors(selectDevice: selectType): [] | string {
     /* Ensure that there is a name */
-    if (!selectDevice.name) {
-      log.warn('sensorSettingsComponent: no name found');
-      return '';
-    }
+    if (!selectDevice.name) { return ''; }
     /* No sensors or generators found text */
-    const typeText = type === 'sensing' ? 'SENSORS' : 'GENERATORS';
-    const noSenGenText = `${selectDevice.name} CONTAINS NO ${typeText}`;
+    const noSensorText = `${selectDevice.name} CONTAINS NO SENSORS`;
     /* The device does not contain any sensors/generators */
-    if (!selectDevice.id) { return noSenGenText; }
+    if (!selectDevice.id) { return noSensorText; }
     /* Get the device settings */
     const deviceSettings = this.props.deviceSettings[selectDevice.id];
-    if (!deviceSettings) { return noSenGenText; }
+    if (!deviceSettings) { return noSensorText; }
     /* find the sensors in the settings */
     const sensorKeys = Object.keys(deviceSettings.sensors);
     const componentList = [];
@@ -142,11 +141,43 @@ export default class sensorSettings extends Component {
       const sensorId = sensorKeys[i];
       const sensor = deviceSettings.sensors[sensorId];
       componentList.push(
-        <SenGen
+        <SensorComponent
           key={i}
           deviceId={selectDevice.id}
           sensorId={sensorId}
           sensorSettings={sensor}
+          setSensorActive={this.props.setSensorActive}
+          setSensorChannels={this.props.setSensorChannels}
+          setSensorParams={this.props.setSensorParams}
+        />
+    );
+    }
+    return componentList;
+  }
+  getGenerators(selectDevice: selectType): [] | string {
+    /* Ensure that there is a name */
+    if (!selectDevice.name) { return ''; }
+    /* No sensors or generators found text */
+    const noGeneratorText = `${selectDevice.name} CONTAINS NO GENERATORS`;
+    /* The device does not contain any sensors/generators */
+    if (!selectDevice.id) { return noGeneratorText; }
+    /* Get the device settings */
+    const deviceSettings = this.props.deviceSettings[selectDevice.id];
+    if (!deviceSettings) { return noGeneratorText; }
+    /* find the sensors in the settings */
+    const generatorKeys = Object.keys(deviceSettings.generators);
+    if (generatorKeys.length === 0) { return noGeneratorText; }
+    const componentList = [];
+    /* Create a component for all of the device */
+    for (let i = 0; i < generatorKeys.length; i++) {
+      const generatorId = generatorKeys[i];
+      const generator = deviceSettings.generators[generatorId];
+      componentList.push(
+        <GeneratorComponent
+          key={i}
+          deviceId={selectDevice.id}
+          generatorId={generatorId}
+          generatorSettings={generator}
           setSensorActive={this.props.setSensorActive}
           setSensorChannels={this.props.setSensorChannels}
           setSensorParams={this.props.setSensorParams}
@@ -207,7 +238,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              { this.getSenGen('sensing', this.props.selected.sensor) }
+              { this.getSensors(this.props.selected.sensor) }
             </Col>
           </Col>
           <Col md={6}>
@@ -232,7 +263,7 @@ export default class sensorSettings extends Component {
                   </Dropdown>
                 </div>
               </Col>
-              {/* this.getSenGen2('actuation', this.props.selected.generator) */}
+              { this.getGenerators(this.props.selected.generator)}
             </Col>
           </Col>
         </Row>

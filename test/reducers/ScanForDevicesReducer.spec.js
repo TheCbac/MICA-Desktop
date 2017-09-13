@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 * Date: 2017.06.06
 *
-**********************************************************/
+********************************************************* */
 import scanForDevicesReducer from '../../app/reducers/ScanForDevicesReducer';
 import { CHANGE_SCAN_METHOD, ENABLE_SCAN_METHOD } from '../../app/actions/ScanForDevicesActions';
 

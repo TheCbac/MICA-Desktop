@@ -12,8 +12,9 @@
 ********************************************************* */
 import { getSelectedDevices } from './senGenActions';
 import micaSensorParams from '../utils/mica/micaSensorParams';
+import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
 import type { noblePeripheralType, nobleIdType, deviceSettingsObjType,
-  senGenParamType } from '../types/paramTypes';
+  sensorParamType, generatorParamType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
@@ -27,7 +28,12 @@ import type {
   updateSenGenParamActionType
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
-import type { metaDataObjType, moduleNameType } from '../types/metaDataTypes';
+import type {
+  metaDataObjType,
+  moduleNameType,
+  sensingMetaObj,
+  actuationMetaObj
+} from '../types/metaDataTypes';
 import type { thunkType } from '../types/functionTypes';
 
 export const FOUND_ADVERTISING_DEVICE = 'FOUND_ADVERTISING_DEVICE';
@@ -165,6 +171,87 @@ export function metaDataReadComplete(
   };
 }
 
+/* Get the sensing devices settings from the metadata */
+function constructSensingSettings(sensingMeta: sensingMetaObj[]): {
+  [sensorId: number | string]: sensorParamType
+} {
+  const sensorObj = {};
+  for (let i = 0; i < sensingMeta.length; i++) {
+    const sensorMeta = sensingMeta[i];
+    /* Get the sensor ID */
+    const { id, scalingConstant, gain, offset, units } = sensorMeta;
+    const sensorName = sensorMeta.type;
+    /* Get the sensor params op */
+    const sensorParams = micaSensorParams[id];
+    /* Set the device channels */
+    const channels = sensorParams.channels.default;
+    /* Get the dynamic params keys */
+    const dynamicParams = sensorParams.dynamicParams;
+    const dynamicParamKeys = Object.keys(dynamicParams);
+    const dynamicParamsDefault = {};
+    /* Iterate through the parameters  */
+    for (let j = 0; j < dynamicParamKeys.length; j++) {
+      /* Get the parameter */
+      const key = dynamicParamKeys[j];
+      const { address } = dynamicParams[key];
+      const defaultVal = dynamicParams[key].default;
+      dynamicParamsDefault[key] = { address, value: defaultVal };
+    }
+    /* Construct the Sensor parameter object */
+    const senParamObj: sensorParamType = {
+      name: sensorName,
+      active: !i, /* Set first device active by default */
+      channels,
+      scalingConstant,
+      gain,
+      offset,
+      units,
+      dynamicParams: dynamicParamsDefault
+    };
+    /* Push the sensor, set the first sensor active */
+    sensorObj[id] = senParamObj;
+  }
+  return sensorObj;
+}
+
+/* Get the sensing devices settings from the metadata */
+function constructGeneratorSettings(actuationMeta: actuationMetaObj[]): {
+  [sensorId: number | string]: generatorParamType
+} {
+  const sensorObj = {};
+  for (let i = 0; i < actuationMeta.length; i++) {
+    const actuatorMeta = actuationMeta[i];
+    /* Get the sensor ID */
+    const { id, type } = actuatorMeta;
+    /* Get the sensor params op */
+    const actuatorParams = micaGeneratorParams[id];
+    /* Set the device channels */
+    const channels = actuatorParams.channels.default;
+    /* Get the dynamic params keys */
+    const dynamicParams = actuatorParams.dynamicParams;
+    const dynamicParamKeys = Object.keys(dynamicParams);
+    const dynamicParamsDefault = {};
+    /* Iterate through the parameters  */
+    for (let j = 0; j < dynamicParamKeys.length; j++) {
+      /* Get the parameter */
+      const key = dynamicParamKeys[j];
+      const { address } = dynamicParams[key];
+      const defaultVal = dynamicParams[key].default;
+      dynamicParamsDefault[key] = { address, value: defaultVal };
+    }
+    /* Construct the Sensor parameter object */
+    const senParamObj: generatorParamType = {
+      name: type,
+      channels,
+      active: !i, /* Set first device active by default */
+      dynamicParams: dynamicParamsDefault
+    };
+    /* Push the sensor, set the first sensor active */
+    sensorObj[id] = senParamObj;
+  }
+  return sensorObj;
+}
+
 /* Read the default sensor parameters from the device */
 export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
   /* Return a function for redux thunk */
@@ -175,46 +262,13 @@ export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
     const deviceMetadata = devices.metadata[deviceId];
     /* Ensure data is there */
     if (!deviceMetadata) { return; }
-    /* get the sensing metadata */
+    /* get the sensing and actuation metadata */
     const sensingMeta = deviceMetadata.sensing;
-    if (!sensingMeta) { return; }
-    const sensorObj = {};
-    const generatorObj = {};
-    for (let i = 0; i < sensingMeta.length; i++) {
-      const sensorMeta = sensingMeta[i];
-      /* Get the sensor ID */
-      const { id, scalingConstant, gain, offset, units } = sensorMeta;
-      const sensorName = sensorMeta.type;
-      /* Get the sensor params op */
-      const sensorParams = micaSensorParams[id];
-      /* Set the device channels */
-      const channels = sensorParams.channels.default;
-      /* Get the dynamic params keys */
-      const dynamicParams = sensorParams.dynamicParams;
-      const dynamicParamKeys = Object.keys(dynamicParams);
-      const dynamicParamsDefault = {};
-      /* Iterate through the parameters  */
-      for (let j = 0; j < dynamicParamKeys.length; j++) {
-        /* Get the parameter */
-        const key = dynamicParamKeys[j];
-        const { address } = dynamicParams[key];
-        const defaultVal = dynamicParams[key].default;
-        dynamicParamsDefault[key] = { address, value: defaultVal };
-      }
-      /* Construct the Sensor parameter object */
-      const senParamObj: senGenParamType = {
-        name: sensorName,
-        active: !i,
-        channels,
-        scalingConstant,
-        gain,
-        offset,
-        units,
-        dynamicParams: dynamicParamsDefault
-      };
-      /* Push the sensor, set the first sensor active */
-      sensorObj[id] = senParamObj;
-    }
+    const actuationMeta = deviceMetadata.actuation;
+    if (!sensingMeta || !actuationMeta) { return; }
+    /* -- Begin constructing the return objects -- */
+    const sensorObj = constructSensingSettings(sensingMeta);
+    const generatorObj = constructGeneratorSettings(actuationMeta);
     /* Return the device settings */
     const deviceSettingsObj = {
       sensors: sensorObj,

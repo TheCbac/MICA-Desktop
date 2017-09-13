@@ -36,7 +36,8 @@ export const micaIDs = {
     '1': 'Signal Voltage',
     '2': 'Signal Current',
     '3': 'Power Voltage',
-    '4': 'Power Current'
+    '4': 'Power Current',
+    '5': 'Drivebot'
   },
   energy: {
     '1': 'LiPo',

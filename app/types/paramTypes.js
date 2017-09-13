@@ -94,8 +94,8 @@ export type dynamicParamType = {
   value: number
 };
 
-/* Parameter type for updating a sensor or generator */
-export type senGenParamType = {
+/* Parameter type for updating a sensor */
+export type sensorParamType = {
   name: string,
   active: boolean,
   channels: number[],
@@ -108,13 +108,23 @@ export type senGenParamType = {
   }
 };
 
+/* Parameter type for updating a generator */
+export type generatorParamType = {
+  name: string,
+  active: boolean,
+  channels: number[],
+  dynamicParams: {
+    [paramName: string]: dynamicParamType
+  }
+};
+
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
   sensors: {
-    [sensorId: number | string]: senGenParamType
+    [sensorId: number | string]: sensorParamType
   },
   generators: {
-    [generatorId: number | string]: senGenParamType
+    [generatorId: number | string]: generatorParamType
   }
 };
 
