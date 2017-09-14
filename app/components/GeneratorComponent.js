@@ -28,9 +28,9 @@ type PropsType = {
   generatorId: string,
   generatorSettings: generatorParamType,
   /* Action Functions */
-  setSensorActive: (
+  setGeneratorActive: (
     deviceId: nobleIdType,
-    sensorId: number | string,
+    generatorId: number | string,
     newState: boolean
   ) => thunkType,
   setSensorChannels: (
@@ -146,9 +146,9 @@ export default class SenGenComponent extends Component {
     return componentArray;
   }
   /* Toggle sensor power */
-  toggleSensorPower() {
+  toggleGeneratorPower() {
     const newActive = !this.state.active;
-    this.props.setSensorActive(
+    this.props.setGeneratorActive(
       this.props.deviceId,
       this.props.generatorId,
       newActive
@@ -182,7 +182,7 @@ export default class SenGenComponent extends Component {
         </Col>
         <Col md={1} xs={1} mdOffset={0} style={sensorStyle}>
           <span className={'pull-right'} style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
-            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleSensorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
+            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleGeneratorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
           </span>
         </Col>
         <Row />

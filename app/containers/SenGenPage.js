@@ -18,6 +18,7 @@ import {
 } from '../actions/senGenActions';
 import {
   setSensorActive,
+  setGeneratorActive,
   setSensorChannels,
   setSensorParams
 } from '../actions/devicesActions';
@@ -37,6 +38,7 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   getSelectedDevices,
   setSelectedDevices,
   setSensorActive,
+  setGeneratorActive,
   setSensorChannels,
   setSensorParams
 }, dispatcher);

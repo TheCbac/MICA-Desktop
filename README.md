@@ -104,10 +104,20 @@ To avoid errors about colors, put winston in dependencies in /app
  ```
 
 # Left off:
-=
+
+# Short term: 
+ * Rename tabs to DEVICES, SETTINGS, COLLECT, ANALYZE
+		* Programs, Applications instead of 
+	* Measure and Perform as the two categories (not SEN GEN)
+ * Reorganize the file structure 
+ * Change copyright to the MICA
+ * Add color to the Data Channels button on 
+ * Sensors and Generators tabs don't scale correctly 
+ * add cube LED control
+
 ## TODO: Long term
 * Write operating system for MICA Cube
-	* Dynamically load programs from MICA app
+	* Dynamically load programs from MICA app 
 	* Use programs to solve problems/challenges
 	* Operating system purposely exposes security flaws in lower level cubes
 	* Users patch security flaws as they level up
@@ -115,3 +125,4 @@ To avoid errors about colors, put winston in dependencies in /app
 	* Software tasks interact with the OS/another program
 	* Electrical tasks interact with the embedded hardware
 	* Mechanical tasks are accomplished through the MICA cube controlling a machine or robot
+

@@ -29,10 +29,10 @@ export default class Header extends Component {
               <NavItem>DEVICES</NavItem>
             </IndexLinkContainer>
             <LinkContainer to="/sengen" activeClassName="active">
-              <NavItem>SEN+GEN</NavItem>
+              <NavItem>SETTINGS</NavItem>
             </LinkContainer>
             <LinkContainer to="/collectData" activeClassName="active">
-              <NavItem>DATA</NavItem>
+              <NavItem>COLLECT</NavItem>
             </LinkContainer>
             <LinkContainer to="/analyze" activeClassName="active">
               <NavItem>ANALYZE</NavItem>

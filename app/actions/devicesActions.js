@@ -296,6 +296,22 @@ export function setSensorActive(
   };
 }
 
+/* Set the Generator instrument active or inactive */
+export function setGeneratorActive(
+  deviceId: nobleIdType,
+  generatorId: number | string,
+  newState: boolean
+): thunkType {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    /* Get the state of the device settings  */
+    const deviceSettings = getState().devices.deviceSettings[deviceId];
+    deviceSettings.generators[generatorId].active = newState;
+    /* Update the object */
+    dispatch(updateSenGenParams(deviceId, deviceSettings));
+  };
+}
+
 /* Update the the state of the channel for a sensor */
 export function setSensorChannels(
   deviceId: nobleIdType,

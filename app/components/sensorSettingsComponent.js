@@ -47,6 +47,11 @@ type propsType = {
     sensorId: number | string,
     newState: boolean
   ) => thunkType,
+  setGeneratorActive: (
+    deviceId: nobleIdType,
+    generatorId: number | string,
+    newState: boolean
+  ) => thunkType,
   setSensorChannels: (
     deviceId: nobleIdType,
     sensorId: number | string,
@@ -178,7 +183,7 @@ export default class sensorSettings extends Component {
           deviceId={selectDevice.id}
           generatorId={generatorId}
           generatorSettings={generator}
-          setSensorActive={this.props.setSensorActive}
+          setGeneratorActive={this.props.setGeneratorActive}
           setSensorChannels={this.props.setSensorChannels}
           setSensorParams={this.props.setSensorParams}
         />
