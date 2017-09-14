@@ -206,6 +206,7 @@
     "extract-text-webpack-plugin": "^2.1.0",
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
+    "pondjs": "^0.8.7",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.2",
     "react-bootstrap-table": "^3.4.2",
@@ -221,6 +222,7 @@
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",
     "react-table": "^6.4.0",
+    "react-timeseries-charts": "^0.12.8",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.4.14"
