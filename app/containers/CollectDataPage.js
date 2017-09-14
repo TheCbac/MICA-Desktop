@@ -16,6 +16,7 @@ import {
  } from 'react-timeseries-charts';
 import { TimeSeries } from 'pondjs';
 import { Col, Row } from 'react-bootstrap';
+import DriveBot from '../components/DriveBotComponent';
 
 
 const testStyle = styler([
@@ -61,6 +62,7 @@ export default class CollectDataPage extends Component {
         <Col md={4} lg={4}>
           <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px', marginBottom: '20px' }}>
             Controls
+            <DriveBot />
           </Col>
           <Row />
           <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px', fontFamily: 'Abel' }}>
