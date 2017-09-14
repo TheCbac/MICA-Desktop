@@ -17,6 +17,7 @@ import {
 import { TimeSeries } from 'pondjs';
 import { Col, Row } from 'react-bootstrap';
 import DriveBot from './DriveBotComponent';
+import type { deviceSettingsType } from '../../types/paramTypes';
 
 
 const testStyle = styler([
@@ -24,10 +25,6 @@ const testStyle = styler([
   { key: 'SMD', color: '#7fcdbb', width: '3px' },
   { key: 'USD', color: '2c7fb8', width: '3px' }
 ]);
-
-const schemeName = ['YlGnBu'];
-const columnNames = ['AUD', 'USD', 'SMD'];
-const testStyle2 = styler(columnNames, schemeName);
 
 const data = {
   name: 'Amounts',
@@ -54,15 +51,63 @@ const data2 = {
 const series1 = new TimeSeries(data);
 const series2 = new TimeSeries(data2);
 
+type propsType = {
+  deviceSettings: deviceSettingsType
+};
+
+/* Get the generator component based on ID - should be refactored and moved */
+function mapGeneratorIdToComponent(generatorId: number | string, key: number): * {
+  /* */
+  const id = parseInt(generatorId, 10);
+  switch (id) {
+    case 5:
+      return (<DriveBot key={key} />);
+    default:
+      console.log('mapGeneratorIdToComponent', generatorId);
+      return '';
+
+  }
+}
 
 export default class CollectDataPage extends Component {
+  props: propsType;
+
+  /* Return all of the components for controlling the
+   * active generators */
+  getGeneratorControls(): * {
+    /* Find the ID of all active devices */
+    const { deviceSettings } = this.props;
+    const deviceKeys = Object.keys(deviceSettings);
+    /* Return array */
+    const componentArray = [];
+    /* Iterate through the devices */
+    for (let i = 0; i < deviceKeys.length; i++) {
+      const deviceId = deviceKeys[i];
+      const device = deviceSettings[deviceId];
+      /* Make sure the device is active */
+      if (device.active) {
+        /* Iterate through all of the generators */
+        const generators = device.generators;
+        const generatorKeys = Object.keys(generators);
+        for (let j = 0; j < generatorKeys.length; j++) {
+          const generatorId = generatorKeys[j];
+          /* Check to see if it is active */
+          if (generators[generatorId].active) {
+            componentArray.push(mapGeneratorIdToComponent(generatorId, j));
+          }
+        }
+      }
+    }
+    /* Return the components */
+    return componentArray;
+  }
   render() {
     return (
       <div>
         <Col md={4} lg={4}>
           <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px', marginBottom: '20px' }}>
             Controls
-            <DriveBot />
+            {this.getGeneratorControls()}
           </Col>
           <Row />
           <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px', fontFamily: 'Abel' }}>

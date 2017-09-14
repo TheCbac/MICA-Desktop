@@ -151,16 +151,18 @@ const deviceHandlers = {
     state: devicesStateType,
     action: disconnectedFromDeviceActionType
   ): devicesStateType {
+    const deviceId = action.payload.peripheralId;
     /* Get the peripheral and index from the disconnecting list */
     const { peripheral, index } = getPeripheralFromList(
-      state.disconnecting, action.payload.peripheralId
+      state.disconnecting, deviceId
     );
     /* Device was */
     if (!peripheral) { return state; }
     /* Remove the peripheral from the disconnecting list */
     return update(state, {
       advertising: { $push: [peripheral] },
-      disconnecting: { $splice: [[index, 1]] }
+      disconnecting: { $splice: [[index, 1]] },
+      deviceSettings: { [deviceId]: { active: { $set: false } } }
     });
   },
   /* Device was abruptly lost, remove from connected list */
@@ -168,16 +170,18 @@ const deviceHandlers = {
     state: devicesStateType,
     action: lostConnectionFromDeviceActionType
   ): devicesStateType {
+    const deviceId = action.payload.peripheralId;
     /* Get the peripheral and index from the connected list */
     const { peripheral, index } = getPeripheralFromList(
-      state.connected, action.payload.peripheralId
+      state.connected, deviceId
     );
     /* Device was */
     if (!peripheral) { return state; }
     /* Remove the peripheral from the connected list */
     return update(state, {
       advertising: { $push: [peripheral] },
-      connected: { $splice: [[index, 1]] }
+      connected: { $splice: [[index, 1]] },
+      deviceSettings: { [deviceId]: { active: { $set: false } } }
     });
   },
   /* Metadata was read in successfully */

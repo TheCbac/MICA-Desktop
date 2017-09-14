@@ -120,6 +120,7 @@ export type generatorParamType = {
 
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
+  active: boolean,
   sensors: {
     [sensorId: number | string]: sensorParamType
   },

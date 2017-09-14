@@ -271,6 +271,7 @@ export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
     const generatorObj = constructGeneratorSettings(actuationMeta);
     /* Return the device settings */
     const deviceSettingsObj = {
+      active: true,
       sensors: sensorObj,
       generators: generatorObj
     };
