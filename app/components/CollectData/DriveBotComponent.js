@@ -1,6 +1,6 @@
 /* @flow */
 /* **********************************************************
-* File: components/DriveBotComponent.js
+* File: components/CollectData/DriveBotComponent.js
 *
 * Brief: React component for controlling DriveBot
 *
@@ -35,11 +35,11 @@ export default class DriveBot extends Component {
         </Col>
         <Col md={5}>
           <Col md={12} >
-            <Button bsStyle={'primary'} block bsSize={'medium'}>+ SPEED</Button>
+            <Button bsStyle={'primary'} block>+ SPEED</Button>
           </Col>
           <Row style={{ marginBottom: '4px' }} />
           <Col md={12} >
-            <Button bsStyle={'primary'} block bsSize={'medium'}>- SPEED</Button>
+            <Button bsStyle={'primary'} block>- SPEED</Button>
           </Col>
         </Col>
       </div>

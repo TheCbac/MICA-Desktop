@@ -1,8 +1,8 @@
 /* @flow */
 /* **********************************************************
-* File: containers/CollectDataPage.js
+* File: components/CollectData/CollectDataPage.js
 *
-* Brief: Actions for the scanning devices
+* Brief: Page component for the 'Collect' tab
 *
 * Authors: Craig Cheney
 *
@@ -16,7 +16,7 @@ import {
  } from 'react-timeseries-charts';
 import { TimeSeries } from 'pondjs';
 import { Col, Row } from 'react-bootstrap';
-import DriveBot from '../components/DriveBotComponent';
+import DriveBot from './DriveBotComponent';
 
 
 const testStyle = styler([
@@ -95,4 +95,3 @@ export default class CollectDataPage extends Component {
 }
 
 /* [] - END OF FILE */
-
