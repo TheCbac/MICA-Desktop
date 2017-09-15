@@ -4,7 +4,9 @@
     "sourceType": "module",
     "allowImportExportEverywhere": true
   },
-  "extends": "airbnb",
+  "extends": [
+    "airbnb"
+    ],
   "env": {
     "browser": true,
     "node": true
@@ -20,6 +22,9 @@
     "import/no-extraneous-dependencies": "off",
     "no-console": "off",
     "no-use-before-define": "off",
+    "no-plusplus": ["error", {
+      "allowForLoopAfterthoughts": true
+    }],
     "no-multi-assign": "off",
     "promise/param-names": "error",
     "promise/always-return": "error",

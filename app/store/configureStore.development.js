@@ -4,13 +4,14 @@ import { hashHistory } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, push } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
-import rootReducer from '../reducers';
-
-
+import rootReducer from '../reducers/index';
+import * as ScanActions from '../actions/ScanForDevicesActions';
+import type { scanStateType } from '../reducers/ScanForDevicesReducer';
 
 const history = createBrowserHistory();
 
-const configureStore = (initialState: ?counterStateType) => {
+const configureStore = (initialState: ?scanStateType) => {
+// const configureStore = (initialState) => {
   // Redux Configuration
   const middleware = [];
   const enhancers = [];
@@ -31,7 +32,7 @@ const configureStore = (initialState: ?counterStateType) => {
 
   // Redux DevTools Configuration
   const actionCreators = {
-
+    ...ScanActions,
     push,
   };
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose

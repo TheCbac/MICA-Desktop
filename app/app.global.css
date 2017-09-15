@@ -1,11 +1,32 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "~font-awesome/css/font-awesome.min.css";
+@import "~react-table/react-table.css";
+
+@font-face {
+  font-family: 'Abel';
+  src: url('./fonts/Abel-Regular.ttf');
+}
+
 body {
-  font-family: sans-serif;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   background-color: #232c39;
-  background-image: linear-gradient(45deg, rgba(0, 216, 255, 0.5) 10%, rgba(0, 1, 127, 0.7));
+  background-image: linear-gradient(45deg, rgba(0, 400, 255, 0.5) 10%, rgba(0, 1, 127, 0.7));
   background-attachment: fixed;
 
   height: 100vh;
   font-size: 14px;
-  overflow-y: hidden;
+  overflow-y: scroll;
+}
+
+.glow {
+  text-shadow: white 0 0 20px;
+  color: white !important;
+}
+
+.hoverGlow:hover {
+  text-shadow: white 0 0 20px;
+  color: white !important;
+  cursor: pointer;
+  /* background-color: yellow;
+  color:red; */
 }
