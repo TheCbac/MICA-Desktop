@@ -15,6 +15,7 @@ import CollectDataPage from '../components/CollectData/CollectDataPage';
 
 function mapStateToProps(state) {
   return {
+    connectedDevices: state.devices.connectedDevices,
     deviceSettings: state.devices.deviceSettings
   };
 }

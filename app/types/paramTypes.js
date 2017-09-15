@@ -19,7 +19,8 @@ export type nobleCharacteristicType = {
   descriptors: ?string,
   type: ?string,
   read: () => void,
-  subscribe: () => void
+  subscribe: () => void,
+  write: () => void
 };
 /* Noble BLE services */
 export type nobleServiceType = {

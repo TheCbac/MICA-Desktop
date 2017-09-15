@@ -12,12 +12,12 @@
 import React, { Component } from 'react';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
-  styler
+  styler, Resizable
  } from 'react-timeseries-charts';
 import { TimeSeries } from 'pondjs';
 import { Col, Row } from 'react-bootstrap';
 import DriveBot from './DriveBotComponent';
-import type { deviceSettingsType } from '../../types/paramTypes';
+import type { noblePeripheralType, deviceSettingsType } from '../../types/paramTypes';
 
 
 const testStyle = styler([
@@ -56,12 +56,15 @@ type propsType = {
 };
 
 /* Get the generator component based on ID - should be refactored and moved */
-function mapGeneratorIdToComponent(generatorId: number | string, key: number): * {
+function mapGeneratorIdToComponent(
+  deviceId: string,
+  generatorId: number | string,
+  key: number): * {
   /* */
   const id = parseInt(generatorId, 10);
   switch (id) {
     case 5:
-      return (<DriveBot key={key} />);
+      return (<DriveBot key={key} deviceId={deviceId} />);
     default:
       console.log('mapGeneratorIdToComponent', generatorId);
       return '';
@@ -93,7 +96,7 @@ export default class CollectDataPage extends Component {
           const generatorId = generatorKeys[j];
           /* Check to see if it is active */
           if (generators[generatorId].active) {
-            componentArray.push(mapGeneratorIdToComponent(generatorId, j));
+            componentArray.push(mapGeneratorIdToComponent(deviceId, generatorId, j));
           }
         }
       }
@@ -116,22 +119,24 @@ export default class CollectDataPage extends Component {
         </Col>
         <Col md={8} lg={8}>
           <div style={{ backgroundColor: '#D4DDE1' }}>
-            <ChartContainer timeRange={series1.timerange()} showGrid showGridPosition={'under'}>
-              <ChartRow height="465">
-                <YAxis id="axis1" label="AUD" min={0} max={2.5} width="60" type="linear" format="$,.2f" />
-                <Charts>
-                  <LineChart axis="axis1" interpolation={'curveMonotoneX'} columns={['AUD', 'SMD']} series={series1} style={testStyle} />
-                  <LineChart axis="axis2" interpolation={'curveMonotoneX'} columns={['USD']} series={series2} style={testStyle} />
-                  <Baseline
-                    axis="axis1"
-                    value={1.0}
-                    label="USD Baseline"
-                    position="right"
-                  />
-                </Charts>
-                <YAxis id="axis2" label="USD" min={0} max={2.5} width="60" type="linear" format="$,.2f" />
-              </ChartRow>
-            </ChartContainer>
+            <Resizable>
+              <ChartContainer timeRange={series1.timerange()} showGrid showGridPosition={'under'}>
+                <ChartRow height="465">
+                  <YAxis id="axis1" label="AUD" min={0} max={2.5} width="60" type="linear" format="$,.2f" />
+                  <Charts>
+                    <LineChart axis="axis1" interpolation={'curveMonotoneX'} columns={['AUD', 'SMD']} series={series1} style={testStyle} />
+                    <LineChart axis="axis2" interpolation={'curveMonotoneX'} columns={['USD']} series={series2} style={testStyle} />
+                    <Baseline
+                      axis="axis1"
+                      value={1.0}
+                      label="USD Baseline"
+                      position="right"
+                    />
+                  </Charts>
+                  <YAxis id="axis2" label="USD" min={0} max={2.5} width="60" type="linear" format="$,.2f" />
+                </ChartRow>
+              </ChartContainer>
+            </Resizable>
           </div>
         </Col>
       </div>
