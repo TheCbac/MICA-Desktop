@@ -19,7 +19,8 @@ export type nobleCharacteristicType = {
   descriptors: ?string,
   type: ?string,
   read: () => void,
-  subscribe: () => void
+  subscribe: () => void,
+  write: () => void
 };
 /* Noble BLE services */
 export type nobleServiceType = {
@@ -120,6 +121,7 @@ export type generatorParamType = {
 
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
+  active: boolean,
   sensors: {
     [sensorId: number | string]: sensorParamType
   },

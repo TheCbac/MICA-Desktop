@@ -13,7 +13,7 @@ import { HashRouter as Router } from 'react-router-dom';
 import { Switch, Route, hashHistory } from 'react-router';
 import App from './containers/App';
 import DevicesPage from './containers/DevicesPage';
-import CollectDataPage from './containers/CollectDataPage';
+import CollectDataContainer from './containers/CollectDataContainer';
 import AnalysisPage from './containers/AnalysisPage';
 import SenGenPage from './containers/SenGenPage';
 
@@ -22,7 +22,7 @@ export default () => (
   <Router history={hashHistory}>
     <App>
       <Switch>
-        <Route path="/collectData" component={CollectDataPage} />
+        <Route path="/collectData" component={CollectDataContainer} />
         <Route path="/sengen" component={SenGenPage} />
         <Route path="/analyze" component={AnalysisPage} />
         <Route path="/" component={DevicesPage} />

@@ -125,4 +125,23 @@ function readMetaCharCallback(
   store.dispatch(metaDataReadComplete(deviceId, metadata, moduleName));
 }
 
+/* Write to a characteristic */
+export function writeCharacteristic(
+  deviceId: string,
+  charUuid: string,
+  payload: number[]
+
+) {
+  /* Get the list of connected devices */
+  const deviceList = store.getState().devices.connected;
+  /* Find the characteristic */
+  const characteristic = getCharacteristicFromPeripheralId(
+    charUuid, micaServiceUuid, deviceId, deviceList
+  );
+  /* Construct the buffer */
+  if (!characteristic) { return; }
+  /* Write the data to the device */
+  const dataBuffer = new Buffer(payload);
+  characteristic.write(dataBuffer, false);
+}
 /* [] - END OF FILE */
