@@ -35,9 +35,9 @@
     "dist": "electron-builder -mwl",
     "build-help": "electron-builder --help"
   },
-  "browserslist": "electron 1.4",
+  "browserslist": "electron 1.8",
   "build": {
-    "productName": "MICADesktopApp1",
+    "productName": "MICA",
     "appId": "org.develar.ElectronReact",
     "files": [
       "dist/",
@@ -84,13 +84,13 @@
     "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
   },
   "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
+    "name": "Craig Cheney",
+    "email": "ccheney@mit.edu",
+    "url": "https://github.mit.edu/ccheney"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
+    "url": "https://github.mit.edu/BiLab/micaReactElectron/issues"
   },
   "keywords": [
     "electron",
@@ -194,9 +194,9 @@
     "stylelint": "^7.10.1",
     "stylelint-config-standard": "^16.0.0",
     "url-loader": "^0.5.8",
-    "webpack": "^2.4.1",
-    "webpack-bundle-analyzer": "^2.4.0",
-    "webpack-dev-server": "^2.4.3",
+    "webpack": "^3.6.0",
+    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-dev-server": "^2.8.2",
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
@@ -228,7 +228,7 @@
     "source-map-support": "^0.4.14"
   },
   "devEngines": {
-    "node": ">=6.x",
+    "node": ">=8.x",
     "npm": ">=3.x",
     "yarn": "0.21.3"
   }

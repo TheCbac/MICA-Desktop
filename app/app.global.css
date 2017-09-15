@@ -2,10 +2,6 @@
 @import "~font-awesome/css/font-awesome.min.css";
 @import "~react-table/react-table.css";
 
-@font-face {
-  font-family: 'Abel';
-  src: url('./fonts/Abel-Regular.ttf');
-}
 
 body {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;

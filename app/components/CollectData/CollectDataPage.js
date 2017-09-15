@@ -113,7 +113,7 @@ export default class CollectDataPage extends Component {
             {this.getGeneratorControls()}
           </Col>
           <Row />
-          <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px', fontFamily: 'Abel' }}>
+          <Col style={{ backgroundColor: '#E0E5E8', minHeight: '240px' }}>
             Graphs
           </Col>
         </Col>
