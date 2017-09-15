@@ -7,6 +7,9 @@ import path from 'path';
 import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import { dependencies } from './package.json';
+import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
+
+CheckNodeEnv('development');
 
 const dist = path.resolve(process.cwd(), 'dll');
 
@@ -155,22 +158,21 @@ export default merge.smart(baseConfig, {
   resolve: {
     modules: [
       'app',
-      'node_modules',
     ],
   },
 
   entry: {
-    vendor: [
-      'babel-polyfill',
-      ...Object.keys(dependencies)
-    ]
-    .filter(dependency => dependency !== 'font-awesome'),
+    renderer: (
+      Object
+        .keys(dependencies || {})
+        .filter(dependency => dependency !== 'font-awesome')
+    )
   },
 
   output: {
-    library: 'vendor',
+    library: 'renderer',
     path: dist,
-    filename: '[name].dll.js',
+    filename: '[name].dev.dll.js',
     libraryTarget: 'var'
   },
 

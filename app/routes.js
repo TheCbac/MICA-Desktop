@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* **********************************************************
 * File: index.js
 *
@@ -35,3 +36,20 @@ export default () => (
  or else the tabs will not work correctly. */
 
 /* [] - END OF FILE */
+=======
+/* eslint flowtype-errors/show-errors: 0 */
+import React from 'react';
+import { Switch, Route } from 'react-router';
+import App from './containers/App';
+import HomePage from './containers/HomePage';
+import CounterPage from './containers/CounterPage';
+
+export default () => (
+  <App>
+    <Switch>
+      <Route path="/counter" component={CounterPage} />
+      <Route path="/" component={HomePage} />
+    </Switch>
+  </App>
+);
+>>>>>>> b76f537bc784d1102b13675297d54bd28baff9d8

@@ -7,18 +7,21 @@ import merge from 'webpack-merge';
 import BabiliPlugin from 'babili-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
+import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
+
+CheckNodeEnv('production');
 
 export default merge.smart(baseConfig, {
   devtool: 'source-map',
 
   target: 'electron-main',
 
-  entry: ['babel-polyfill', './app/main.development'],
+  entry: './app/main.dev',
 
   // 'main.js' in root
   output: {
     path: __dirname,
-    filename: './app/main.js'
+    filename: './app/main.prod.js'
   },
 
   plugins: [

@@ -37,12 +37,13 @@ describe('main window', function spec() {
     await client.waitUntilWindowLoaded();
     await delay(500);
     const title = await browserWindow.getTitle();
-    expect(title).toBe('micaReactElectron');
+    expect(title).toBe('Hello Electron React!');
   });
-  it('shouldn\'t have any logs in the console of the main window', async () => {
+
+  it('should haven\'t any logs in console of main window', async () => {
     const { client } = this.app;
     const logs = await client.getRenderProcessLogs();
-    /* Print renderer process logs */
+    // Print renderer process logs
     logs.forEach(log => {
       console.log(log.message);
       console.log(log.source);
