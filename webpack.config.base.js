@@ -41,13 +41,10 @@ export default {
   },
 
   plugins: [
-<<<<<<< HEAD
-=======
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
     }),
 
->>>>>>> b76f537bc784d1102b13675297d54bd28baff9d8
     new webpack.NamedModulesPlugin(),
   ],
 };
