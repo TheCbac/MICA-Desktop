@@ -2,6 +2,7 @@
 /* eslint max-len: 0 */
 // @flow
 import { app, BrowserWindow } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 
 const path = require('path');
@@ -42,7 +43,18 @@ app.on('window-all-closed', () => {
   }
 });
 
+/* Auto Update code */
+autoUpdater.on('update-downloaded', () => {
+  autoUpdater.quitAndInstall();
+});
+
 app.on('ready', async () => {
+  /* Check for updates */
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Checking for updates...');
+    autoUpdater.checkForUpdates();
+  }
+
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }

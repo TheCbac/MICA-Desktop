@@ -27,6 +27,7 @@
     "dev": "cross-env NODE_ENV=development START_HOT=1 npm run hot-updates-server",
     "devDebug": "DEBUG_LVL=5 cross-env NODE_ENV=development START_HOT=1 npm run hot-updates-server",
     "package": "npm run build && build --publish never",
+    "publish": "npm run build && build --publish always",
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl",
@@ -40,6 +41,14 @@
     "productName": "MICA Desktop",
     "appId": "edu.mit.mica",
     "copyright": "Copyright © 2017 The MICA Group",
+    "publish": [
+      {
+        "provider": "github",
+        "host": "github.mit.edu",
+        "owner": "BiLab",
+        "repo": "MICA-Desktop"
+      }
+    ],
     "files": [
       "dist/",
       "node_modules/",
@@ -153,7 +162,7 @@
     "css-loader": "^0.28.0",
     "devtron": "^1.4.0",
     "electron": "^1.6.5",
-    "electron-builder": "^19.19.1",
+    "electron-builder": "^19.27.7",
     "electron-devtools-installer": "^2.2.0",
     "electron-rebuild": "^1.5.11",
     "enzyme": "^2.8.2",
@@ -207,6 +216,7 @@
     "bootstrap": "^3.3.7",
     "dist": "^0.1.2",
     "electron-debug": "^1.1.0",
+    "electron-updater": "^2.8.9",
     "extract-text-webpack-plugin": "^2.1.0",
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
