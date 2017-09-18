@@ -45,6 +45,7 @@ app.on('window-all-closed', () => {
 
 /* Send the status for logging to the window */
 function sendStatusToWindow(text) {
+  if (mainWindow == null) { return; }
   mainWindow.webContents.send('message', text);
 }
 
