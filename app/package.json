@@ -1,7 +1,7 @@
 {
-  "name": "mica-react-electron",
-  "productName": "mica-react-electron",
-  "version": "1.0.0",
+  "name": "mica-desktop",
+  "productName": "mica-desktop",
+  "version": "0.1.7",
   "description": "Desktop version of MICA",
   "main": "./main.js",
   "author": {

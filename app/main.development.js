@@ -2,6 +2,7 @@
 /* eslint max-len: 0 */
 // @flow
 import { app, BrowserWindow } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 
 const path = require('path');
@@ -42,11 +43,48 @@ app.on('window-all-closed', () => {
   }
 });
 
+/* Send the status for logging to the window */
+function sendStatusToWindow(text) {
+  mainWindow.webContents.send('message', text);
+}
+
+/* ******** Auto Update code ******** */
+autoUpdater.on('update-downloaded', () => {
+  sendStatusToWindow('Update downloaded; will install in now');
+  autoUpdater.quitAndInstall();
+});
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-available', () => {
+  sendStatusToWindow('Update available.');
+});
+autoUpdater.on('update-not-available', () => {
+  sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater.');
+  sendStatusToWindow(err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+  let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
+  logMessage = `${logMessage} - Downloaded ${progressObj.percent}%`;
+  logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
+  sendStatusToWindow(logMessage);
+});
+
+
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
 
+  /* Set the devTools */
+  // let tools = false;
+  let tools = true;
+  if (process.env.NODE_ENV === 'development') {
+    tools = true;
+  }
   // Electron does not recognize when variable is set to development mode. It stays in production
   mainWindow = new BrowserWindow({
     show: false,
@@ -57,7 +95,7 @@ app.on('ready', async () => {
     webPreferences: {
       // This should be set to false once we find a way to change NODE_ENV to development mode automatically
       // For now, we can just set it to false manually every time we want to build the app
-      devTools: true
+      devTools: tools
     }
   });
 
@@ -82,6 +120,18 @@ app.on('ready', async () => {
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
-});
 
+  /* Check for updates */
+  if (process.env.NODE_ENV !== 'development') {
+    setTimeout(() => {
+      sendStatusToWindow('Begin autoUpdate');
+      autoUpdater.checkForUpdates();
+    }, 5000);
+  } else {
+    setTimeout(() => {
+      sendStatusToWindow('Skipping updates in development mode.');
+      console.log('Skipping updates in development mode.');
+    }, 5000);
+  }
+});
 

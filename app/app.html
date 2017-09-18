@@ -2,11 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-<<<<<<< HEAD
-    <title>micaReactElectron</title>
-=======
-    <title>Hello Electron React!</title>
->>>>>>> b76f537bc784d1102b13675297d54bd28baff9d8
+    <title>MICA Desktop</title>
     <script>
       (function() {
         if (!process.env.HOT) {
@@ -28,24 +24,15 @@
         // Dynamically insert the DLL script in development env in the
         // renderer process
         if (process.env.NODE_ENV === 'development') {
-<<<<<<< HEAD
-          scripts.push('../dll/vendor.dll.js');
-=======
           scripts.push('../dll/renderer.dev.dll.js');
->>>>>>> b76f537bc784d1102b13675297d54bd28baff9d8
         }
 
         // Dynamically insert the bundled app script in the renderer process
         const port = process.env.PORT || 1212;
         scripts.push(
           (process.env.HOT)
-<<<<<<< HEAD
-            ? 'http://localhost:' + port + '/dist/bundle.js'
-            : './dist/bundle.js'
-=======
             ? 'http://localhost:' + port + '/dist/renderer.dev.js'
             : './dist/renderer.prod.js'
->>>>>>> b76f537bc784d1102b13675297d54bd28baff9d8
         );
 
         document.write(
