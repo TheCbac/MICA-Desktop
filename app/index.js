@@ -11,6 +11,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import { ipcRenderer } from 'electron';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import './app.global.css';
@@ -18,6 +19,9 @@ import './actions/nobleCallbackActions';
 
 const store = configureStore();
 
+ipcRenderer.on('message', (event, text) => {
+  console.log('MESSAGE:', text);
+});
 
 render(
   <AppContainer>

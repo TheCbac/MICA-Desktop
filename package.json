@@ -44,8 +44,7 @@
     "publish": [
       {
         "provider": "github",
-        "host": "github.mit.edu",
-        "owner": "BiLab",
+        "owner": "TheCbac",
         "repo": "MICA-Desktop"
       }
     ],
