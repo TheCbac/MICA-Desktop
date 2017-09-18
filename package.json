@@ -1,8 +1,8 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
+  "name": "mica-desktop",
+  "productName": "MICA Desktop",
   "version": "0.11.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "description": "MICA Desktop is used to interact with MICA devices",
   "main": "main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js",
@@ -35,10 +35,11 @@
     "dist": "electron-builder -mwl",
     "build-help": "electron-builder --help"
   },
-  "browserslist": "electron 1.4",
+  "browserslist": "electron 1.8",
   "build": {
-    "productName": "MICADesktopApp1",
-    "appId": "org.develar.ElectronReact",
+    "productName": "MICA Desktop",
+    "appId": "edu.mit.mica",
+    "copyright": "Copyright © 2017 The MICA Group",
     "files": [
       "dist/",
       "node_modules/",
@@ -62,6 +63,9 @@
         }
       ]
     },
+    "mac": {
+      "category": "public.app-category.education"
+    },
     "win": {
       "target": [
         "nsis"
@@ -81,16 +85,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
+    "url": "git+https://github.mit.edu/BiLab/micaReactElectron.git"
   },
   "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
+    "name": "Craig Cheney",
+    "email": "ccheney@mit.edu",
+    "url": "https://github.mit.edu/ccheney"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
+    "url": "https://github.mit.edu/BiLab/micaReactElectron/issues"
   },
   "keywords": [
     "electron",
@@ -103,7 +107,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
+  "homepage": "https://github.mit.edu/BiLab/micaReactElectron",
   "jest": {
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/mocks/fileMock.js",

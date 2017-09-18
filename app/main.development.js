@@ -47,6 +47,11 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
+  /* Set the devTools */
+  let tools = false;
+  if (process.env.NODE_ENV === 'development') {
+    tools = true;
+  }
   // Electron does not recognize when variable is set to development mode. It stays in production
   mainWindow = new BrowserWindow({
     show: false,
@@ -57,7 +62,7 @@ app.on('ready', async () => {
     webPreferences: {
       // This should be set to false once we find a way to change NODE_ENV to development mode automatically
       // For now, we can just set it to false manually every time we want to build the app
-      devTools: true
+      devTools: tools
     }
   });
 
