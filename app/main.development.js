@@ -131,7 +131,7 @@ app.on('ready', async () => {
     setTimeout(() => {
       sendStatusToWindow('Skipping updates in development mode.');
       console.log('Skipping updates in development mode.');
-    }, 5000);
+    }, 10000);
   }
 });
 
