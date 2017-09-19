@@ -113,6 +113,10 @@ export default class DriveBot extends Component {
   render() {
     return (
       <div>
+        <Col md={12}>
+          <span style={{ fontFamily: 'Abel', fontSize: '1.25em' }}>DRIVEBOT</span>
+        </Col>
+        <Row />
         <Col md={6}>
           <Col md={4} mdOffset={4}>
             <Button
