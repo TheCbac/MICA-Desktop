@@ -55,16 +55,17 @@ function initiateUpdateProcess(version: string): void {
   sendStatusToWindow('Update available.');
   mainWindow.webContents.send('updateAvailable', version);
 }
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall();
-});
-autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('Checking for update...');
-});
+/* Main auto update */
 autoUpdater.on('update-available', (updateInfo) => {
   sendStatusToWindow(updateInfo);
   initiateUpdateProcess(updateInfo.version);
+});
+autoUpdater.on('update-downloaded', () => {
+  autoUpdater.quitAndInstall();
+});
+/* Additional auto-update events */
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
 });
 autoUpdater.on('update-not-available', () => {
   sendStatusToWindow('Update not available.');
@@ -80,7 +81,7 @@ autoUpdater.on('download-progress', (progressObj) => {
   sendStatusToWindow(logMessage);
 });
 
-
+/* App ready callback */
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
@@ -130,6 +131,7 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'production') {
     /* Start the update process */
     autoUpdater.checkForUpdates();
+    sendStatusToWindow('Begin Auto update');
   } else {
     setTimeout(() => {
       sendStatusToWindow('Skipping updates in development mode.');
