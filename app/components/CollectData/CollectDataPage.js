@@ -14,11 +14,18 @@ import { Col, Row } from 'react-bootstrap';
 import GraphSettings from './GraphSettingsComponent';
 import GraphComponent from './GraphComponent';
 import ControlComponent from './ControlsComponent';
+import type { thunkType } from '../../types/functionTypes';
 import type { deviceSettingsType } from '../../types/paramTypes';
+import type { collectionStateType, graphSettingsType } from '../../types/stateTypes';
+import type { updateGraphSettingsActionType } from '../../types/collectionActionTypes';
 
 
 type propsType = {
-  deviceSettings: deviceSettingsType
+  deviceSettings: deviceSettingsType,
+  collectionSettings: collectionStateType,
+  startCollecting: () => thunkType,
+  stopCollecting: () => thunkType,
+  updateGraphSettings: (graphSettings: graphSettingsType) => updateGraphSettingsActionType
 };
 
 export default class CollectDataPage extends Component {
@@ -30,7 +37,12 @@ export default class CollectDataPage extends Component {
         <Col md={4} lg={4}>
           <ControlComponent deviceSettings={this.props.deviceSettings} />
           <Row />
-          <GraphSettings />
+          <GraphSettings
+            collectionSettings={this.props.collectionSettings}
+            startCollecting={this.props.startCollecting}
+            stopCollecting={this.props.stopCollecting}
+            updateGraphSettings={this.props.updateGraphSettings}
+          />
         </Col>
 
         <Col md={8} lg={8}>

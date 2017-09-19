@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: appWideActionTypes.js
+* File: types/appWideActionTypes.js
 *
 * Brief: Type def for Actions that span the entire app
 *

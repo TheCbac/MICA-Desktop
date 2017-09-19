@@ -1,6 +1,6 @@
 // @flow
 /* **********************************************************
-* File: appWideActions.js
+* File: actions/appWideActions.js
 *
 * Brief: Actions that span the entire app
 *
