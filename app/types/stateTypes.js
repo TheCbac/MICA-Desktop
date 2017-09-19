@@ -48,12 +48,26 @@ export type appWideStateType = {
   }
 };
 
+/* Graph settings */
+export type horizontalScaleType = 0.5 | 1 | 2 | 5 | 10;
+export type graphSettingsType = {
+  horizontalScale: horizontalScaleType,
+  pausedDisplay: boolean
+};
+
+/* For graphing of the devices */
+export type collectionStateType = {
+  collecting: boolean,
+  graphSettings: graphSettingsType
+};
+
 /* State of the app  */
 export type stateType = {
  scanForDevices: scanStateType,
  devices: devicesStateType,
  router: {},
- appWide: appWideStateType
+ appWide: appWideStateType,
+ collection: collectionStateType
 };
 
 /* [] - END OF FILE */

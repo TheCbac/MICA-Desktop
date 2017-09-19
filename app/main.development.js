@@ -98,7 +98,7 @@ app.on('ready', async () => {
     show: false,
     width: 1024,
     height: 728,
-    minWidth: 475,
+    minWidth: 1000,
     minHeight: 475,
     webPreferences: {
       devTools: tools

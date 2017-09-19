@@ -1,12 +1,14 @@
 // @flow
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 /* **********************************************************
-* File: reducers/devicesReducer.js
+* File: reducers/appWideReducer.js
 *
-* Brief: Reducer for interactive with devices
+* Brief: Reducer for App wide events, such as Auto-Update modals
+*   and disconnect from devices
 *
 * Author: Craig Cheney
-* Date: 2017.07.10
+*
+* 2017.09.18 CC - Document created
 *
 ********************************************************* */
 import update from 'immutability-helper';
