@@ -43,6 +43,7 @@ app.on('window-all-closed', () => {
   }
 });
 
+/* ************ Auto Update code ************ */
 /* Send the status for logging to the window */
 function sendStatusToWindow(text): void {
   if (mainWindow == null) { return; }
@@ -55,7 +56,6 @@ function initiateUpdateProcess(version: string): void {
   mainWindow.webContents.send('updateAvailable', version);
 }
 
-/* ******** Auto Update code ******** */
 autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall();
 });
@@ -65,7 +65,8 @@ if (process.env.DEBUG_PROD === 'true') {
     sendStatusToWindow('Checking for update...');
   });
   autoUpdater.on('update-available', (updateInfo) => {
-    initiateUpdateProcess(updateInfo.version);
+    sendStatusToWindow(updateInfo);
+    initiateUpdateProcess('v1.2.4');
   });
   autoUpdater.on('update-not-available', () => {
     sendStatusToWindow('Update not available.');
@@ -88,7 +89,8 @@ app.on('ready', async () => {
   }
 
   /* Set the devTools in development mode */
-  let tools = false;
+  // let tools = false;
+  let tools = true;
   if (process.env.NODE_ENV === 'development') {
     tools = true;
   }
