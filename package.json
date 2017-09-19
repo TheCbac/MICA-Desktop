@@ -93,16 +93,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.mit.edu/BiLab/micaReactElectron.git"
+    "url": "git+https://github.com/TheCbac/MICA-Desktop"
   },
   "author": {
     "name": "Craig Cheney",
     "email": "ccheney@mit.edu",
-    "url": "https://github.mit.edu/ccheney"
+    "url": "https://github.com/TheCbac"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.mit.edu/BiLab/micaReactElectron/issues"
+    "url": "https://github.com/TheCbac/MICA-Desktop/issues"
   },
   "keywords": [
     "electron",
