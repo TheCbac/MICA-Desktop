@@ -5,6 +5,7 @@
 *
 * Author: Craig Cheney
 *
+* 2017.09.18 CC - Added IPC events
 * 2017.06.08 CC - Document created
 *
 ********************************************************* */
@@ -14,13 +15,21 @@ import { AppContainer } from 'react-hot-loader';
 import { ipcRenderer } from 'electron';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
+import { updatePending } from './actions/appWideActions';
 import './app.global.css';
 import './actions/nobleCallbackActions';
 
 const store = configureStore();
 
-ipcRenderer.on('message', (event, text) => {
+/*  CC - I'm not sure the IPC actions make sense here.. */
+/* Receive messages from the main process */
+ipcRenderer.on('message', (event, text): void => {
   console.log('MESSAGE:', text);
+});
+
+/* Receive notifications from the main process */
+ipcRenderer.on('updateAvailable', (event, version: string): void => {
+  store.dispatch(updatePending(version));
 });
 
 render(
