@@ -59,29 +59,27 @@ function initiateUpdateProcess(version: string): void {
 autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall();
 });
-/* Debugging Auto Update */
-if (process.env.DEBUG_PROD === 'true') {
-  autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-  });
-  autoUpdater.on('update-available', (updateInfo) => {
-    sendStatusToWindow(updateInfo);
-    initiateUpdateProcess('v1.2.4');
-  });
-  autoUpdater.on('update-not-available', () => {
-    sendStatusToWindow('Update not available.');
-  });
-  autoUpdater.on('error', (err) => {
-    sendStatusToWindow('Error in auto-updater.');
-    sendStatusToWindow(err);
-  });
-  autoUpdater.on('download-progress', (progressObj) => {
-    let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
-    logMessage = `${logMessage} - Downloaded ${progressObj.percent}%`;
-    logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
-    sendStatusToWindow(logMessage);
-  });
-}
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-available', (updateInfo) => {
+  sendStatusToWindow(updateInfo);
+  initiateUpdateProcess(updateInfo.version);
+});
+autoUpdater.on('update-not-available', () => {
+  sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater.');
+  sendStatusToWindow(err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+  let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
+  logMessage = `${logMessage} - Downloaded ${progressObj.percent}%`;
+  logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
+  sendStatusToWindow(logMessage);
+});
+
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
