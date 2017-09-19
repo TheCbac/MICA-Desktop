@@ -16,11 +16,12 @@ import DevicesPage from './containers/DevicesPage';
 import CollectDataContainer from './containers/CollectDataContainer';
 import AnalysisPage from './containers/AnalysisPage';
 import SenGenPage from './containers/SenGenPage';
-
+import AppModalContainer from './containers/AppModalContainer';
 
 export default () => (
   <Router history={hashHistory}>
     <App>
+      <AppModalContainer />
       <Switch>
         <Route path="/collectData" component={CollectDataContainer} />
         <Route path="/sengen" component={SenGenPage} />

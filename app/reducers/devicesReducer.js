@@ -31,7 +31,7 @@ import { getPeripheralFromList } from '../utils/deviceUtils';
 
 
 /* Default state of the devicesReducer */
-export const defaultState = {
+export const defaultState: devicesStateType = {
   advertising: [],
   connecting: [],
   connected: [],

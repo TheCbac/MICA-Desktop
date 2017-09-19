@@ -40,11 +40,20 @@ export type devicesStateType = {
   deviceSettings: deviceSettingsType
 };
 
+/* For app wide actions */
+export type appWideStateType = {
+  update: {
+    pending: boolean,
+    version: string
+  }
+};
+
 /* State of the app  */
 export type stateType = {
  scanForDevices: scanStateType,
  devices: devicesStateType,
- router: {}
+ router: {},
+ appWide: appWideStateType
 };
 
 /* [] - END OF FILE */
