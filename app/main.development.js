@@ -43,6 +43,7 @@ app.on('window-all-closed', () => {
   }
 });
 
+/* ************ Auto Update code ************ */
 /* Send the status for logging to the window */
 function sendStatusToWindow(text): void {
   if (mainWindow == null) { return; }
@@ -54,34 +55,33 @@ function initiateUpdateProcess(version: string): void {
   sendStatusToWindow('Update available.');
   mainWindow.webContents.send('updateAvailable', version);
 }
-
-/* ******** Auto Update code ******** */
+/* Main auto update */
+autoUpdater.on('update-available', (updateInfo) => {
+  sendStatusToWindow(updateInfo);
+  initiateUpdateProcess(updateInfo.version);
+});
 autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall();
 });
-/* Debugging Auto Update */
-if (process.env.DEBUG_PROD === 'true') {
-  autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-  });
-  autoUpdater.on('update-available', (updateInfo) => {
-    initiateUpdateProcess(updateInfo.version);
-  });
-  autoUpdater.on('update-not-available', () => {
-    sendStatusToWindow('Update not available.');
-  });
-  autoUpdater.on('error', (err) => {
-    sendStatusToWindow('Error in auto-updater.');
-    sendStatusToWindow(err);
-  });
-  autoUpdater.on('download-progress', (progressObj) => {
-    let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
-    logMessage = `${logMessage} - Downloaded ${progressObj.percent}%`;
-    logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
-    sendStatusToWindow(logMessage);
-  });
-}
+/* Additional auto-update events */
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-not-available', () => {
+  sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater.');
+  sendStatusToWindow(err);
+});
+autoUpdater.on('download-progress', (progressObj) => {
+  let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
+  logMessage = `${logMessage} - Downloaded ${progressObj.percent}%`;
+  logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
+  sendStatusToWindow(logMessage);
+});
 
+/* App ready callback */
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
@@ -89,6 +89,7 @@ app.on('ready', async () => {
 
   /* Set the devTools in development mode */
   let tools = false;
+  // let tools = true;
   if (process.env.NODE_ENV === 'development') {
     tools = true;
   }
@@ -130,6 +131,7 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'production') {
     /* Start the update process */
     autoUpdater.checkForUpdates();
+    sendStatusToWindow('Begin Auto update');
   } else {
     setTimeout(() => {
       sendStatusToWindow('Skipping updates in development mode.');
