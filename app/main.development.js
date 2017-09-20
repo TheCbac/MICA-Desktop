@@ -98,7 +98,7 @@ app.on('ready', async () => {
     show: false,
     width: 1024,
     height: 728,
-    minWidth: 475,
+    minWidth: 1000,
     minHeight: 475,
     webPreferences: {
       devTools: tools
@@ -137,7 +137,7 @@ app.on('ready', async () => {
       sendStatusToWindow('Skipping updates in development mode.');
       /* In Terminal */
       console.log('Skipping updates in development mode.');
-      initiateUpdateProcess('v1.2.3');
+      // initiateUpdateProcess('v1.2.3');
     }, 10000);
   }
 });
