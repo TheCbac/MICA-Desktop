@@ -73,6 +73,8 @@ export const micaIDs = {
     '4': 'Bootloader'
   }
 };
+/* Frequency in Hz of the data clock inside the MICA cubes */
+export const DATA_CLOCK_FREQ = 100000;
 
 
 type moduleNameType = 'energy' | 'actuation' | 'power' | 'sensing' | 'communication' | 'control';

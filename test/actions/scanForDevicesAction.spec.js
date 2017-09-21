@@ -9,7 +9,6 @@
 * Date: 2017.06.06
 *
 **********************************************************/
-// $FlowFixMe
 import scanRewire, * as actions from '../../app/actions/ScanForDevicesActions';
 
 describe('ScanForDevicesActions', () => {

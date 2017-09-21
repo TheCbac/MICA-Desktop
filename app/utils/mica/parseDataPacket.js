@@ -13,15 +13,18 @@
 *
 ********************************************************* */
 import { TimeEvent } from 'pondjs';
-import PreciseTime from '../preciseTime';
+import {
+  MASK_BIT_ODD,
+  MASK_BYTE_ONE,
+  MASK_NIBBLE_LOW,
+  SHIFT_BYTE_HALF,
+  SHIFT_BYTE_ONE,
+  FLAG_DATA_ROLLUNDER
+} from '../bitConstants';
+import { DATA_CLOCK_FREQ } from './micaConstants';
 import log from '../loggingUtils';
+import type { periodCountType, sensorListType } from '../../types/paramTypes';
 
-const LOW_NIBBLE_MASK = 0x0F;
-const HALF_BYTE_SHIFT = 0x04;
-const BYTE_SHIFT = 0x08;
-const ROLLUNDER_FLAG = 0x08;
-const BITS_12 = 12;
-const ODD_MASK = 0x01;
 
 /* Converts a twos complement word of numBits length to a signed int */
 export function twosCompToSigned(value: number, numBits: number): number {
@@ -34,7 +37,7 @@ export function twosCompToSigned(value: number, numBits: number): number {
 
 /* take two on the parsing function */
 export function parseDataPacket(
-  packetData: buffer,
+  packetData: Buffer,
   numChannels: number,
   periodLength: number,
   scalingConstant: number,
@@ -56,7 +59,7 @@ export function parseDataPacket(
       /* If the rollunder flag is set read secondsLSB */
       /* Currently no error correction is done with secondsLsb, but it
        * needs to be read to maintain packet index integrity  */
-      const rollunder = (timeLsb & ROLLUNDER_FLAG);
+      const rollunder = (timeLsb & FLAG_DATA_ROLLUNDER);
       if (rollunder) {
         const secondsLsb = packetData.readUInt8(idx++); // eslint-disable-line no-unused-vars
       }
@@ -66,21 +69,21 @@ export function parseDataPacket(
       for (let channel = 0; channel < numChannels; channel++) {
         let rawData;
         /* If an even numbered channel */
-        if (!(channel & ODD_MASK)) {
+        if (!(channel & MASK_BIT_ODD)) {
           const dataMsb = packetData.readUInt8(idx++);
           const dataLsb = packetData.readUInt8(idx++);
-          rawData = (dataMsb << HALF_BYTE_SHIFT) |
-            ((dataLsb >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
+          rawData = (dataMsb << SHIFT_BYTE_HALF) |
+            ((dataLsb >> SHIFT_BYTE_HALF) & MASK_NIBBLE_LOW);
         } else { /* If an Odd numbered channel */
           /* Unpack the MSB of odd channels from the previous byte */
           const dataMsb = packetData.readUInt8(idx - 1);
           const dataLsb = packetData.readUInt8(idx++);
-          rawData = ((dataMsb & LOW_NIBBLE_MASK) << BYTE_SHIFT) | dataLsb;
+          rawData = ((dataMsb & MASK_NIBBLE_LOW) << SHIFT_BYTE_ONE) | dataLsb;
         }
         /* Record the results */
         const chanOffset = offset[channel];
         /* Convert from two's complement to signed */
-        const signedData = twosCompToSigned(rawData, BITS_12);
+        const signedData = twosCompToSigned(rawData, 12);
         /* dataPoint = K/G*(x-x0) = K/G*x - offset */
         const value = ((scalingConstant / gain) * signedData) - chanOffset;
         /* Limit the precision */
@@ -88,10 +91,10 @@ export function parseDataPacket(
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
-      const timeDifferentialTwos = (timeMsb << HALF_BYTE_SHIFT) |
-        ((timeLsb >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
+      const timeDifferentialTwos = (timeMsb << SHIFT_BYTE_HALF) |
+        ((timeLsb >> SHIFT_BYTE_HALF) & MASK_NIBBLE_LOW);
       /* Get the signed time differential */
-      const timeDifferential = twosCompToSigned(timeDifferentialTwos, BITS_12);
+      const timeDifferential = twosCompToSigned(timeDifferentialTwos, 12);
       /* calculate the microsecond delta */
       const micro = periodLength + timeDifferential;
       /* Update the time */
@@ -106,6 +109,25 @@ export function parseDataPacket(
   }
   /* Return the event array */
   return eventArray;
+}
+
+/* Returns the period count from the sample rate - MINIMUM SAMPLE RATE is ~1.5 HZ */
+export function sampleRateToPeriodCount(sampleRate: number): periodCountType {
+  /* Calculate the 16-bit period count */
+  const periodCount = Math.abs(Math.round(DATA_CLOCK_FREQ / sampleRate));
+  /* Clip to at 16 bit number */
+  if (periodCount >= ((2 ** 16) - 1)) {
+    return { msb: 0xFF, lsb: 0xFF };
+  }
+  /* Break into MSB and LSB */
+  const msb = (periodCount >> SHIFT_BYTE_ONE) & MASK_BYTE_ONE;
+  const lsb = (periodCount & MASK_BYTE_ONE);
+  return { msb, lsb };
+}
+
+/* Create the start packet from a list of sensors */
+export function encodeStartPacket(sampleRate: number, sensorList: sensorListType): number[] {
+
 }
 
 /* [] - END OF FILE */
