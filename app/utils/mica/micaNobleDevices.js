@@ -21,6 +21,8 @@ import {
 import parseMetaData from './metaDataParsers';
 import log from '../loggingUtils';
 import { metaDataReadComplete } from '../../actions/devicesActions';
+import { parseDataPacket } from './parseDataPacket';
+import PreciseTime from '../preciseTime';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -75,10 +77,20 @@ function discoverMicaNobleCallback(id: nobleIdType, error: ?string): void {
   }
   /* Subscribe to the char */
   sensingCommandsChar.subscribe(subscribeCallback.bind(null, id, 'SensingCommand'));
+  sensingCommandsChar.on('data', sensingDataCallback.bind(null, id));
   /* Subscribe to the char */
   communicationCommandChar.subscribe(subscribeCallback.bind(null, id, 'CommunicationCommand'));
   /* Read the metadata from the device */
   readMetaData(id);
+}
+
+function sensingDataCallback(id: string, data: buffer, isNotification: boolean): void {
+  // console.log('sensingDataCallback:', id, data);
+  const time = new Date().getTime();
+  /* Parse the command */
+  const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time);
+  // console.log('parsedData:', parsed);
+  console.log(parsed.map((point) => point.toPoint()[1]));
 }
 
 /* Call back function for subscriptions */
@@ -138,10 +150,10 @@ export function writeCharacteristic(
   const characteristic = getCharacteristicFromPeripheralId(
     charUuid, micaServiceUuid, deviceId, deviceList
   );
-  /* Construct the buffer */
   if (!characteristic) { return; }
-  /* Write the data to the device */
+  /* Construct the buffer */
   const dataBuffer = new Buffer(payload);
+  /* Write the data to the device */
   characteristic.write(dataBuffer, false);
 }
 /* [] - END OF FILE */

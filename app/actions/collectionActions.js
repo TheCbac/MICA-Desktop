@@ -13,6 +13,8 @@ import type {
   toggleCollectionStateActionType,
   updateGraphSettingsActionType
 } from '../types/collectionActionTypes';
+import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
+import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
 import type { thunkType } from '../types/functionTypes';
 
@@ -35,7 +37,12 @@ export function startCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const collectionSettings = getState().collection;
+    const state = getState();
+    /* Write to the device */
+    const device = state.devices.connected[0];
+    const startCommand = [0x01, 0x03, 0xE8, 0x01, 0x01, 0x00];
+    // sensingCommand.write(startCommand);
+    writeCharacteristic(device.id, micaCharUuids.sensorCommands, startCommand);
     /* Update the object */
     dispatch(toggleCollectionState(true));
   };
@@ -46,7 +53,12 @@ export function stopCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const collectionSettings = getState().collection;
+    const state = getState();
+    /* Write to the device */
+    const device = state.devices.connected[0];
+    const { sensorCommands } = micaCharUuids;
+    const stopCommand = [0x00, 0x01];
+    writeCharacteristic(device.id, sensorCommands, stopCommand);
     /* Update the object */
     dispatch(toggleCollectionState(false));
   };

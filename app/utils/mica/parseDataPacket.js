@@ -40,11 +40,12 @@ export function parseDataPacket(
   scalingConstant: number,
   gain: number,
   offset: number[],
-  startTime: PreciseTime
+  startTime: number
 ): TimeEvent[] {
   /* return array */
   const eventArray = [];
   let idx = 0;
+  let t = 0;
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -94,9 +95,9 @@ export function parseDataPacket(
       /* calculate the microsecond delta */
       const micro = periodLength + timeDifferential;
       /* Update the time */
-      startTime.addMicroseconds(micro);
+      t += micro;
       /* Create the time event */
-      const event = new TimeEvent(startTime.getPreciseTime(), channelData);
+      const event = new TimeEvent(t, channelData);
       /* Push the event */
       eventArray.push(event);
     }

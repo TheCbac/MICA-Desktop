@@ -10,7 +10,6 @@
 * 2017.09.14 CC - Document created
 *
 ********************************************************* */
-
 export default class PreciseTime extends Date {
   /* Type def */
   microseconds: number;
@@ -18,6 +17,8 @@ export default class PreciseTime extends Date {
   constructor(...args: *) {
     super(...args);
     this.microseconds = 0;
+    /* Change the prototype */
+    // Object.setPrototypeOf(this, PreciseTime.prototype);
   }
   /* Add microseconds to the date */
   addMicroseconds(uSec: number): number {
@@ -36,6 +37,7 @@ export default class PreciseTime extends Date {
   }
   /* Get the precise time stamp */
   getPreciseTime(): number {
+    // return Number(`${this.getTime()}.${this.microseconds}`);
     return Number(`${this.getTime()}.${this.microseconds}`);
   }
 }
