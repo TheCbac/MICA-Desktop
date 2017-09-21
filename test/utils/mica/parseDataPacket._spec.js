@@ -1,21 +1,20 @@
 // @flow
 /* eslint no-underscore-dangle: 0 */
 /* **********************************************************
-* File: test/parseDataPacket/parseDataPacketTest.spec.js
+* File: test/utils/mica/parseDataPacket.spec.js
 *
 * Brief: Test for data packet parsing function
 *
-* Author: George Whitfield
-* Date: 2017.07.31
+* Authors: George Whitfield, Craig Cheney
 *
-**********************************************************/
-// with rewire, two files within the same directory cannot have the same name, even
-// the extensions are dirrent.
-
+* 2017.09.20 CC - Updated test suite
+* 2017.07.31 GW - Document Created
+*
+********************************************************* */
 import sinon from 'sinon';
-import { parseDataPacket, __RewireAPI__ as Rewire } from './parseDataPacket';
+import { parseDataPacket, __RewireAPI__ as Rewire } from '../../../app/utils/mica/parseDataPacket';
 
-// rewire module can acess non-exported variables
+// rewire module can access non-exported variables
 describe('parseDataPacket.js test', () => {
   // const rewire = require('rewire');
 

@@ -15,7 +15,7 @@ import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
   styler, Resizable, BarChart, ScatterChart, Legend
  } from 'react-timeseries-charts';
-import { TimeSeries, TimeEvent, TimeRange, Pipeline, Stream, percentile, EventOut } from 'pondjs';
+import { TimeSeries, TimeEvent, TimeRange, Pipeline, percentile, EventOut, Stream } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
 import type { collectionStateType } from '../../types/stateTypes';
 
@@ -99,12 +99,6 @@ export default class GraphComponent extends Component {
           /* Enqueue the event */
           const newEvent = this.state.events;
           newEvent.enq(event);
-          // const newEvent = update(this.state.events,
-          //   { $apply: (evt) => {
-          //     evt.enq(event);
-          //     return evt;
-          //   } }
-          // );
           /* Update the state */
           this.setState({ time: t, events: newEvent });
           /* Let the aggregator process the event */
