@@ -1,25 +1,27 @@
-/* Returns the data packet object from the dataPacket data */
+// @flow
 /* eslint no-bitwise: 0 */
 /* eslint no-plusplus: 0 */
 /* **********************************************************
-* File: actions/ScanForDevicesActions.js
+* File: utils/mica/parseDataPacket.js
 *
-* Brief: Actions for the scanning devices
+* Brief: Utility for parsing mica data packets
 *
 * Authors: George Whitfield, Craig Cheney
 *
+* 2017.09.20 CC - Updated document for Electron
 * 2017.07.28 GW - Document created
 *
 ********************************************************* */
-import { TimeSeries } from 'pondjs';
+import { TimeEvent } from 'pondjs';
+import PreciseTime from '../preciseTime';
+import log from '../loggingUtils';
 
 const LOW_NIBBLE_MASK = 0x0F;
-const HALF_BYTE_SHIFT = 4;
-const BYTE_SHIFT = 8;
+const HALF_BYTE_SHIFT = 0x04;
+const BYTE_SHIFT = 0x08;
 const ROLLUNDER_FLAG = 0x08;
 const BITS_12 = 12;
-const IS_ODD = 0x01;
-
+const ODD_MASK = 0x01;
 
 /* Converts a twos complement word of numBits length to a signed int */
 export function twosCompToSigned(value: number, numBits: number): number {
@@ -31,137 +33,78 @@ export function twosCompToSigned(value: number, numBits: number): number {
 }
 
 /* take two on the parsing function */
-export function parseDataPacket2(
+export function parseDataPacket(
   packetData: buffer,
   numChannels: number,
   periodLength: number,
   scalingConstant: number,
   gain: number,
-  offset: number
-): TimeSeries {
-
-}
-
-/* Parse Data Function */
-export function parseDataPacket(
-  peripheralId: number,
-  data: buffer,
-  numChannels: number,
-  periodLength: number,
-  packetTime,
-  scalingConstant,
-  gain,
-  offset
-) {
-  let i = 0;
-  const dataArray = [];
-
-  while (i < data.length) {
-    try {
-      /* ***************** Time information ***************** */
-      const timeMSB = getValue(data, i++);
-      const timeLSB = getValue(data, i++);
+  offset: number[],
+  startTime: PreciseTime
+): TimeEvent[] {
+  /* return array */
+  const eventArray = [];
+  let idx = 0;
+  /* Protect against corrupt packets */
+  try {
+    /* Iterate through the whole packet */
+    while (idx < packetData.length) {
+      /* ***************** Time information **************** */
+      const timeMsb = packetData.readUInt8(idx++);
+      const timeLsb = packetData.readUInt8(idx++);
       /* If the rollunder flag is set read secondsLSB */
-      /* Currently no error correction is done with secondsLSB, but it
-          needs to be read to maintain packet index integrity  */
-      const rollunder = (timeLSB & ROLLUNDER_FLAG);
+      /* Currently no error correction is done with secondsLsb, but it
+       * needs to be read to maintain packet index integrity  */
+      const rollunder = (timeLsb & ROLLUNDER_FLAG);
       if (rollunder) {
-        const secondsLSB = getValue(data, i++);
+        const secondsLsb = packetData.readUInt8(idx++); // eslint-disable-line no-unused-vars
       }
       /* ***************** Data information ***************** */
-      const channelData = [];
-      let dataMSB;
-      let dataLSB;
-      let rawData;
+      const channelData = {};
+      /* Iterate through the channels */
       for (let channel = 0; channel < numChannels; channel++) {
+        let rawData;
         /* If an even numbered channel */
-        if (!(channel & IS_ODD)) {
-          dataMSB = getValue(data, i++);
-          dataLSB = getValue(data, i++);
-          rawData = (dataMSB << HALF_BYTE_SHIFT) | ((dataLSB >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
-        } else { /* If an odd numbered channel */
+        if (!(channel & ODD_MASK)) {
+          const dataMsb = packetData.readUInt8(idx++);
+          const dataLsb = packetData.readUInt8(idx++);
+          rawData = (dataMsb << HALF_BYTE_SHIFT) |
+            ((dataLsb >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
+        } else { /* If an Odd numbered channel */
           /* Unpack the MSB of odd channels from the previous byte */
-          dataMSB = getValue(data, (i - 1));
-          dataLSB = getValue(data, (i + 1));
-          rawData = ((dataMSB & LOW_NIBBLE_MASK) << BYTE_SHIFT) | dataLSB;
-          // console.log('rawData for channel ' + channel + ' --> ' + rawData);
+          const dataMsb = packetData.readUInt8(idx - 1);
+          const dataLsb = packetData.readUInt8(idx++);
+          rawData = ((dataMsb & LOW_NIBBLE_MASK) << BYTE_SHIFT) | dataLsb;
         }
-        /* Record the result */
+        /* Record the results */
         const chanOffset = offset[channel];
         /* Convert from two's complement to signed */
-        const x = twosCompToSigned(rawData, BITS_12);
+        const signedData = twosCompToSigned(rawData, BITS_12);
         /* dataPoint = K/G*(x-x0) = K/G*x - offset */
-        const value = ((scalingConstant / gain) * x) - chanOffset;
+        const value = ((scalingConstant / gain) * signedData) - chanOffset;
+        /* Limit the precision */
         channelData[channel] = value.toFixed(5);
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
-      const timeDifferentialTwos = (timeMSB << HALF_BYTE_SHIFT) |
-        ((timeLSB >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
-
+      const timeDifferentialTwos = (timeMsb << HALF_BYTE_SHIFT) |
+        ((timeLsb >> HALF_BYTE_SHIFT) & LOW_NIBBLE_MASK);
+      /* Get the signed time differential */
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, BITS_12);
-
+      /* calculate the microsecond delta */
       const micro = periodLength + timeDifferential;
-
-      /* Add the number of microseconds to the packet time obj */
-      packetTime.addMicroseconds(micro);
-      const newTime = packetTime.getTimeMicro();
-
-      /* Push the data array */
-      const result = {
-        t: newTime,
-        d: channelData
-      };
-
-      dataArray.push(result);
-      const array = [];
-      array.push(result);
-
-      /* ***************** Update on the graph ***************** */
-      /* Time in milliseconds between updates */
-      const graphingInterval = 60;
-      /* Graph on client if beyond the graphing interval */
-      if (packetTime.lastLogged === null || (newTime - packetTime.lastLogged) > graphingInterval) {
-        packetTime.lastLogged = newTime;
-          /* report to client */
-      }
-    /* Catch any Errors */
-    } catch (err) {
-      console.log('parseDataPacket: ', err);
+      /* Update the time */
+      startTime.addMicroseconds(micro);
+      /* Create the time event */
+      const event = new TimeEvent(startTime.getPreciseTime(), channelData);
+      /* Push the event */
+      eventArray.push(event);
     }
-  } /* End While */
-  return dataArray;
-}
-
-/* ****************** untested ****************** */
-export function newPacketTime() {
-  const packetTime = new Date();
-  packetTime.microsecond = 0;
-  packetTime.lastLogged = null;
-  /* Modify packetTime for microseconds */
-  packetTime.addMicroseconds = function (usec) {
-    const micro = usec + this.microsecond;
-    const millisecond = Math.floor(micro / 1000);
-    this.setTime(this.getTime() + millisecond);
-    this.microsecond = (micro % 1000);
-    return this.microsecond;
-  };
-  // Look into 'extends'
-  packetTime.getMicroseconds = () => this.microsecond;
-  /* returns the timestamp with microseconds */
-  packetTime.getTimeMicro = () => Number(`${this.getTime()}.${this.microsecond}`);
-
-  return packetTime;
-}
-
-/* ************* Generic Helpers ************* */
-/* wrapper function to ensure BLE and USB functionality  */
-function getValue(data, index) {
-  if (data._isBuffer) {
-    return data.readUInt8(index);
+  } catch (err) {
+    log.warn('ParseDataPacket corrupted packet', err);
   }
-  return data[index];
+  /* Return the event array */
+  return eventArray;
 }
-
 
 /* [] - END OF FILE */
