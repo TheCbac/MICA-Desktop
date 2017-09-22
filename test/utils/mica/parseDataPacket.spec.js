@@ -212,10 +212,10 @@ describe('parseDataPacket.spec.js', () => {
     });
   });
   describe('Encode stop packet', () => {
-    it('Should return the correct stop packet', () {
+    it('Should return the correct stop packet', () => {
       const sensorList: sensorListType = {};
       expect(encodeStopPacket(sensorList)).toEqual([CMD_STOP]);
-    })
+    });
   });
 });
 /* [] - END OF FILE */
