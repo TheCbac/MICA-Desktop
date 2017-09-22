@@ -53,11 +53,18 @@ export function startCollecting(): thunkType {
       if (device.active) {
         /* PLACE HOLDER SAMPLE RATE */
         const sampleRate = 100;
-        const startPacket = encodeStartPacket(sampleRate, device.sensors);
+        // const startPacket = encodeStartPacket(sampleRate, device.sensors);
+        const startPacket = [1, 3, 232, 1, 1, 0];
+        console.log('Start packet', startPacket);
         /* Only write if there were active sensors */
         if (startPacket.length) {
           sensorStarted = true;
-          writeCharacteristic(deviceId, micaCharUuids.sensorCommands, startPacket);
+          const result = writeCharacteristic(deviceId, micaCharUuids.sensorCommands, startPacket,
+            (dId, charUuid, err) => {
+              console.log('writeCharCallback:', dId, charUuid, err);
+            }
+          );
+          console.log('startCollecting: writeResult', result);
         }
       }
     }
