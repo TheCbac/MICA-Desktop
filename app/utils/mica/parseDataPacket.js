@@ -136,30 +136,38 @@ export function channelArrayToWord(channelArray: number[]): number {
 
 /* Create the start packet from a list of sensors */
 export function encodeStartPacket(sampleRate: number, sensorList: sensorListType): number[] {
-  /* Get the period count */
-  const { msb, lsb } = sampleRateToPeriodCount(sampleRate);
   /* Array to return */
-  const startPacket = [CMD_START, msb, lsb];
+  const startPacket = [];
   /* Iterate over each sensor */
   const sensorIds = Object.keys(sensorList);
+  console.log('encodeStartPacket', sensorList, sensorIds);
   for (let i = 0; i < sensorIds.length; i++) {
     /* Get the specific sensor */
     const sensorId = parseInt(sensorIds[i], 10);
     const sensor = sensorList[sensorId];
-    /* get the channels */
-    const channels = channelArrayToWord(sensor.channels);
-    /* Get the dynamic params */
-    const paramList = [];
-    const paramKeys = Object.keys(sensor.dynamicParams);
-    const numParams = paramKeys.length;
-    for (let j = 0; j < numParams; j++) {
-      /* Get the address and value */
-      const { address, value } = sensor.dynamicParams[paramKeys[j]];
-      /* Order is important here */
-      paramList.push(address, value);
+    /* Ensure the sensor is active */
+    if (sensor.active) {
+      /* get the channels */
+      const channels = channelArrayToWord(sensor.channels);
+      /* Get the dynamic params */
+      const paramList = [];
+      const paramKeys = Object.keys(sensor.dynamicParams);
+      const numParams = paramKeys.length;
+      for (let j = 0; j < numParams; j++) {
+        /* Get the address and value */
+        const { address, value } = sensor.dynamicParams[paramKeys[j]];
+        /* Order is important here */
+        paramList.push(address, value);
+      }
+      /* Push each sensor to the start packet */
+      startPacket.push(sensorId, channels, numParams, ...paramList);
     }
-    /* Push each sensor to the start packet */
-    startPacket.push(sensorId, channels, numParams, ...paramList);
+  }
+  /* Only add start bytes if there are active sensors */
+  if (startPacket.length) {
+    /* Get the period count */
+    const { msb, lsb } = sampleRateToPeriodCount(sampleRate);
+    startPacket.unshift(CMD_START, msb, lsb);
   }
   /* Return the start packet */
   return startPacket;

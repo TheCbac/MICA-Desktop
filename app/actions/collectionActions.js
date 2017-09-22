@@ -34,7 +34,7 @@ export function toggleCollectionState(newState: boolean): toggleCollectionStateA
   };
 }
 
-/* Start collecting data */
+/* Gather the active sensor and start collecting data */
 export function startCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
@@ -43,36 +43,28 @@ export function startCollecting(): thunkType {
     const { deviceSettings } = state.devices;
     /* find all active devices */
     const deviceKeys = Object.keys(deviceSettings);
+    let sensorStarted = false;
     /* Iterate over each device */
     for (let i = 0; i < deviceKeys.length; i++) {
       const deviceId = deviceKeys[i];
       const device = deviceSettings[deviceId];
       /* See if the device is active */
       if (device.active) {
-        /* Find all of the active sensors in the device */
-        const sensorIds = Object.keys(device.sensors);
-        const activeSensorList = [];
-        for (let j = 0; j < sensorIds.length; j++) {
-          const sensorId = sensorIds[j];
-          const sensor = device.sensor[sensorId];
-          /* See if the sensor is active */
-          if (sensor.active) { activeSensorList.push(sensor); }
-        }
-        /* Only generate a start packet for a device that has active sensors */
-        if (activeSensorList.length) {
-          /* PLACE HOLDER SAMPLE RATE */
-          const sampleRate = 100;
-          const startPacket = encodeStartPacket(sampleRate, activeSensorList);
+        /* PLACE HOLDER SAMPLE RATE */
+        const sampleRate = 100;
+        const startPacket = encodeStartPacket(sampleRate, device.sensors);
+        /* Only write if there were active sensors */
+        if (startPacket.length) {
+          sensorStarted = true;
+          writeCharacteristic(deviceId, micaCharUuids.sensorCommands, startPacket);
         }
       }
     }
-    /* Write to the device */
-    const device = state.devices.connected[0];
-    const startCommand = [0x01, 0x03, 0xE8, 0x01, 0x01, 0x00];
-    // sensingCommand.write(startCommand);
-    writeCharacteristic(device.id, micaCharUuids.sensorCommands, startCommand);
-    /* Update the object */
-    dispatch(toggleCollectionState(true));
+    /* Ensure that at least one sensor was started */
+    if (sensorStarted) {
+          /* Update the object */
+      dispatch(toggleCollectionState(true));
+    }
   };
 }
 

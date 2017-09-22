@@ -46,7 +46,7 @@ const accSensor: sensorParamType = {
 const gyrId = 0x02;
 const gyrSensor: sensorParamType = {
   name: 'Gyroscope',
-  active: false,
+  active: true,
   channels: [
     0
   ],
@@ -176,6 +176,37 @@ describe('parseDataPacket.spec.js', () => {
         aSensorId, aChannels, aNumParams, ...aParams,
         gSensorId, gChannels, gNumParams, ...gParams
       ]);
+    });
+    it('Do not include inactive sensors', () => {
+      const acc = { ...accSensor, channels: [2] };
+      const gyr = { ...gyrSensor, active: false };
+      const sensorList: sensorListType = {};
+      sensorList[accId] = acc;
+      sensorList[gyrId] = gyr;
+      const sampleRate = 525;
+      const msb = 0x00;
+      const lsb = 0xBE;
+      /* Acc Result constants */
+      const aSensorId = 0x01;
+      const aChannels = 0x04;
+      const aNumParams = 0x02;
+      const aParams = [15, 3, 16, 11];
+      /* Test */
+      expect(encodeStartPacket(sampleRate, sensorList)).toEqual([
+        CMD_START, msb, lsb,
+        aSensorId, aChannels, aNumParams, ...aParams
+      ]);
+    });
+    it('Inactive sensors should return an empty array', () => {
+      const acc = { ...accSensor, active: false };
+      const gyr = { ...gyrSensor, active: false };
+      const sensorList: sensorListType = {};
+      const sampleRate = 525;
+      /* Create the sensor array */
+      sensorList[accId] = acc;
+      sensorList[gyrId] = gyr;
+      /* Test */
+      expect(encodeStartPacket(sampleRate, sensorList)).toEqual([]);
     });
   });
 });
