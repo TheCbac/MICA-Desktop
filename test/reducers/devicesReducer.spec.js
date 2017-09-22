@@ -9,7 +9,7 @@
 * 2017.09.03 CC - Updated for correct flow usage
 * 2017.07.25 GW - Document created
 *
-**********************************************************/
+********************************************************* */
 import faker from 'faker';
 import reducer from '../../app/reducers/devicesReducer';
 import {
@@ -82,13 +82,10 @@ describe('devicesReducer.spec.js', () => {
       /* Call the reducer */
       const newState = reducer(defaultState, action);
       expect(defaultState.advertising.length).toEqual(0);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState.advertising.length).toEqual(1);
       /* Add second device */
       const newState1 = reducer(newState, action1);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState.advertising.length).toEqual(1);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState1.advertising.length).toEqual(2);
     });
   });
@@ -105,55 +102,13 @@ describe('devicesReducer.spec.js', () => {
       /* Call the reducer */
       const newState = reducer(defaultState, addAction);
       expect(defaultState.advertising.length).toEqual(0);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState.advertising.length).toEqual(1);
       /* Clear the list */
       const newState1 = reducer(newState, clearAction);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState1.advertising.length).toEqual(0);
-      // $FlowFixMe /* .advertising is not specified statically */
       expect(newState.advertising.length).toEqual(1);
     });
   });
-  /* Written by GW - needs refactoring for correctness */
-
-  // describe('Testing deviceHandlers', () => {
-  //   describe('Testing CLEAR_ADVERTISING_LIST', () => {
-  //     it('Return the correct information', () => {
-  //       const blankAdvertising = {
-  //         advertising: []
-  //       };
-  //       expect(clearAdvertisingList).toEqual({
-  //         connected: testDevicesStateType.connected,
-  //         advertising: blankAdvertising.advertising
-  //       });
-  //     });
-  //   });
-  //   it('Does not throw an error', () => {
-  //     expect(() => {
-  //       deviceHandlers.CLEAR_ADVERTISING_LIST(testDevicesStateType, testDevicesActionType);
-  //     }).not.toThrow();
-  //   });
-  //   describe('Testing FOUND_ADVERTISING_DEVICE', () => {
-  //     it('Return the correct information', () => {
-  //       const newAdvertisingValue = testDevicesStateType.advertising.concat(testFoundDevicesActionType.payload.peripheral);
-  //       expect(foundAdvertisingDevice).toEqual({
-  //         connected: testDevicesStateType.connected,
-  //         advertising: newAdvertisingValue
-  //       });
-  //     });
-  //     it('Does not throw an error', () => {
-  //       expect(() => {
-  //         deviceHandlers.FOUND_ADVERTISING_DEVICE(testDevicesStateType, testFoundDevicesActionType);
-  //       }).not.toThrow();
-  //     });
-  //   });
-  // });
-  // it('Has a defaultState with values set to blank arrays', () => {
-  //   expect(defaultState).toEqual({
-  //     advertising: [],
-  //     connected: []
-  //   });
-  // });
 });
 
+/* [] - END OF FILE */

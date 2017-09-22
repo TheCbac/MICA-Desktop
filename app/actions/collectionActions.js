@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-bitwise: 0 */
 /* **********************************************************
 * File: actions/collectionActions.js
 *
@@ -13,7 +14,10 @@ import type {
   toggleCollectionStateActionType,
   updateGraphSettingsActionType
 } from '../types/collectionActionTypes';
+import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
+import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
+import { encodeStartPacket, encodeStopPacket } from '../utils/mica/parseDataPacket';
 import type { thunkType } from '../types/functionTypes';
 
 
@@ -30,14 +34,38 @@ export function toggleCollectionState(newState: boolean): toggleCollectionStateA
   };
 }
 
-/* Start collecting data */
+/* Gather the active sensor and start collecting data */
 export function startCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const collectionSettings = getState().collection;
-    /* Update the object */
-    dispatch(toggleCollectionState(true));
+    const state = getState();
+    const { deviceSettings } = state.devices;
+    /* find all active devices */
+    const deviceKeys = Object.keys(deviceSettings);
+    /* Keep track of whether a sensor was started */
+    let sensorStarted = false;
+    /* Iterate over each device */
+    for (let i = 0; i < deviceKeys.length; i++) {
+      const deviceId = deviceKeys[i];
+      const device = deviceSettings[deviceId];
+      /* See if the device is active */
+      if (device.active) {
+        /* PLACE HOLDER SAMPLE RATE */
+        const sampleRate = 100;
+        const startPacket = encodeStartPacket(sampleRate, device.sensors);
+        /* Only write if there were active sensors */
+        if (startPacket.length) {
+          sensorStarted = true;
+          writeCharacteristic(deviceId, micaCharUuids.sensorCommands, startPacket);
+        }
+      }
+    }
+    /* Ensure that at least one sensor was started */
+    if (sensorStarted) {
+      /* Indicate that the device is being collected */
+      dispatch(toggleCollectionState(true));
+    }
   };
 }
 
@@ -46,7 +74,20 @@ export function stopCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const collectionSettings = getState().collection;
+    const state = getState();
+    const { deviceSettings } = state.devices;
+    /* find all active devices */
+    const deviceKeys = Object.keys(deviceSettings);
+    /* Iterate over each device */
+    for (let i = 0; i < deviceKeys.length; i++) {
+      const deviceId = deviceKeys[i];
+      const device = deviceSettings[deviceId];
+      /* See if the device is active */
+      if (device.active) {
+        const stopPacket = encodeStopPacket(device.sensors);
+        writeCharacteristic(deviceId, micaCharUuids.sensorCommands, stopPacket);
+      }
+    }
     /* Update the object */
     dispatch(toggleCollectionState(false));
   };

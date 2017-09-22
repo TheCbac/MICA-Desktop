@@ -119,20 +119,31 @@ export type generatorParamType = {
   }
 };
 
+/* A list of sensors */
+export type sensorListType = {
+  [sensorId: number]: sensorParamType
+};
+
+export type generatorListType = {
+  [generatorId: number]: generatorParamType
+};
+
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
   active: boolean,
-  sensors: {
-    [sensorId: number | string]: sensorParamType
-  },
-  generators: {
-    [generatorId: number | string]: generatorParamType
-  }
+  sensors: sensorListType,
+  generators: generatorListType
 };
 
 /* Top level state type */
 export type deviceSettingsType = {
   [deviceId: string]: deviceSettingsObjType
+};
+
+/* A period count */
+export type periodCountType = {
+  msb: number,
+  lsb: number
 };
 
 /* [] - END OF FILE */

@@ -42,19 +42,19 @@ const log = {
       logMsg('Debug: ', ...args);
     }
   },
-  /* Verbose debugging statments */
+  /* Verbose debugging statements */
   verbose(...args: mixed[]): void {
     if (lvl(this.debugLevel) >= 3) {
       logMsg('Verbose: ', ...args);
     }
   },
-  /* Informative deubgging */
+  /* Informative debugging */
   info(...args: mixed[]): void {
     if (lvl(this.debugLevel) >= 2) {
       logMsg('Info: ', ...args);
     }
   },
-  /* Warngings */
+  /* Warnings */
   warn(...args: mixed[]): void {
     if (lvl(this.debugLevel) >= 1) {
       logMsg('Warn: ', ...args);

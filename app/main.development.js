@@ -88,8 +88,8 @@ app.on('ready', async () => {
   }
 
   /* Set the devTools in development mode */
-  let tools = false;
-  // let tools = true;
+  // let tools = false;
+  let tools = true;
   if (process.env.NODE_ENV === 'development') {
     tools = true;
   }
