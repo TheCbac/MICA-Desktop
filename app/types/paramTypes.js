@@ -29,30 +29,32 @@ export type nobleServiceType = {
   characteristics: ?nobleCharacteristicType[]
 };
 
-/* Noble Object */
-export type noblePeripheralType = {
-  address: string,
-  addressType: string,
-  advertisement: {
-    localName: string,
-    manufacturerData: ?string,
-    serviceData: [],
-    serviceUuids: string[],
-    txPowerLevel: ?number
-  },
-  connectable: boolean,
-  id: string,
-  rssi: number,
-  services: ?nobleServiceType[],
-  uuid: string,
-  connect: () => void,
-  disconnect: () => void,
-  once: () => void,
-  discoverSomeServicesAndCharacteristics: () => void
-};
+// /* Noble Object */
+// export type noblePeripheralType = {
+//   address: string,
+//   addressType: string,
+//   advertisement: {
+//     localName: string,
+//     manufacturerData: ?string,
+//     serviceData: [],
+//     serviceUuids: string[],
+//     txPowerLevel: ?number
+//   },
+//   connectable: boolean,
+//   id: string,
+//   rssi: number,
+//   services: ?nobleServiceType[],
+//   uuid: string,
+//   connect: () => void,
+//   disconnect: () => void,
+//   once: () => void,
+//   discoverSomeServicesAndCharacteristics: () => void
+// };
 
 
 export type nobleIdType = string;
+/* ID of a device */
+export type idType = string;
 
 /* Options for the parameter settings */
 export type deviceOptionsType = {

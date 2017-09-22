@@ -10,103 +10,82 @@
 * 2017.07.25 GW - Document created
 *
 ********************************************************* */
-import faker from 'faker';
-import reducer from '../../app/reducers/devicesReducer';
+import devicesReducer from '../../app/reducers/devicesReducer';
 import {
   FOUND_ADVERTISING_DEVICE,
   CLEAR_ADVERTISING_LIST
 } from '../../app/actions/devicesActions';
 import { micaServiceUuid } from '../../app/utils/mica/micaConstants';
+import {
+  deviceIdFactory,
+  foundDeviceActionFactory,
+  clearAdvertisingListFactory
+ } from '../factories/factories';
 import type { devicesStateType } from '../../app/types/stateTypes';
-import type { noblePeripheralType } from '../../app/types/paramTypes';
+import type { idType } from '../../app/types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
 } from '../../app/types/actionTypes';
 
 /* Default state for the reducer */
-const defaultState: devicesStateType = {
-  advertising: [],
-  connecting: [],
-  connected: [],
-  disconnecting: [],
-  metadata: {},
-  selected: {
-    sensor: undefined,
-    generator: undefined
-  }
-};
-
-/* Create a noblePeripheralType from the specified action and payload  */
-function nobleDeviceFactory(userSpecifiedParams: ?{}): noblePeripheralType {
-  /* Create a default */
-  const uuidVal = faker.random.uuid();
-  let peripheral = {
-    address: faker.internet.ipv6(),
-    addressType: 'public',
-    advertisement: {
-      localName: faker.internet.userName(),
-      serviceData: [],
-      serviceUuids: [micaServiceUuid],
-    },
-    connectable: true,
-    id: uuidVal,
-    uuid: uuidVal,
-    rssi: -1 * faker.random.number(),
-    services: []
-  };
-  /* apply any user params */
-  if (userSpecifiedParams != null) {
-    peripheral = { ...peripheral, ...userSpecifiedParams };
-  }
-  return peripheral;
-}
+const defaultState: devicesStateType = { };
 
 /* Test Suite */
 describe('devicesReducer.spec.js', () => {
   describe('FOUND_ADVERTISING_DEVICE', () => {
     it('Should add in a new device to an empty list', () => {
       /* Create the action */
-      const action: foundDeviceActionType = {
-        type: FOUND_ADVERTISING_DEVICE,
-        payload: {
-          peripheral: nobleDeviceFactory()
-        }
-      };
-      const action1: foundDeviceActionType = {
-        type: FOUND_ADVERTISING_DEVICE,
-        payload: {
-          peripheral: nobleDeviceFactory()
-        }
-      };
-      /* Call the reducer */
-      const newState = reducer(defaultState, action);
-      expect(defaultState.advertising.length).toEqual(0);
-      expect(newState.advertising.length).toEqual(1);
+      const action: foundDeviceActionType = foundDeviceActionFactory();
+      const action1: foundDeviceActionType = foundDeviceActionFactory();
+      /* Call the reducer - ensure it is an object, issue with createReducer type */
+      const newState = devicesReducer(defaultState, action);
+      expect(Object.keys(defaultState).length).toBe(0);
+      expect(Object.keys(newState).length).toBe(1);
+      /* Everything should be advertising */
+      let values = Object.values(newState);
+      for (let i = 0; i < values.length; i++) {
+        expect(values[i]).toBe('advertising');
+      }
       /* Add second device */
-      const newState1 = reducer(newState, action1);
-      expect(newState.advertising.length).toEqual(1);
-      expect(newState1.advertising.length).toEqual(2);
+      const newState1 = devicesReducer(newState, action1);
+      expect(Object.keys(newState).length).toBe(1);
+      expect(Object.keys(newState1).length).toBe(2);
+      /* Everything should be advertising */
+      values = Object.values(newState1);
+      for (let i = 0; i < values.length; i++) {
+        expect(values[i]).toBe('advertising');
+      }
+      /* Make sure the keys are correctly included */
+      const idList = Object.keys(newState1);
+      expect(idList.indexOf(action.payload.deviceId)).toBeGreaterThanOrEqual(0);
+      expect(idList.indexOf(action1.payload.deviceId)).toBeGreaterThanOrEqual(0);
+    });
+    it('Should change a disconnected device to an advertising device', () => {
+      const id = deviceIdFactory();
+      /* default state */
+      const state1 = { [id]: 'disconnected' };
+      const action = foundDeviceActionFactory(id);
+      /* Run the devicesReducer */
+      const state2 = devicesReducer(state1, action);
+      expect(Object.keys(state2).length).toBe(1);
+      expect(state2[id]).toBe('advertising');
     });
   });
   describe('CLEAR_ADVERTISING_DEVICE', () => {
     it('should clear the list of devices', () => {
       /* Create the actions */
-      const addAction: foundDeviceActionType = {
-        type: FOUND_ADVERTISING_DEVICE,
-        payload: {
-          peripheral: nobleDeviceFactory()
-        }
-      };
-      const clearAction: clearAdvertisingActionType = { type: CLEAR_ADVERTISING_LIST };
-      /* Call the reducer */
-      const newState = reducer(defaultState, addAction);
-      expect(defaultState.advertising.length).toEqual(0);
-      expect(newState.advertising.length).toEqual(1);
+      const id = deviceIdFactory();
+      const addAction: foundDeviceActionType = foundDeviceActionFactory(id);
+      const clearAction: clearAdvertisingActionType = clearAdvertisingListFactory();
+      /* Call the devicesReducer */
+      const newState = devicesReducer(defaultState, addAction);
+      expect(Object.values(defaultState).indexOf('advertising')).toBe(-1);
+      expect(newState[id]).toBe('advertising');
       /* Clear the list */
-      const newState1 = reducer(newState, clearAction);
-      expect(newState1.advertising.length).toEqual(0);
-      expect(newState.advertising.length).toEqual(1);
+      const newState1 = devicesReducer(newState, clearAction);
+      expect(Object.keys(newState1).length).toBe(1);
+      expect(newState1[id]).toBe('disconnected');
     });
   });
 });

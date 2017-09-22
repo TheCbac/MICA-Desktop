@@ -29,16 +29,24 @@ export type selectType = {
   id: ?string
 };
 
+/* Options for the BLE modules */
+export type bleStateType = 'advertising' | 'connecting' | 'connected' |
+  'disconnecting' | 'disconnected';
+/* Keep track of the devices connected */
 export type devicesStateType = {
-  advertising: noblePeripheralType[],
-  connecting: noblePeripheralType[],
-  connected: noblePeripheralType[],
-  disconnecting: noblePeripheralType[],
-  metadata: metaDataType,
-  selected: { sensor: selectType, generator: selectType},
-  unselected: { sensors: selectType[], generators: selectType[]},
-  deviceSettings: deviceSettingsType
+  [deviceId: string]: bleStateType
 };
+
+// export type devicesStateType = {
+//   advertising: noblePeripheralType[],
+//   connecting: noblePeripheralType[],
+//   connected: noblePeripheralType[],
+//   disconnecting: noblePeripheralType[],
+//   metadata: metaDataType,
+//   selected: { sensor: selectType, generator: selectType},
+//   unselected: { sensors: selectType[], generators: selectType[]},
+//   deviceSettings: deviceSettingsType
+// };
 
 /* For app wide actions */
 export type appWideStateType = {
@@ -67,7 +75,9 @@ export type stateType = {
  devices: devicesStateType,
  router: {},
  appWide: appWideStateType,
- collection: collectionStateType
+ collection: collectionStateType,
+ metadata: metaDataType,
+ deviceSettings: deviceSettingsType
 };
 
 /* [] - END OF FILE */

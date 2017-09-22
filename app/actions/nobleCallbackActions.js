@@ -54,8 +54,8 @@ export function scanStop() {
 }
 /* A peripheral was discovered */
 export function discover() {
-  Noble.on('discover', (peripheral) => {
-    store.dispatch(foundAdvertisingDevice(peripheral));
+  Noble.on('discover', (peripheral: *) => {
+    store.dispatch(foundAdvertisingDevice(peripheral.id));
   });
 }
 /* Register the callbacks */

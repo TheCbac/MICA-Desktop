@@ -10,8 +10,7 @@
 ********************************************************* */
 import type {
   scanTypes,
-  noblePeripheralType,
-  nobleIdType,
+  idType,
   deviceSettingsObjType
 } from './paramTypes';
 import type { metaDataObjType, moduleNameType } from './metaDataTypes';
@@ -46,14 +45,15 @@ export type scanStateActionType = {
 
 /* Clear the advertising device list */
 export type clearAdvertisingActionType = {
-  type: 'CLEAR_ADVERTISING_LIST'
+  type: 'CLEAR_ADVERTISING_LIST',
+  payload: {}
 };
 
 /* A new advertising device was found */
 export type foundDeviceActionType = {
   type: 'FOUND_ADVERTISING_DEVICE',
   payload: {
-    peripheral: noblePeripheralType
+    deviceId: idType
   }
 };
 

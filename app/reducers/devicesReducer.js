@@ -31,29 +31,7 @@ import { getPeripheralFromList } from '../utils/deviceUtils';
 
 
 /* Default state of the devicesReducer */
-export const defaultState: devicesStateType = {
-  advertising: [],
-  connecting: [],
-  connected: [],
-  disconnecting: [],
-  metadata: {
-  },
-  selected: {
-    sensor: {
-      name: undefined,
-      id: undefined
-    },
-    generator: {
-      name: undefined,
-      id: undefined
-    }
-  },
-  unselected: {
-    generators: [],
-    sensors: []
-  },
-  deviceSettings: {}
-};
+export const defaultState: devicesStateType = { };
 
 /* Handlers to create reducers  */
 const deviceHandlers = {
@@ -62,16 +40,46 @@ const deviceHandlers = {
     state: devicesStateType,
     action: clearAdvertisingActionType
   ): devicesStateType {
-    /* Return copy of new data  */
-    return update(state, { advertising: { $set: [] } });
+    /* Find all of the devices that are advertising */
+    const advList = [];
+    const deviceList = Object.keys(state);
+    for (let i = 0; i < deviceList.length; i++) {
+      const id = deviceList[i];
+      if (state[id] === 'advertising') {
+        advList.push(id);
+      }
+    }
+    /* Remove all objects who are advertising */
+    const removeAdvState = update(state, { $unset: advList });
+    /* Create an object to push back in */
+    const disconnectObj = {};
+    for (let j = 0; j < advList.length; j++) {
+      disconnectObj[advList[j]] = 'disconnected';
+    }
+
+    return update(removeAdvState, { $merge: disconnectObj });
+    // /* Set all advertising devices to disconnected */
+    // return update(state, { $apply:
+    //   // eslint-disable-next-line arrow-body-style
+    //   // (val) => { return (val === 'advertising') ? 'disconnected' : val; }
+    //   (state) => { return (val === 'advertising') ? 'disconnected' : val; }
+
+    // });
   },
   /* An advertising device was found */
   FOUND_ADVERTISING_DEVICE(
     state: devicesStateType,
     action: foundDeviceActionType,
   ): devicesStateType {
-    /* Must deep copy, not just shallow copy */
-    return update(state, { advertising: { $push: [action.payload.peripheral] } });
+    const deviceId = action.payload.deviceId;
+    /* See if the device is already in the list */
+    const deviceList = Object.keys(state);
+    if (deviceList.indexOf(deviceId) >= 0) {
+      /* Set the disconnected device to advertising */
+      return update(state, { [deviceId]: { $set: 'advertising' } });
+    }
+    /* No existing device was found, add a new one to the list */
+    return update(state, { $merge: { [deviceId]: 'advertising' } });
   },
   /* Attempting to connect to a device: move from advertising to connecting */
   CONNECTING_TO_DEVICE(

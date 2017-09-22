@@ -13,7 +13,7 @@
 import { getSelectedDevices } from './senGenActions';
 import micaSensorParams from '../utils/mica/micaSensorParams';
 import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
-import type { noblePeripheralType, nobleIdType, deviceSettingsObjType,
+import type { idType, deviceSettingsObjType,
   sensorParamType, generatorParamType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
@@ -48,11 +48,11 @@ export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 
 /* Action creator for when an advertising MICA device is discovered */
-export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
+export function foundAdvertisingDevice(peripheralId: idType): foundDeviceActionType {
   return {
     type: FOUND_ADVERTISING_DEVICE,
     payload: {
-      peripheral
+      peripheralId
     }
   };
 }
