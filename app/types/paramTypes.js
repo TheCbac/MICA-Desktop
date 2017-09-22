@@ -121,11 +121,11 @@ export type generatorParamType = {
 
 /* A list of sensors */
 export type sensorListType = {
-  [sensorId: number | string]: sensorParamType
+  [sensorId: number]: sensorParamType
 };
 
 export type generatorListType = {
-  [generatorId: number | string]: generatorParamType
+  [generatorId: number]: generatorParamType
 };
 
 /* Specific object for device settings */

@@ -21,7 +21,7 @@ import {
   SHIFT_BYTE_ONE,
   FLAG_DATA_ROLLUNDER
 } from '../bitConstants';
-import { DATA_CLOCK_FREQ } from './micaConstants';
+import { DATA_CLOCK_FREQ, CMD_START } from './micaConstants';
 import log from '../loggingUtils';
 import type { periodCountType, sensorListType } from '../../types/paramTypes';
 
@@ -124,10 +124,45 @@ export function sampleRateToPeriodCount(sampleRate: number): periodCountType {
   const lsb = (periodCount & MASK_BYTE_ONE);
   return { msb, lsb };
 }
+/* Returns the channel word given an array of channel indices */
+export function channelArrayToWord(channelArray: number[]): number {
+  let channelWord = 0;
+  /* Iterate through the channels */
+  for (let i = 0; i < channelArray.length; i++) {
+    channelWord |= (0x01 << channelArray[i]);
+  }
+  return channelWord;
+}
 
 /* Create the start packet from a list of sensors */
 export function encodeStartPacket(sampleRate: number, sensorList: sensorListType): number[] {
-
+  /* Get the period count */
+  const { msb, lsb } = sampleRateToPeriodCount(sampleRate);
+  /* Array to return */
+  const startPacket = [CMD_START, msb, lsb];
+  /* Iterate over each sensor */
+  const sensorIds = Object.keys(sensorList);
+  for (let i = 0; i < sensorIds.length; i++) {
+    /* Get the specific sensor */
+    const sensorId = parseInt(sensorIds[i], 10);
+    const sensor = sensorList[sensorId];
+    /* get the channels */
+    const channels = channelArrayToWord(sensor.channels);
+    /* Get the dynamic params */
+    const paramList = [];
+    const paramKeys = Object.keys(sensor.dynamicParams);
+    const numParams = paramKeys.length;
+    for (let j = 0; j < numParams; j++) {
+      /* Get the address and value */
+      const { address, value } = sensor.dynamicParams[paramKeys[j]];
+      /* Order is important here */
+      paramList.push(address, value);
+    }
+    /* Push each sensor to the start packet */
+    startPacket.push(sensorId, channels, numParams, ...paramList);
+  }
+  /* Return the start packet */
+  return startPacket;
 }
 
 /* [] - END OF FILE */

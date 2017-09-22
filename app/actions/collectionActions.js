@@ -15,11 +15,10 @@ import type {
   updateGraphSettingsActionType
 } from '../types/collectionActionTypes';
 import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
-import { micaServiceUuid, micaCharUuids, DATA_CLOCK_FREQ } from '../utils/mica/micaConstants';
-import { SHIFT_BYTE_ONE, MASK_BYTE_ONE } from '../utils/bitConstants';
+import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
+import { encodeStartPacket } from '../utils/mica/parseDataPacket';
 import type { thunkType } from '../types/functionTypes';
-import type { sensorListType } from '../types/paramTypes';
 
 
 export const TOGGLE_COLLECTION_STATE = 'TOGGLE_COLLECTION_STATE';
@@ -32,28 +31,6 @@ export function toggleCollectionState(newState: boolean): toggleCollectionStateA
     payload: {
       newState
     }
-  };
-}
-
-/* Create the start packet from a list of sensors */
-function encodeStartPacket(sampleRate: number, sensorList: sensorListType): number[] {
-
-}
-/* A period count */
-type periodCountType = {
-  msb: number,
-  lsb: number
-};
-
-function sampleRateToPeriodCount(sampleRate: number): periodCountType {
-  /* Calculate the 16-bit period count */
-  const periodCount = Math.round(DATA_CLOCK_FREQ / sampleRate);
-  /* Break into MSB and LSB */
-  const msb = (periodCount >> SHIFT_BYTE_ONE) & MASK_BYTE_ONE;
-  const lsb = (periodCount & MASK_BYTE_ONE);
-  return {
-    msb,
-    lsb
   };
 }
 
@@ -83,7 +60,9 @@ export function startCollecting(): thunkType {
         }
         /* Only generate a start packet for a device that has active sensors */
         if (activeSensorList.length) {
-          const startPacket = encodeStartPacket(activeSensorList);
+          /* PLACE HOLDER SAMPLE RATE */
+          const sampleRate = 100;
+          const startPacket = encodeStartPacket(sampleRate, activeSensorList);
         }
       }
     }
