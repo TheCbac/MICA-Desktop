@@ -141,19 +141,25 @@ function readMetaCharCallback(
 export function writeCharacteristic(
   deviceId: string,
   charUuid: string,
-  payload: number[]
-
-) {
+  payload: number[],
+  callback?: (deviceId: string, charUuid: string, error: string) => void
+): boolean {
   /* Get the list of connected devices */
   const deviceList = store.getState().devices.connected;
   /* Find the characteristic */
   const characteristic = getCharacteristicFromPeripheralId(
     charUuid, micaServiceUuid, deviceId, deviceList
   );
-  if (!characteristic) { return; }
+  if (!characteristic) { return false; }
+  console.log('writeCharacteristic:', characteristic.write);
   /* Construct the buffer */
   const dataBuffer = new Buffer(payload);
   /* Write the data to the device */
-  characteristic.write(dataBuffer, false);
+  if (callback != null) {
+    characteristic.write(dataBuffer, false, callback.bind(null, deviceId, charUuid));
+  } else {
+    characteristic.write(dataBuffer, false);
+  }
+  return true;
 }
 /* [] - END OF FILE */
