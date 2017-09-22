@@ -75,6 +75,7 @@ export const micaIDs = {
 };
 /* Frequency in Hz of the data clock inside the MICA cubes */
 export const DATA_CLOCK_FREQ = 100000;
+export const CMD_STOP = 0x00;
 export const CMD_START = 0x01;
 
 

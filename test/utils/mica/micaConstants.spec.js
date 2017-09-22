@@ -11,7 +11,7 @@
 *
 ********************************************************* */
 import { micaServiceUuid, micaCharUuids,
-  moduleToName, nameToId, CMD_START, DATA_CLOCK_FREQ
+  moduleToName, nameToId, CMD_START, CMD_STOP, DATA_CLOCK_FREQ
 } from '../../../app/utils/mica/micaConstants';
 
 /* Test suite */
@@ -56,8 +56,11 @@ describe('MicaConstants', () => {
     it('Start command should be 1', () => {
       expect(CMD_START).toEqual(0x01);
     });
+    it('Stop command should be 0', () => {
+      expect(CMD_STOP).toEqual(0x00);
+    });
     it('Clock frequency should be 100 kHz', () => {
       expect(DATA_CLOCK_FREQ).toEqual(100000);
-    })
+    });
   });
 });

@@ -17,7 +17,7 @@ import type {
 import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
 import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
-import { encodeStartPacket } from '../utils/mica/parseDataPacket';
+import { encodeStartPacket, encodeStopPacket } from '../utils/mica/parseDataPacket';
 import type { thunkType } from '../types/functionTypes';
 
 
@@ -43,6 +43,7 @@ export function startCollecting(): thunkType {
     const { deviceSettings } = state.devices;
     /* find all active devices */
     const deviceKeys = Object.keys(deviceSettings);
+    /* Keep track of whether a sensor was started */
     let sensorStarted = false;
     /* Iterate over each device */
     for (let i = 0; i < deviceKeys.length; i++) {
@@ -62,7 +63,7 @@ export function startCollecting(): thunkType {
     }
     /* Ensure that at least one sensor was started */
     if (sensorStarted) {
-          /* Update the object */
+      /* Indicate that the device is being collected */
       dispatch(toggleCollectionState(true));
     }
   };
@@ -74,11 +75,19 @@ export function stopCollecting(): thunkType {
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
     const state = getState();
-    /* Write to the device */
-    const device = state.devices.connected[0];
-    const { sensorCommands } = micaCharUuids;
-    const stopCommand = [0x00, 0x01];
-    writeCharacteristic(device.id, sensorCommands, stopCommand);
+    const { deviceSettings } = state.devices;
+    /* find all active devices */
+    const deviceKeys = Object.keys(deviceSettings);
+    /* Iterate over each device */
+    for (let i = 0; i < deviceKeys.length; i++) {
+      const deviceId = deviceKeys[i];
+      const device = deviceSettings[deviceId];
+      /* See if the device is active */
+      if (device.active) {
+        const stopPacket = encodeStopPacket(device.sensors);
+        writeCharacteristic(deviceId, micaCharUuids.sensorCommands, stopPacket);
+      }
+    }
     /* Update the object */
     dispatch(toggleCollectionState(false));
   };

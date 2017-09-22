@@ -13,10 +13,12 @@ import {
   twosCompToSigned,
   sampleRateToPeriodCount,
   channelArrayToWord,
-  encodeStartPacket
+  encodeStartPacket,
+  encodeStopPacket
 } from '../../../app/utils/mica/parseDataPacket';
 import {
-  CMD_START
+  CMD_START,
+  CMD_STOP
 } from '../../../app/utils/mica/micaConstants';
 import type { sensorParamType, sensorListType } from '../../../app/types/paramTypes';
 
@@ -208,6 +210,12 @@ describe('parseDataPacket.spec.js', () => {
       /* Test */
       expect(encodeStartPacket(sampleRate, sensorList)).toEqual([]);
     });
+  });
+  describe('Encode stop packet', () => {
+    it('Should return the correct stop packet', () {
+      const sensorList: sensorListType = {};
+      expect(encodeStopPacket(sensorList)).toEqual([CMD_STOP]);
+    })
   });
 });
 /* [] - END OF FILE */

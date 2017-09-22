@@ -21,7 +21,7 @@ import {
   SHIFT_BYTE_ONE,
   FLAG_DATA_ROLLUNDER
 } from '../bitConstants';
-import { DATA_CLOCK_FREQ, CMD_START } from './micaConstants';
+import { DATA_CLOCK_FREQ, CMD_START, CMD_STOP } from './micaConstants';
 import log from '../loggingUtils';
 import type { periodCountType, sensorListType } from '../../types/paramTypes';
 
@@ -171,6 +171,12 @@ export function encodeStartPacket(sampleRate: number, sensorList: sensorListType
   }
   /* Return the start packet */
   return startPacket;
+}
+
+/* Create the stop packet. Currently the stop packet does not depend on the sensorList */
+// eslint-disable-next-line no-unused-vars
+export function encodeStopPacket(sensorList: sensorListType): number[] {
+  return [CMD_STOP];
 }
 
 /* [] - END OF FILE */
