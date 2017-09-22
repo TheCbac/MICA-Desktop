@@ -13,10 +13,17 @@
 * 2017.06.26 CC - Document created
 *
 ********************************************************* */
+import type {
+  serviceUuidType,
+  charUuidObjType,
+  bleIdObjType,
+  constantType,
+  moduleNameType
+} from '../../types/constantTypes';
 
-export const micaServiceUuid = 'cbac5416e0024988ab38aee966a7218f';
+export const micaServiceUuid: serviceUuidType = 'cbac5416e0024988ab38aee966a7218f';
 
-export const micaCharUuids = {
+export const micaCharUuids: charUuidObjType = {
   energyMetadata: 'cbac0bf6341e3a0705183cdac0f21000',
   energyCommands: 'cbac90446ee6405a90e66a12315bca84',
   actuationMetadata: 'cbacd02a74bf45c7b1bb994527009bc0',
@@ -31,7 +38,7 @@ export const micaCharUuids = {
   controlCommands: 'cbac07a4b054467db95f773fa6bbb796'
 };
 
-export const micaIDs = {
+export const micaIDs: bleIdObjType = {
   actuation: {
     '1': 'Signal Voltage',
     '2': 'Signal Current',
@@ -74,12 +81,11 @@ export const micaIDs = {
   }
 };
 /* Frequency in Hz of the data clock inside the MICA cubes */
-export const DATA_CLOCK_FREQ = 100000;
-export const CMD_STOP = 0x00;
-export const CMD_START = 0x01;
+export const DATA_CLOCK_FREQ: constantType = 100000;
+export const CMD_STOP: constantType = 0x00;
+export const CMD_START: constantType = 0x01;
 
 
-type moduleNameType = 'energy' | 'actuation' | 'power' | 'sensing' | 'communication' | 'control';
 /* Wrapper function for mapping IDs to names  */
 export function moduleToName(module: moduleNameType, id: number): string {
   /* No need to search for None */
@@ -89,7 +95,7 @@ export function moduleToName(module: moduleNameType, id: number): string {
   /* Ensure it exists */
   if (!moduleObj) { return 'Unknown'; }
   /* Return the name if it exists */
-  return moduleObj[id] || 'Unknown';
+  return moduleObj[id.toString()] || 'Unknown';
 }
 
 /* Get the ID number from the name of a device - not case sensitive */
