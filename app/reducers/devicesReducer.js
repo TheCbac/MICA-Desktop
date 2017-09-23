@@ -12,7 +12,8 @@
 import update from 'immutability-helper';
 import createReducer from './createReducer';
 import type {
-  devicesStateType
+  devicesStateType,
+  devicesStateObjType
 } from '../types/stateTypes';
 import type {
   clearAdvertisingActionType,
@@ -35,36 +36,27 @@ export const defaultState: devicesStateType = { };
 
 /* Handlers to create reducers  */
 const deviceHandlers = {
-  /* Clear the advertising list */
+  /* Clear the advertising list - Must be a more succinct way of writing this */
   CLEAR_ADVERTISING_LIST(
     state: devicesStateType,
     action: clearAdvertisingActionType
   ): devicesStateType {
-    /* Find all of the devices that are advertising */
-    const advList = [];
+    /* Find all of the devices */
     const deviceList = Object.keys(state);
+    /* make a copy of the state */
+    let updatedState = update(state, {});
+    /* Iterate over each object */
     for (let i = 0; i < deviceList.length; i++) {
       const id = deviceList[i];
-      if (state[id] === 'advertising') {
-        advList.push(id);
+      const device = state[id];
+      /* Check if it is advertising */
+      if (device.state === 'advertising') {
+        updatedState = update(updatedState,
+          { [id]: { state: { $set: 'disconnected' } } }
+        );
       }
     }
-    /* Remove all objects who are advertising */
-    const removeAdvState = update(state, { $unset: advList });
-    /* Create an object to push back in */
-    const disconnectObj = {};
-    for (let j = 0; j < advList.length; j++) {
-      disconnectObj[advList[j]] = 'disconnected';
-    }
-
-    return update(removeAdvState, { $merge: disconnectObj });
-    // /* Set all advertising devices to disconnected */
-    // return update(state, { $apply:
-    //   // eslint-disable-next-line arrow-body-style
-    //   // (val) => { return (val === 'advertising') ? 'disconnected' : val; }
-    //   (state) => { return (val === 'advertising') ? 'disconnected' : val; }
-
-    // });
+    return updatedState;
   },
   /* An advertising device was found */
   FOUND_ADVERTISING_DEVICE(
@@ -76,121 +68,107 @@ const deviceHandlers = {
     const deviceList = Object.keys(state);
     if (deviceList.indexOf(deviceId) >= 0) {
       /* Set the disconnected device to advertising */
-      return update(state, { [deviceId]: { $set: 'advertising' } });
+      return update(state, { [deviceId]: { state: { $set: 'advertising' } } });
     }
     /* No existing device was found, add a new one to the list */
-    return update(state, { $merge: { [deviceId]: 'advertising' } });
+    const newDevice: devicesStateObjType = {
+      state: 'advertising',
+      metadata: {
+        energy: {},
+        actuation: {},
+        power: {},
+        sensing: {},
+        communication: {},
+        control: {}
+      },
+      settings: {
+        active: false,
+        sensors: {},
+        generators: {}
+      }
+    };
+    return update(state, { $merge: { [deviceId]: newDevice } });
   },
-  /* Attempting to connect to a device: move from advertising to connecting */
+  /* Attempting to connect to a device: set from advertising to connecting */
   CONNECTING_TO_DEVICE(
     state: devicesStateType,
     action: connectingToDeviceActionType
   ): devicesStateType {
-    /* Get the peripheral and index from the advertising list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.advertising, action.payload.peripheralId
-    );
-    if (!peripheral) { return state; }
-    /* Add the peripheral to the connecting list */
-    /* Remove the peripheral from the advertising list */
-    return update(state, {
-      connecting: { $push: [peripheral] },
-      advertising: { $splice: [[index, 1]] }
-    });
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'advertising') {
+      return state;
+    }
+    return update(state, { [id]: { state: { $set: 'connecting' } } });
   },
   /* Connection successful, move from connecting list to connected */
   CONNECTED_TO_DEVICE(
     state: devicesStateType,
     action: connectedToDeviceActionType
   ): devicesStateType {
-    /* Get the peripheral and index from the connecting list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.connecting, action.payload.peripheralId
-    );
-    if (!peripheral) { return state; }
-    /* Add to connected, remove from connecting */
-    const state1 = update(state, {
-      connected: { $push: [peripheral] },
-      connecting: { $splice: [[index, 1]] }
-    });
-    /* Create a metadata object for the device - Overrides previous */
-    const metaObj = { };
-    metaObj[action.payload.peripheralId] = {};
-    return update(state1, { metadata: { $merge: metaObj } });
-    /* Create the default sensor and generator settings */
-
-    // return update(state2, { deviceSettings: { $push:}})
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'connecting') {
+      return state;
+    }
+    return update(state, { [id]: {
+      state: { $set: 'connected' },
+      settings: { active: { $set: true } }
+    } });
   },
   /* Cancel a pending connection */
   CANCEL_CONNECT_TO_DEVICE(
     state: devicesStateType,
     action: cancelConnectToDeviceActionType
   ): devicesStateType {
-    /* Get the peripheral and index from the connecting list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.connecting, action.payload.peripheralId
-    );
-    if (!peripheral) { return state; }
-    /* Add to advertising, remove from connecting */
-    return update(state, {
-      advertising: { $push: [peripheral] },
-      connecting: { $splice: [[index, 1]] }
-    });
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'connecting') {
+      return state;
+    }
+    return update(state, { [id]: { state: { $set: 'advertising' } } });
   },
   /* Attempting to disconnect from a device: move from connected to disconnected */
   DISCONNECTING_FROM_DEVICE(
     state: devicesStateType,
     action: disconnectingFromDeviceActionType
   ): devicesStateType {
-    /* Get the peripheral and index from the advertising list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.connected, action.payload.peripheralId
-    );
-    if (!peripheral) { return state; }
-    /* Add the peripheral to the disconnecting list */
-    /* Remove the peripheral from the connected list */
-    return update(state, {
-      disconnecting: { $push: [peripheral] },
-      connected: { $splice: [[index, 1]] }
-    });
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'connected') {
+      return state;
+    }
+    return update(state, { [id]: {
+      state: { $set: 'disconnecting' },
+      settings: { active: { $set: false } }
+    } });
   },
   /* Disconnection successful, remove from disconnecting list */
   DISCONNECTED_FROM_DEVICE(
     state: devicesStateType,
     action: disconnectedFromDeviceActionType
   ): devicesStateType {
-    const deviceId = action.payload.peripheralId;
-    /* Get the peripheral and index from the disconnecting list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.disconnecting, deviceId
-    );
-    /* Device was */
-    if (!peripheral) { return state; }
-    /* Remove the peripheral from the disconnecting list */
-    return update(state, {
-      advertising: { $push: [peripheral] },
-      disconnecting: { $splice: [[index, 1]] },
-      deviceSettings: { [deviceId]: { active: { $set: false } } }
-    });
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'disconnecting') {
+      return state;
+    }
+    return update(state, { [id]: { state: { $set: 'advertising' } } });
   },
   /* Device was abruptly lost, remove from connected list */
   LOST_CONNECTION_FROM_DEVICE(
     state: devicesStateType,
     action: lostConnectionFromDeviceActionType
   ): devicesStateType {
-    const deviceId = action.payload.peripheralId;
-    /* Get the peripheral and index from the connected list */
-    const { peripheral, index } = getPeripheralFromList(
-      state.connected, deviceId
-    );
-    /* Device was */
-    if (!peripheral) { return state; }
-    /* Remove the peripheral from the connected list */
-    return update(state, {
-      advertising: { $push: [peripheral] },
-      connected: { $splice: [[index, 1]] },
-      deviceSettings: { [deviceId]: { active: { $set: false } } }
-    });
+    const id = action.payload.deviceId;
+    /* Control state flow */
+    if (state[id].state !== 'connected') {
+      return state;
+    }
+    return update(state, { [id]: {
+      state: { $set: 'advertising' },
+      settings: { active: { $set: false } }
+    } });
   },
   /* Metadata was read in successfully */
   REPORT_META_DATA(

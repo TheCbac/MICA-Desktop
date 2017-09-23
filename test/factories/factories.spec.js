@@ -12,7 +12,13 @@
 import {
   deviceIdFactory,
   foundDeviceActionFactory,
-  clearAdvertisingListFactory
+  clearAdvertisingListFactory,
+  connectingToDeviceActionFactory,
+  connectedToDeviceActionFactory,
+  cancelConnectToDeviceActionFactory,
+  disconnectingFromDeviceActionFactory,
+  disconnectedFromDeviceActionFactory,
+  lostConnectionFromDeviceActionFactory
 } from './factories';
 
 /* Test suite */
@@ -50,6 +56,90 @@ describe('Factories.spec.js', () => {
         type: 'CLEAR_ADVERTISING_LIST',
         payload: {}
       });
+    });
+  });
+  describe('connectingToDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = connectingToDeviceActionFactory();
+      expect(action.type).toBe('CONNECTING_TO_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = connectingToDeviceActionFactory(id);
+      expect(action.type).toBe('CONNECTING_TO_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
+    });
+  });
+  describe('connectedToDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = connectedToDeviceActionFactory();
+      expect(action.type).toBe('CONNECTED_TO_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = connectedToDeviceActionFactory(id);
+      expect(action.type).toBe('CONNECTED_TO_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
+    });
+  });
+  describe('cancelConnectToDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = cancelConnectToDeviceActionFactory();
+      expect(action.type).toBe('CANCEL_CONNECT_TO_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = cancelConnectToDeviceActionFactory(id);
+      expect(action.type).toBe('CANCEL_CONNECT_TO_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
+    });
+  });
+  describe('disconnectingFromDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = disconnectingFromDeviceActionFactory();
+      expect(action.type).toBe('DISCONNECTING_FROM_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = disconnectingFromDeviceActionFactory(id);
+      expect(action.type).toBe('DISCONNECTING_FROM_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
+    });
+  });
+  describe('disconnectedFromDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = disconnectedFromDeviceActionFactory();
+      expect(action.type).toBe('DISCONNECTED_FROM_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = disconnectedFromDeviceActionFactory(id);
+      expect(action.type).toBe('DISCONNECTED_FROM_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
+    });
+  });
+  describe('lostConnectionFromDeviceActionFactory', () => {
+    it('returns a valid action creator', () => {
+      const action = lostConnectionFromDeviceActionFactory();
+      expect(action.type).toBe('LOST_CONNECTION_FROM_DEVICE');
+      expect(typeof action.payload.deviceId).toBe('string');
+      expect(action.payload.deviceId.length).toBe(32);
+    });
+    it('Returns the id passed in', () => {
+      const id = deviceIdFactory();
+      const action = lostConnectionFromDeviceActionFactory(id);
+      expect(action.type).toBe('LOST_CONNECTION_FROM_DEVICE');
+      expect(action.payload.deviceId).toBe(id);
     });
   });
 });

@@ -10,11 +10,11 @@
 ********************************************************* */
 import type {
   scanTypes,
-  noblePeripheralType,
-  deviceSettingsType
+  deviceSettingsType,
+  deviceSettingsObjType
 } from './paramTypes';
 
-import type { metaDataType } from './metaDataTypes';
+import type { metaDataObjType } from './metaDataTypes';
 
 /* State Type for the ScanForDevicesComponent */
 export type scanStateType = {
@@ -30,11 +30,16 @@ export type selectType = {
 };
 
 /* Options for the BLE modules */
-export type bleStateType = 'advertising' | 'connecting' | 'connected' |
-  'disconnecting' | 'disconnected';
+export type bleStateType = 'advertising' | 'connecting' | 'connected' | 'disconnecting';
+
+export type devicesStateObjType = {
+  state: bleStateType,
+  metadata: metaDataObjType,
+  settings: deviceSettingsObjType
+ };
 /* Keep track of the devices connected */
 export type devicesStateType = {
-  [deviceId: string]: bleStateType
+  [deviceId: string]: devicesStateObjType
 };
 
 // export type devicesStateType = {
@@ -75,9 +80,7 @@ export type stateType = {
  devices: devicesStateType,
  router: {},
  appWide: appWideStateType,
- collection: collectionStateType,
- metadata: metaDataType,
- deviceSettings: deviceSettingsType
+ collection: collectionStateType
 };
 
 /* [] - END OF FILE */

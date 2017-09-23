@@ -48,11 +48,11 @@ export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 
 /* Action creator for when an advertising MICA device is discovered */
-export function foundAdvertisingDevice(peripheralId: idType): foundDeviceActionType {
+export function foundAdvertisingDevice(deviceId: idType): foundDeviceActionType {
   return {
     type: FOUND_ADVERTISING_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
@@ -61,15 +61,16 @@ export function foundAdvertisingDevice(peripheralId: idType): foundDeviceActionT
 export function clearAdvertisingList(): clearAdvertisingActionType {
   return {
     type: CLEAR_ADVERTISING_LIST,
+    payload: {}
   };
 }
 
 /* Move peripheral from advertising to connecting */
-export function connectingToDevice(peripheralId: nobleIdType): connectingToDeviceActionType {
+export function connectingToDevice(deviceId: idType): connectingToDeviceActionType {
   return {
     type: CONNECTING_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }

@@ -61,7 +61,7 @@ export type foundDeviceActionType = {
 export type connectingToDeviceActionType = {
   type: 'CONNECTING_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -69,7 +69,7 @@ export type connectingToDeviceActionType = {
 export type cancelConnectToDeviceActionType = {
   type: 'CANCEL_CONNECT_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -77,7 +77,7 @@ export type cancelConnectToDeviceActionType = {
 export type connectedToDeviceActionType = {
   type: 'CONNECTED_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -85,7 +85,7 @@ export type connectedToDeviceActionType = {
 export type disconnectingFromDeviceActionType = {
   type: 'DISCONNECTING_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -93,7 +93,7 @@ export type disconnectingFromDeviceActionType = {
 export type disconnectedFromDeviceActionType = {
   type: 'DISCONNECTED_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -101,7 +101,7 @@ export type disconnectedFromDeviceActionType = {
 export type lostConnectionFromDeviceActionType = {
   type: 'LOST_CONNECTION_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
