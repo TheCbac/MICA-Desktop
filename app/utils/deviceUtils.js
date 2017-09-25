@@ -35,7 +35,7 @@ export function getPeripheralFromList(
 }
 
 
-/* Return a service from a given peripehral by UUID */
+/* Return a service from a given peripheral by UUID */
 export function getServiceFromPeripheral(
   serviceUuid: string,
   peripheral: noblePeripheralType
@@ -69,7 +69,22 @@ export function getCharacteristicFromService(
   return undefined;
 }
 
-/* Returns a characteristic from a given peripehral */
+/* Get the characteristic from a Device */
+export function getCharacteristicFromDevice(
+  device: noblePeripheralType,
+  serviceUuid: string,
+  charUuid: string
+): ?noblePeripheralType {
+  /* Find the service  */
+  const service = getServiceFromPeripheral(serviceUuid, device);
+  if (!service) { return undefined; }
+  return getCharacteristicFromService(
+    charUuid,
+    service
+  );
+}
+
+/* Returns a characteristic from a given peripheral */
 export function getCharacteristicFromPeripheralId(
   charUuid: string,
   serviceUuid: string,

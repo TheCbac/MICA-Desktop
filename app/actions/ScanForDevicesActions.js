@@ -28,7 +28,7 @@ import {
   lostConnectionFromDevice
 } from './devicesActions';
 import { bleStartScan, bleStopScan, bleConnect,
-  bleCancelPending, bleDisconnect } from '../utils/BLE/bleFunctions';
+  bleCancelPending, bleDisconnect, bleReadMetadata } from '../utils/BLE/bleFunctions';
 import type { thunkType } from '../types/functionTypes';
 
 
@@ -113,13 +113,13 @@ export function connectToDevice(deviceId: idType): thunkType {
     bleConnect(
       method,
       deviceId,
-      connectCallBack.bind(null, deviceId),
-      disconnectCallback.bind(null, deviceId)
+      connectCallBack.bind(null, deviceId, method),
+      disconnectCallback.bind(null, deviceId, method)
     );
   };
 }
 /* Callback when a device has been connected (or timeout) */
-function connectCallBack(id: idType, error: ?string): void {
+function connectCallBack(id: idType, method: scanTypes, error: ?string): void {
   if (error) {
     log.error('Failed to connect to device:', id);
     return;
@@ -129,6 +129,7 @@ function connectCallBack(id: idType, error: ?string): void {
   store.dispatch(connectedToDevice(id));
   /* Discover parameters about the device */
   // discoverMicaNoble(id);
+  bleReadMetadata(method, id);
 }
 
 /* Cancel an attempt to connect */

@@ -13,8 +13,9 @@ import store from '../../index';
 import { foundAdvertisingDevice } from '../../actions/devicesActions';
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
-import { micaServiceUuid } from '../mica/micaConstants';
+import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
 import log from '../loggingUtils';
+import { shallowObjToArray, getCharacteristicFromDevice } from '../deviceUtils';
 import type { bleApiResultType } from '../../types/bleTypes';
 import type { idType, newDeviceObjType } from '../../types/paramTypes';
 
@@ -55,17 +56,88 @@ export function nobleDisconnect(
 ): bleApiResultType {
   /* Get the device */
   const device = nobleObjects[deviceId];
-  if (!device) {
-    return { success: false, error: 'could not find the specified device' };
-  }
+  if (!device) { return { success: false, error: 'could not find the specified device' }; }
   /* Connect to the device */
   device.disconnect();
   /* Return success */
   return { success: true };
 }
 
+/* Read the metadata from a device */
+export function nobleReadMetadata(
+  deviceId: idType,
+): bleApiResultType {
+  /* Get the device */
+  const device = nobleObjects[deviceId];
+  if (!device) { return { success: false, error: 'could not find the specified device' }; }
+  /* Convert the uuids to an array */
+  const micaCharArray = shallowObjToArray(micaCharUuids);
+  /* Discover the MICA characteristics & Subscribe to them */
+  device.discoverSomeServicesAndCharacteristics(
+    [micaServiceUuid],
+    micaCharArray,
+    discoverMicaNobleCallback.bind(null, deviceId)
+  );
+  /* Return success */
+  return { success: true };
+}
+/* ======== Callbacks ======== */
+
+/* Callback once MICA discovery is done - Subscriptions are done here */
+function discoverMicaNobleCallback(id: idType, error: ?string): void {
+  /* Get the device */
+  const device = nobleObjects[id];
+  if (error || !device) {
+    log.error('discoverMicaNobleCallback: Discovery failed', error, id);
+    return;
+  }
+  const { sensorCommands, communicationCommands } = micaCharUuids;
+  /* Subscribe to the sensing command */
+  const sensingCommandChar = getCharacteristicFromDevice(
+    device, micaServiceUuid, sensorCommands
+  );
+  /* Ensure the commands were found */
+  if (!sensingCommandChar) {
+    log.error('Failed to find sensingCommand Characteristic for', id);
+  } else {
+    sensingCommandChar.subscribe(subscribeCallback.bind(null, id, 'SensingCommand'));
+    sensingCommandChar.on('data', sensingDataCallback.bind(null, id));
+  }
+  /* Subscribe to the Communication command */
+  const commCommandChar = getCharacteristicFromDevice(
+    device, micaServiceUuid, communicationCommands
+  );
+  if (!commCommandChar) {
+    log.error('Failed to find communicationCommand Characteristic for', id);
+  } else {
+    commCommandChar.subscribe(subscribeCallback.bind(null, id, 'CommunicationCommand'));
+  }
+  /* Read the metadata from the device */
+  /* TODO: PICK UP HERE */
+}
+
+/* TODO: Notifications for data  */
+function sensingDataCallback(id: string, data: Buffer, isNotification: boolean): void {
+  // console.log('sensingDataCallback:', id, data);
+  const time = new Date().getTime();
+  /* Parse the command */
+  /* TODO: implement dynamic packets based on settings */
+  const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time); // hardcoded settings
+  // console.log('parsedData:', parsed);
+  console.log(parsed.map((point) => point.toPoint()[1]));
+}
+
+/* Call back function for subscriptions */
+function subscribeCallback(id: string, char: string, error: ?string): void {
+  if (error) {
+    log.error('Subscription to', char, 'failed on device:', id);
+  } else {
+    log.verbose('Subscription to', char, 'succeeded on device:', id);
+  }
+}
 
 /* ======== Noble Native Callbacks ======== */
+
 Noble.on('stateChange', (state: string) => {
   let enabled = false;
   if (state === 'poweredOn') {

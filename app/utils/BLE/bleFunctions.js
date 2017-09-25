@@ -10,8 +10,9 @@
 *
 * 2017.09.25 CC - Document created
 ********************************************************* */
-import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect
- } from './bleNoble';
+import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
+  nobleReadMetadata
+} from './bleNoble';
 import { usbPlaceholder } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
 import type { bleApiResultType, bleWrapperObjType } from '../../types/bleTypes';
@@ -75,6 +76,20 @@ export function bleDisconnect(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleDisconnect,
+    usbMethod: usbPlaceholder
+  };
+  /* Wrap the function */
+  return wrapBle(bleWrapperObj, id);
+}
+
+/* Read the metadata from a device */
+export function bleReadMetadata(
+  method: scanTypes,
+  id: idType,
+): bleApiResultType {
+  const bleWrapperObj: bleWrapperObjType = {
+    method,
+    bleMethod: nobleReadMetadata,
     usbMethod: usbPlaceholder
   };
   /* Wrap the function */
