@@ -32,11 +32,6 @@ function mapStateToProps(state: stateType) {
     enabled: state.scanForDevices.enabled,
     scanning: state.scanForDevices.scanning,
     devices: state.devices
-    // advertisingDevices: state.devices.advertising,
-    // connectingDevices: state.devices.connecting,
-    // connectedDevices: state.devices.connected,
-    // disconnectingDevices: state.devices.disconnecting
-    // devices: state.devices.advertising.concat(state.devices.connecting, state.devices.connected)
   };
 }
 /* Action creators to be used in the component */

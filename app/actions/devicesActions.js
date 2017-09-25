@@ -80,71 +80,71 @@ export function connectingToDevice(deviceId: idType): connectingToDeviceActionTy
   };
 }
 /* Successfully connected, move from connecting to connected */
-export function connectedToDevice(peripheralId: nobleIdType): connectedToDeviceActionType {
+export function connectedToDevice(deviceId: idType): connectedToDeviceActionType {
   return {
     type: CONNECTED_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Cancel a pending connection */
-export function cancelConnectToDevice(peripheralId: nobleIdType): cancelConnectToDeviceActionType {
+export function cancelConnectToDevice(deviceId: idType): cancelConnectToDeviceActionType {
   return {
     type: CANCEL_CONNECT_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function disconnectingFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): disconnectingFromDeviceActionType {
   return {
     type: DISCONNECTING_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function disconnectedFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): disconnectedFromDeviceActionType {
   return {
     type: DISCONNECTED_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function lostConnectionFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): lostConnectionFromDeviceActionType {
   return {
     type: LOST_CONNECTION_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Report Metadata */
 export function reportMetaData(
-  deviceId: nobleIdType,
+  deviceId: idType,
   metaData: ?metaDataObjType,
   moduleName: ?moduleNameType
 ): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
     payload: {
-      peripheralId: deviceId,
+      deviceId,
       data: metaData,
       moduleName
     }
@@ -154,7 +154,7 @@ export function reportMetaData(
 
 /* Wrapper for reporting metadata - check to see if the metadata is complete */
 export function metaDataReadComplete(
-  deviceId: nobleIdType,
+  deviceId: idType,
   metaData: ?metaDataObjType,
   moduleName: ?moduleNameType
 ): thunkType {
@@ -259,7 +259,7 @@ function constructGeneratorSettings(actuationMeta: actuationMetaObj[]): {
 }
 
 /* Read the default sensor parameters from the device */
-export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
+export function setDefaultSenGenParams(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
@@ -288,7 +288,7 @@ export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
 
 /* Set sensor on a device active or inactive  */
 export function setSensorActive(
-  deviceId: nobleIdType,
+  deviceId: idType,
   sensorId: number | string,
   newState: boolean
 ): thunkType {
@@ -305,7 +305,7 @@ export function setSensorActive(
 
 /* Set the Generator instrument active or inactive */
 export function setGeneratorActive(
-  deviceId: nobleIdType,
+  deviceId: idType,
   generatorId: number | string,
   newState: boolean
 ): thunkType {
@@ -321,7 +321,7 @@ export function setGeneratorActive(
 
 /* Update the the state of the channel for a sensor */
 export function setSensorChannels(
-  deviceId: nobleIdType,
+  deviceId: idType,
   sensorId: number | string,
   newChannels: number[]
 ): thunkType {
@@ -337,7 +337,7 @@ export function setSensorChannels(
 
 /* Update the dynamic parameters in the store */
 export function setSensorParams(
-  deviceId: nobleIdType,
+  deviceId: idType,
   sensorId: number | string,
   paramName: string,
   paramValue: number
@@ -354,7 +354,7 @@ export function setSensorParams(
 
 /* Change the active parameters */
 export function updateSenGenParams(
-  deviceId: nobleIdType,
+  deviceId: idType,
   deviceSettings: deviceSettingsObjType
 ): updateSenGenParamActionType {
   return {

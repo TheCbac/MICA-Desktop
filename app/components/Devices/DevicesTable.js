@@ -66,7 +66,7 @@ export default class DevicesTable extends Component {
     };
     const dull = { color: 'black' };
     /* See if the device is connected */
-    if (this.props.devices[id] === 'connected') {
+    if (this.props.devices[id].state === 'connected') {
       return glow;
     }
     return dull;
@@ -88,7 +88,7 @@ export default class DevicesTable extends Component {
     }
   }
   /* Perform a device action based on the current state */
-  performDeviceAction(id: nobleIdType): void {
+  performDeviceAction(id: idType): void {
     /* Find the current state of the device */
     const deviceState = this.props.devices[id].state;
     /* Act depending on the state */
@@ -175,7 +175,6 @@ export default class DevicesTable extends Component {
             desc: false
           }]}
         />
-        {this.devicesToArray().length}
       </div>
     );
   }
