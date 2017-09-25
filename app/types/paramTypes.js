@@ -137,11 +137,6 @@ export type deviceSettingsObjType = {
   generators: generatorListType
 };
 
-/* Top level state type */
-export type deviceSettingsType = {
-  [deviceId: string]: deviceSettingsObjType
-};
-
 /* A period count */
 export type periodCountType = {
   msb: number,

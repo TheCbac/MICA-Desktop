@@ -108,30 +108,29 @@ export type lostConnectionFromDeviceActionType = {
 export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {
-    peripheralId: string,
-    data: ?metaDataObjType,
-    moduleName: ?moduleNameType
+    deviceId: string,
+    data: metaDataObjType
   }
 };
 
-/* Set the selected devices */
-export type updateSelectedDeviceAction = {
-  type: 'UPDATE_SELECTED_DEVICES',
-  payload: {
-    sensor: selectType,
-    generator: selectType,
-    unselected: {
-      sensors: selectType[],
-      generators: selectType[]
-    }
-  }
-};
+// /* Set the selected devices */
+// export type updateSelectedDeviceAction = {
+//   type: 'UPDATE_SELECTED_DEVICES',
+//   payload: {
+//     sensor: selectType,
+//     generator: selectType,
+//     unselected: {
+//       sensors: selectType[],
+//       generators: selectType[]
+//     }
+//   }
+// };
 
 /* Update the settings of a device */
 export type updateSenGenParamActionType = {
   type: 'UPDATE_SEN_GEN_PARAMS',
   payload: {
-    deviceId: nobleIdType,
+    deviceId: idType,
     deviceSettings: deviceSettingsObjType
   }
 };

@@ -25,7 +25,6 @@ import type {
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  updateSelectedDeviceAction,
   updateSenGenParamActionType
 } from '../types/actionTypes';
 import { getPeripheralFromList } from '../utils/deviceUtils';
@@ -175,51 +174,33 @@ const deviceHandlers = {
     state: devicesStateType,
     action: reportMetaDataActionType
   ): devicesStateType {
-    const deviceId = action.payload.peripheralId;
-    /* Get the peripheral and index from the connected list */
-    const { peripheral } = getPeripheralFromList(state.connected, deviceId);
-    /* Ensure the peripheral was found */
-    if (!peripheral) { return state; }
-    /* Find the module name @TODO: this should be changed the metaObjType */
-    let metadata = action.payload.data;
-    /* If there are no devices in a module, populate as empty array */
-    if (metadata == null) {
-      metadata = [];
+    const id = action.payload.deviceId;
+    /* Get the list of keys */
+    const moduleList = Object.keys(action.payload.data);
+    /* Create a copy of the state */
+    let updatedState = update(state, {});
+    /* Iterate through all of the modules */
+    for (let i = 0; i < moduleList.length; i++) {
+      const module = moduleList[i];
+      updatedState = update(updatedState, { [id]: {
+        metadata:
+          { [module]: { $set: action.payload.data[module] } }
+      } });
     }
-    const moduleName = action.payload.moduleName;
-    /* Ensure valid data was reported */
-    if (!moduleName) { return state; }
-    /* Create an obj who has a key of the module in question */
-    const deviceMetaObj = { };
-    deviceMetaObj[moduleName] = metadata;
+    return updatedState;
     /* Update the stored Metadata object.  */
-    return update(state, { metadata: { [deviceId]: { $merge: deviceMetaObj } } });
-  },
-  /* Get the devices that have been selected */
-  UPDATE_SELECTED_DEVICES(
-    state: devicesStateType,
-    action: updateSelectedDeviceAction
-  ): devicesStateType {
-    /* Set the values directly */
-    return update(state, {
-      selected: { $set: {
-        sensor: action.payload.sensor,
-        generator: action.payload.generator
-      } },
-      unselected: { $set: action.payload.unselected }
-    });
+    // return update(state, { [id]: { metadata: { $set: action.payload.data } } });
   },
   /* Update the active settings for a device */
   UPDATE_SEN_GEN_PARAMS(
     state: devicesStateType,
     action: updateSenGenParamActionType
   ): devicesStateType {
-    /* set the new values */
+    const id = action.payload.deviceId;
+    /* Set the new values */
     return update(state, {
-      deviceSettings: {
-        [action.payload.deviceId]: {
-          $set: action.payload.deviceSettings
-        }
+      [id]: {
+        settings: { $set: action.payload.deviceSettings }
       }
     });
   }

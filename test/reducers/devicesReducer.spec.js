@@ -12,8 +12,8 @@
 *
 ********************************************************* */
 import devicesReducer from '../../app/reducers/devicesReducer';
+import { deviceIdFactory } from '../factories/factories';
 import {
-  deviceIdFactory,
   foundDeviceActionFactory,
   clearAdvertisingListFactory,
   connectingToDeviceActionFactory,
@@ -22,7 +22,8 @@ import {
   disconnectingFromDeviceActionFactory,
   disconnectedFromDeviceActionFactory,
   lostConnectionFromDeviceActionFactory,
- } from '../factories/factories';
+  reportMetadataFactory
+ } from '../factories/actionFactories';
 import type { devicesStateType, devicesStateObjType } from '../../app/types/stateTypes';
 import type {
   foundDeviceActionType,
@@ -50,7 +51,7 @@ describe('devicesReducer.spec.js', () => {
       expect(Object.keys(defaultState).length).toBe(0);
       expect(Object.keys(newState).length).toBe(1);
       /* Everything should be advertising */
-      const values = Object.values(newState);
+      const values: devicesStateObjType[] = Object.values(newState);
       for (let i = 0; i < values.length; i++) {
         expect(values[i].state).toBe('advertising');
       }
@@ -211,6 +212,24 @@ describe('devicesReducer.spec.js', () => {
       const lostConnectionState = devicesReducer(connectedState, lostConnectionAction);
       expect(lostConnectionState[id].state).toBe('advertising');
       expect(lostConnectionState[id].settings.active).toBe(false);
+    });
+  });
+  /* Metadata */
+  describe('REPORT_META_DATA', () => {
+    it('should accept metadata object with one module', () => {
+      const deviceId = deviceIdFactory();
+      /* Add a device */
+      const foundAction: foundDeviceActionType = foundDeviceActionFactory(deviceId);
+      const foundState: devicesStateType = devicesReducer(defaultState, foundAction);
+      /* Report metadata */
+      const metadataAction = reportMetadataFactory(deviceId);
+      const metadataState: devicesStateType = devicesReducer(foundState, metadataAction);
+      /* iterate through all of the modules contained in the metadata */
+      const moduleList = Object.keys(metadataAction.payload.data);
+      for (let i = 0; i < moduleList.length; i++) {
+        const module = moduleList[i];
+        expect(metadataState[deviceId].metadata[module]).toEqual(metadataAction.payload.data[module]);
+      }
     });
   });
 });

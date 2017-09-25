@@ -88,22 +88,22 @@ export type moduleNameType =
 
 /* Refactoring of the metadata types */
 export type metaDataObjType = {
-  energy: {
+  energy?: {
     [energyId: number]: energyMetaObj
   },
-  actuation: {
+  actuation?: {
     [actuationId: number]: actuationMetaObj
   },
-  power: {
+  power?: {
     [powerId: number]: powerMetaObj
   },
-  sensing: {
+  sensing?: {
     [sensingId: number]: sensingMetaObj
   },
-  communication: {
+  communication?: {
     [communicationId: number]: commMetaObj
   },
-  control: {
+  control?: {
     [controlId: number]: controlMetaObj
   }
 };
