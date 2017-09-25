@@ -29,10 +29,13 @@ export type selectType = {
 };
 
 /* Options for the BLE modules */
-export type bleStateType = 'advertising' | 'connecting' | 'connected' | 'disconnecting';
+export type bleStateType = 'advertising' | 'connecting' | 'connected' | 'disconnecting' | 'disconnected';
 
 export type devicesStateObjType = {
   state: bleStateType,
+  address: string,
+  name: string,
+  rssi: number,
   metadata: metaDataObjType,
   settings: deviceSettingsObjType
  };

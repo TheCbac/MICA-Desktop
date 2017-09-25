@@ -62,16 +62,24 @@ const deviceHandlers = {
     state: devicesStateType,
     action: foundDeviceActionType,
   ): devicesStateType {
-    const deviceId = action.payload.deviceId;
+    const { deviceId, address, name, rssi } = action.payload;
     /* See if the device is already in the list */
     const deviceList = Object.keys(state);
     if (deviceList.indexOf(deviceId) >= 0) {
       /* Set the disconnected device to advertising */
-      return update(state, { [deviceId]: { state: { $set: 'advertising' } } });
+      return update(state, { [deviceId]: {
+        state: { $set: 'advertising' },
+        address: { $set: address },
+        name: { $set: name },
+        rssi: { $set: rssi },
+      } });
     }
     /* No existing device was found, add a new one to the list */
     const newDevice: devicesStateObjType = {
       state: 'advertising',
+      address,
+      name,
+      rssi,
       metadata: {
         energy: {},
         actuation: {},

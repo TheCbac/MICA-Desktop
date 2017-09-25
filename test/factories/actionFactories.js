@@ -9,6 +9,7 @@
 * 2017.09.23 CC - Document Created
 *
 ********************************************************* */
+import faker from 'faker';
 import { deviceIdFactory } from './factories';
 import type { idType } from '../../app/types/paramTypes';
 import type {
@@ -30,7 +31,10 @@ export function foundDeviceActionFactory(deviceId?: idType): foundDeviceActionTy
   return {
     type: 'FOUND_ADVERTISING_DEVICE',
     payload: {
-      deviceId: id
+      deviceId: id,
+      name: faker.name.firstName(),
+      address: faker.random.alphaNumeric(),
+      rssi: faker.random.number()
     }
   };
 }

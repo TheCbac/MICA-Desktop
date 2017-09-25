@@ -29,6 +29,14 @@ export type nobleServiceType = {
   characteristics: ?nobleCharacteristicType[]
 };
 
+/* Object emitted when a device has been found */
+export type newDeviceObjType = {
+  deviceId: idType,
+  address: string,
+  name: string,
+  rssi: number
+};
+
 // /* Noble Object */
 // export type noblePeripheralType = {
 //   address: string,

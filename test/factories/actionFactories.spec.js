@@ -29,9 +29,15 @@ describe('actionFactories.spec.js', () => {
       /* Run test 5 times */
       for (let i = 0; i < 5; i++) {
         const action = foundDeviceActionFactory();
-        expect(action.type).toEqual('FOUND_ADVERTISING_DEVICE');
-        expect(typeof action.payload.deviceId).toEqual('string');
-        expect(action.payload.deviceId.length).toEqual(32);
+        const { deviceId, name, address, rssi } = action.payload;
+        expect(action.type).toBe('FOUND_ADVERTISING_DEVICE');
+        expect(typeof deviceId).toBe('string');
+        expect(deviceId.length).toBe(32);
+        expect(typeof name).toBe('string');
+        expect(name.length).toBeGreaterThan(0);
+        expect(typeof address).toBe('string');
+        expect(address.length).toBeGreaterThan(0);
+        expect(typeof rssi).toBe('number');
       }
     });
     it('should accept an argument of an id', () => {

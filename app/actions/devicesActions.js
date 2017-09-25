@@ -14,7 +14,7 @@ import { getSelectedDevices } from './senGenActions';
 import micaSensorParams from '../utils/mica/micaSensorParams';
 import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
 import type { idType, deviceSettingsObjType,
-  sensorParamType, generatorParamType } from '../types/paramTypes';
+  sensorParamType, generatorParamType, newDeviceObjType } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
@@ -48,11 +48,16 @@ export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 
 /* Action creator for when an advertising MICA device is discovered */
-export function foundAdvertisingDevice(deviceId: idType): foundDeviceActionType {
+export function foundAdvertisingDevice(deviceObj: newDeviceObjType): foundDeviceActionType {
+  /* Could use a spread operator - destructure and pass back for clarity */
+  const { deviceId, name, rssi, address } = deviceObj;
   return {
     type: FOUND_ADVERTISING_DEVICE,
     payload: {
-      deviceId
+      deviceId,
+      name,
+      rssi,
+      address
     }
   };
 }

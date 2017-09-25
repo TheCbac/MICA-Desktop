@@ -53,7 +53,10 @@ export type clearAdvertisingActionType = {
 export type foundDeviceActionType = {
   type: 'FOUND_ADVERTISING_DEVICE',
   payload: {
-    deviceId: idType
+    deviceId: idType,
+    name: string,
+    rssi: number,
+    address: string
   }
 };
 

@@ -49,19 +49,22 @@ describe('devicesReducer.spec.js', () => {
       /* Call the reducer - ensure it is an object, issue with createReducer type */
       const newState: devicesStateType = devicesReducer(defaultState, action);
       expect(Object.keys(defaultState).length).toBe(0);
-      expect(Object.keys(newState).length).toBe(1);
+      const deviceIdList = Object.keys(newState);
+      expect(deviceIdList.length).toBe(1);
       /* Everything should be advertising */
-      const values: devicesStateObjType[] = Object.values(newState);
-      for (let i = 0; i < values.length; i++) {
-        expect(values[i].state).toBe('advertising');
-      }
+      const id = deviceIdList[0];
+      const device = newState[id];
+      expect(device.state).toBe('advertising');
+      expect(typeof device.name).toBe('string');
+      expect(typeof device.rssi).toBe('number');
+      expect(typeof device.address).toBe('string');
       /* Add second device */
       const newState1: devicesStateType = devicesReducer(newState, action1);
       expect(Object.keys(newState).length).toBe(1);
       expect(Object.keys(newState1).length).toBe(2);
       /* Everything should be advertising */
       const values1: devicesStateObjType[] = Object.values(newState1);
-      for (let i = 0; i < values.length; i++) {
+      for (let i = 0; i < values1.length; i++) {
         expect(values1[i].state).toBe('advertising');
       }
       /* Make sure the keys are correctly included */

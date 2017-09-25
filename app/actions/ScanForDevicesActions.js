@@ -31,6 +31,8 @@ import {
   lostConnectionFromDevice
 } from './devicesActions';
 import { getSelectedDevices } from './senGenActions';
+import type { thunkType } from '../types/functionTypes';
+
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -80,7 +82,7 @@ export function changeScanState(method: scanTypes,
   };
 }
 /* Starts and stops the scanning events - dispatches events based on results */
-export function startStopScan() {
+export function startStopScan(): thunkType {
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
     const scanState = getState().scanForDevices;
@@ -109,7 +111,7 @@ export function startStopScan() {
 }
 
 /* Connecting to the a MICA Device - Redux Thunk */
-export function connectToDevice(advertisingDeviceId: nobleIdType) {
+export function connectToDevice(advertisingDeviceId: nobleIdType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the current devices */
@@ -140,7 +142,7 @@ function connectCallBack(id: nobleIdType, error: ?string): void {
   discoverMicaNoble(id);
 }
 
-export function cancelPendingConnection(deviceId: nobleIdType) {
+export function cancelPendingConnection(deviceId: nobleIdType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Find the device in the connecting list */
@@ -156,7 +158,7 @@ export function cancelPendingConnection(deviceId: nobleIdType) {
   };
 }
 /* Disconnect from a device */
-export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
+export function disconnectFromDevice(connectedDeviceId: nobleIdType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the currently connected devices */
