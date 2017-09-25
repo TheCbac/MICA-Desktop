@@ -1,19 +1,21 @@
 // @flow
 /* eslint no-underscore-dangle: 0 */
 /* **********************************************************
-* File: test/components/ScanForDevicesComponent.spec.js
+* File: test/components/Devices/DevicesPage.spec.js
 *
 * Brief: Testing of the scan device component
 *
 * Author: Craig Cheney
-* Date: 2017.06.06
 *
-**********************************************************/
+* 2017.09.25 CC - Changed name to DevicesPage
+*   (from scanForDevicesComponent)
+* 2017.06.06 CC - Document created
+*
+********************************************************* */
 import { spy } from 'sinon';
 import React from 'react';
 import { shallow } from 'enzyme';
-import ScanForDevices from '../../app/components/ScanForDevicesComponent';
-import { __RewireAPI__ as Rewire } from '../../app/components/ScanForDevicesComponent';
+import DevicesPage, { __RewireAPI__ as Rewire } from '../../../app/components/Devices/DevicesPage';
 /* Create the scan devices component */
 function setup(propsObj) {
   /* Default props */
@@ -21,29 +23,12 @@ function setup(propsObj) {
     method: 'ble',
     enabled: false,
     scanning: false,
-    advertisingDevices: [],
-    connectingDevices: [],
-    connectedDevices: [],
-    disconnectingDevices: []
+    devices: {}
   };
   /* If arguments were passed in use those */
   if (propsObj !== undefined) {
     props = { ...props, ...propsObj };
   }
-  // let props;
-  // if (propsObj === undefined) {
-  //   props = {
-  //     method: 'ble',
-  //     enabled: false,
-  //     scanning: false,
-  //     advertisingDevices: [],
-  //     connectingDevices: [],
-  //     connectedDevices: [],
-  //     disconnectingDevices: []
-  //   };
-  // } else {
-  //   props = { ...propsObj };
-  // }
   const actions = {
     changeScanMethod: spy(),
     startStopScan: spy(),
@@ -51,11 +36,7 @@ function setup(propsObj) {
     cancelPendingConnection: spy(),
     disconnectFromDevice: spy()
   };
-  const component = shallow(<ScanForDevices
-    // method={props.method}
-    // enabled={props.enabled}
-    // scanning={props.scanning}
-    // advertisingDevices={props.advertisingDevices}
+  const component = shallow(<DevicesPage
     {...props}
     {...actions}
   />);
@@ -71,7 +52,7 @@ const bleId = 0;
 const usbId = 1;
 const scanId = 2;
 /* Testing suite */
-describe('ScanForDevicesComponent', () => {
+describe('DevicesPage', () => {
   it('Buttons should be named correctly', () => {
     const { buttons } = setup();
     expect(buttons.at(bleId).prop('name')).toEqual('bleMethodBtn');

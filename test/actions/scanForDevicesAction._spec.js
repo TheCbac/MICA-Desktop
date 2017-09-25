@@ -6,7 +6,8 @@
 * Brief: Testing of the scan for device actions
 *
 * Author: Craig Cheney
-* Date: 2017.06.06
+*
+* 2017.06.06 CC - Document created
 *
 ********************************************************* */
 import scanRewire, * as actions from '../../app/actions/ScanForDevicesActions';

@@ -1,21 +1,24 @@
 // @flow
 /* **********************************************************
-* File: components/ScanForDevicesComponent.js
+* File: components/Devices/DevicesPage.js
 *
-* Brief: Component for starting scan, and choosing scan
+* Brief: Page for starting scan, and choosing scan
 *     method.
 *
 * Author: Craig Cheney
-* Date: 2017.04.27
+*
+* 2017.09.25 CC - Changed name to DevicesPage (from ScanForDevicesComponent)
+* 2017.04.27 CC - Document Created
 *
 ********************************************************* */
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { ButtonGroup, Button, Grid, Col, Row } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import { getPeripheralFromList } from '../utils/deviceUtils';
-import type { scanTypes, noblePeripheralType, nobleIdType } from '../types/paramTypes';
-import type { changeScanActionType } from '../types/actionTypes';
+import { getPeripheralFromList } from '../../utils/deviceUtils';
+import type { scanTypes, noblePeripheralType, nobleIdType } from '../../types/paramTypes';
+import type { changeScanActionType } from '../../types/actionTypes';
+import type { devicesStateType } from '../../types/stateTypes';
 
 type methodBtnStyleType = 'success' | 'danger' | 'default';
 type scanBtnStyleType = {
@@ -32,7 +35,7 @@ type connectBtnSettingsType = {
 };
 type deviceListType = 'advertising' | 'connecting' | 'connected' | 'disconnecting';
 
-export default class ScanForDevices extends Component {
+export default class DevicesPage extends Component {
   /* Properties, checked with flow */
   props: {
       method: scanTypes,
@@ -40,10 +43,11 @@ export default class ScanForDevices extends Component {
       scanning: boolean,
       changeScanMethod: (scanTypes) => changeScanActionType,
       startStopScan: () => mixed,
-      advertisingDevices: noblePeripheralType[],
-      connectingDevices: noblePeripheralType[],
-      connectedDevices: noblePeripheralType[],
-      disconnectingDevices: noblePeripheralType[],
+      devices: devicesStateType,
+      // advertisingDevices: noblePeripheralType[],
+      // connectingDevices: noblePeripheralType[],
+      // connectedDevices: noblePeripheralType[],
+      // disconnectingDevices: noblePeripheralType[],
       connectToDevice: () => mixed,
       cancelPendingConnection: () => mixed,
       disconnectFromDevice: () => mixed

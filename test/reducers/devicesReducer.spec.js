@@ -228,7 +228,8 @@ describe('devicesReducer.spec.js', () => {
       const moduleList = Object.keys(metadataAction.payload.data);
       for (let i = 0; i < moduleList.length; i++) {
         const module = moduleList[i];
-        expect(metadataState[deviceId].metadata[module]).toEqual(metadataAction.payload.data[module]);
+        expect(metadataState[deviceId].metadata[module])
+          .toEqual(metadataAction.payload.data[module]);
       }
     });
   });

@@ -1,11 +1,12 @@
 /* @flow */
 /* **********************************************************
-* File: senGenPage.js
+* File: SettingsContainer.js
 *
 * Brief: Container for the Sensor & Generators settings page
 *
 * Author: Craig Cheney
 *
+* 2017.09.25 CC - Changed name to SettingsContainer.js (from SenGenPage)
 * 2017.08.30 CC - Document created
 *
 ********************************************************* */

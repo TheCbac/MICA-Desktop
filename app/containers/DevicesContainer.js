@@ -1,17 +1,19 @@
 // @flow
 /* **********************************************************
-* File: DevicesPage.js
+* File: DevicesContainer.js
 *
 * Brief: Container for the Devices page
 *
 * Author: Craig Cheney
+
+* 2017.09.25 CC - Changed name to DevicesContainer.js (from DevicesPage)
 * 2017.08.27 CC - Changed name to DevicesPage.js (from HomePage)
 * 2017.04.27 CC - Document created
 *
-**********************************************************/
+********************************************************* */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import scanForDevices from '../components/ScanForDevicesComponent';
+import DevicesPage from '../components/Devices/DevicesPage';
 import {
   changeScanMethod,
   enableScanMethod,
@@ -29,10 +31,11 @@ function mapStateToProps(state: stateType) {
     method: state.scanForDevices.method,
     enabled: state.scanForDevices.enabled,
     scanning: state.scanForDevices.scanning,
-    advertisingDevices: state.devices.advertising,
-    connectingDevices: state.devices.connecting,
-    connectedDevices: state.devices.connected,
-    disconnectingDevices: state.devices.disconnecting
+    devices: state.devices
+    // advertisingDevices: state.devices.advertising,
+    // connectingDevices: state.devices.connecting,
+    // connectedDevices: state.devices.connected,
+    // disconnectingDevices: state.devices.disconnecting
     // devices: state.devices.advertising.concat(state.devices.connecting, state.devices.connected)
   };
 }
@@ -47,6 +50,6 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   cancelPendingConnection
 }, dispatcher);
 
-export default connect(mapStateToProps, mapDispatchToProps)(scanForDevices);
+export default connect(mapStateToProps, mapDispatchToProps)(DevicesPage);
 
 /* [] - END OF FILE */
