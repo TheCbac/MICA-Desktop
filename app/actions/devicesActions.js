@@ -138,44 +138,56 @@ export function lostConnectionFromDevice(
 /* Report Metadata */
 export function reportMetaData(
   deviceId: idType,
-  metaData: ?metaDataObjType,
-  moduleName: ?moduleNameType
+  metaData: metaDataObjType,
 ): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
     payload: {
       deviceId,
       data: metaData,
-      moduleName
     }
   };
 }
 
+// export function reportMetaData(
+//   deviceId: idType,
+//   metaData: ?metaDataObjType,
+//   moduleName: ?moduleNameType
+// ): reportMetaDataActionType {
+//   return {
+//     type: REPORT_META_DATA,
+//     payload: {
+//       deviceId,
+//       data: metaData,
+//       moduleName
+//     }
+//   };
+// }
 
-/* Wrapper for reporting metadata - check to see if the metadata is complete */
-export function metaDataReadComplete(
-  deviceId: idType,
-  metaData: ?metaDataObjType,
-  moduleName: ?moduleNameType
-): thunkType {
-  /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
-    /* Report the metadata */
-    dispatch(reportMetaData(deviceId, metaData, moduleName));
-    /* Get the state  */
-    const state = getState();
-    /* Get the metadata for a device */
-    const deviceMetadata = state.devices.metadata[deviceId];
-    /* get the number of metadata reads */
-    const numMetadata = Object.keys(deviceMetadata).length;
-    /* If all of the modules have been read, update the selected device */
-    if (numMetadata === 6) {
-      dispatch(getSelectedDevices());
-      /* Set the default parameters */
-      dispatch(setDefaultSenGenParams(deviceId));
-    }
-  };
-}
+// /* Wrapper for reporting metadata - check to see if the metadata is complete */
+// export function metaDataReadComplete(
+//   deviceId: idType,
+//   metaData: ?metaDataObjType,
+//   moduleName: ?moduleNameType
+// ): thunkType {
+//   /* Return a function for redux thunk */
+//   return (dispatch: () => void, getState: () => stateType): void => {
+//     /* Report the metadata */
+//     dispatch(reportMetaData(deviceId, metaData, moduleName));
+//     /* Get the state  */
+//     const state = getState();
+//     /* Get the metadata for a device */
+//     const deviceMetadata = state.devices.metadata[deviceId];
+//     /* get the number of metadata reads */
+//     const numMetadata = Object.keys(deviceMetadata).length;
+//     /* If all of the modules have been read, update the selected device */
+//     if (numMetadata === 6) {
+//       dispatch(getSelectedDevices());
+//       /* Set the default parameters */
+//       dispatch(setDefaultSenGenParams(deviceId));
+//     }
+//   };
+// }
 
 /* Get the sensing devices settings from the metadata */
 function constructSensingSettings(sensingMeta: sensingMetaObj[]): {

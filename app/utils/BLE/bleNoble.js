@@ -10,14 +10,23 @@
 * 2017.09.25 CC - Document created
 ********************************************************* */
 import store from '../../index';
-import { foundAdvertisingDevice } from '../../actions/devicesActions';
+import { foundAdvertisingDevice, reportMetaData } from '../../actions/devicesActions';
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
 import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
 import log from '../loggingUtils';
-import { shallowObjToArray, getCharacteristicFromDevice } from '../deviceUtils';
+import {
+  getCharacteristicFromDevice, readBleCharacteristic
+} from './bleHelpers';
+import { shallowObjToArray } from '../deviceUtils';
 import type { bleApiResultType } from '../../types/bleTypes';
-import type { idType, newDeviceObjType } from '../../types/paramTypes';
+import type {
+  idType, newDeviceObjType, noblePeripheralType
+} from '../../types/paramTypes';
+import parseMetaData from '../mica/metaDataParsers';
+
+log.debugLevel = 5;
+log.debug('bleNoble.js logging level set to:', log.debugLevel);
 
 /* Store the Noble objects */
 const nobleObjects = {};
@@ -64,7 +73,7 @@ export function nobleDisconnect(
 }
 
 /* Read the metadata from a device */
-export function nobleReadMetadata(
+export function nobleInitializeDevice(
   deviceId: idType,
 ): bleApiResultType {
   /* Get the device */
@@ -76,19 +85,20 @@ export function nobleReadMetadata(
   device.discoverSomeServicesAndCharacteristics(
     [micaServiceUuid],
     micaCharArray,
-    discoverMicaNobleCallback.bind(null, deviceId)
+    nobleDiscoverMicaCallback.bind(null, deviceId)
   );
   /* Return success */
   return { success: true };
 }
+
 /* ======== Callbacks ======== */
 
 /* Callback once MICA discovery is done - Subscriptions are done here */
-function discoverMicaNobleCallback(id: idType, error: ?string): void {
+function nobleDiscoverMicaCallback(id: idType, error: ?string): void {
   /* Get the device */
   const device = nobleObjects[id];
   if (error || !device) {
-    log.error('discoverMicaNobleCallback: Discovery failed', error, id);
+    log.error('nobleDiscoverMicaCallback: Discovery failed', error, id);
     return;
   }
   const { sensorCommands, communicationCommands } = micaCharUuids;
@@ -100,8 +110,8 @@ function discoverMicaNobleCallback(id: idType, error: ?string): void {
   if (!sensingCommandChar) {
     log.error('Failed to find sensingCommand Characteristic for', id);
   } else {
-    sensingCommandChar.subscribe(subscribeCallback.bind(null, id, 'SensingCommand'));
-    sensingCommandChar.on('data', sensingDataCallback.bind(null, id));
+    sensingCommandChar.subscribe(nobleSubscribeCallback.bind(null, id, 'SensingCommand'));
+    sensingCommandChar.on('data', nobleSensingDataCallback.bind(null, id));
   }
   /* Subscribe to the Communication command */
   const commCommandChar = getCharacteristicFromDevice(
@@ -110,15 +120,57 @@ function discoverMicaNobleCallback(id: idType, error: ?string): void {
   if (!commCommandChar) {
     log.error('Failed to find communicationCommand Characteristic for', id);
   } else {
-    commCommandChar.subscribe(subscribeCallback.bind(null, id, 'CommunicationCommand'));
+    commCommandChar.subscribe(nobleSubscribeCallback.bind(null, id, 'CommunicationCommand'));
   }
   /* Read the metadata from the device */
   /* TODO: PICK UP HERE */
+  nobleReadMetadata(device);
+}
+
+/* Begin Reading the metadata from a device */
+function nobleReadMetadata(
+  device: noblePeripheralType,
+): bleApiResultType {
+  /* Get all of the chars */
+  const {
+    energyMetadata, actuationMetadata, powerMetadata,
+    sensorMetadata, communicationMetadata, controlMetadata
+  } = micaCharUuids;
+  const metadataChars = [
+    energyMetadata, actuationMetadata, powerMetadata,
+    sensorMetadata, communicationMetadata, controlMetadata
+  ];
+  /* Read all of the metadata */
+  let result = { success: true };
+  for (let i = 0; i < metadataChars.length; i++) {
+    const char = metadataChars[i];
+    /* Read from the device */
+    const { success, error } = readBleCharacteristic(
+      device, micaServiceUuid, char, readMetadataCallback);
+    if (!success) {
+      result = { success, error, payload: { charUuid: char } };
+    }
+  }
+  return result;
+}
+
+/* Callback for when the metadata is read */
+function readMetadataCallback(
+  charId: string, deviceId: string, error: ?string, data: Buffer
+): void {
+  if (error) {
+    log.error('readCharCallback', charId, 'failed on device', deviceId, 'with error', error);
+    return;
+  }
+  /* Parse the metadata */
+  const metadata = parseMetaData(charId, data);
+  log.debug('readMetaCharCallback: Parsed metadata:', metadata);
+  store.dispatch(reportMetaData(deviceId, metadata));
 }
 
 /* TODO: Notifications for data  */
-function sensingDataCallback(id: string, data: Buffer, isNotification: boolean): void {
-  // console.log('sensingDataCallback:', id, data);
+function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: boolean): void {
+  // console.log('nobleSensingDataCallback:', id, data);
   const time = new Date().getTime();
   /* Parse the command */
   /* TODO: implement dynamic packets based on settings */
@@ -128,7 +180,7 @@ function sensingDataCallback(id: string, data: Buffer, isNotification: boolean):
 }
 
 /* Call back function for subscriptions */
-function subscribeCallback(id: string, char: string, error: ?string): void {
+function nobleSubscribeCallback(id: string, char: string, error: ?string): void {
   if (error) {
     log.error('Subscription to', char, 'failed on device:', id);
   } else {

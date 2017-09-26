@@ -17,6 +17,36 @@ import type {
   nobleServiceType
 } from '../types/paramTypes';
 
+/* Return an array from an array like object */
+export function shallowObjToArray(obj: {}): ?mixed[] {
+  const objArray = [];
+  const keys = Object.keys(obj);
+  /* Iterate over the keys */
+  for (let i = 0; i < keys.length; i += 1) {
+    objArray.push(obj[keys[i]]);
+  }
+  return objArray;
+}
+
+/* Return a float from a buffer */
+export function bufferToFloat(buffer: Buffer): ?number {
+  /* Must be four bytes */
+  if (buffer.length !== 4) { return undefined; }
+  /* Array to place bytes in */
+  const floatBytes = [];
+  /* Reverse order */
+  floatBytes[3] = buffer[0];
+  floatBytes[2] = buffer[1];
+  floatBytes[1] = buffer[2];
+  floatBytes[0] = buffer[3];
+  /* Convert to float */
+  return new Buffer(floatBytes).readFloatBE(0);
+}
+
+/* ***************************************** *
+ *                 DEPRECATED                *
+ * ***************************************** */
+
 /* Find a peripheral from a list of peripherals */
 export function getPeripheralFromList(
   deviceList: noblePeripheralType[],
@@ -35,54 +65,39 @@ export function getPeripheralFromList(
 }
 
 
-/* Return a service from a given peripheral by UUID */
-export function getServiceFromPeripheral(
-  serviceUuid: string,
-  peripheral: noblePeripheralType
-): ?nobleServiceType {
-  /* Find the appropriate service from the peripheral */
-  const servicesList = peripheral.services;
-  /* Ensure list exists */
-  if (!servicesList) { return undefined; }
-  for (let i = 0; i < servicesList.length; i += 1) {
-    if (servicesList[i].uuid === serviceUuid) {
-      return servicesList[i];
-    }
-  }
-  return undefined;
-}
-/* Returns a characteristic when passed a service */
-export function getCharacteristicFromService(
-  charUuid: string,
-  service: nobleServiceType
-): ?nobleCharacteristicType {
-  /* find the characteristics list */
-  const charList = service.characteristics;
-  /* Ensure the list exists */
-  if (!charList) { return undefined; }
-  /* Look for the matching UUID */
-  for (let i = 0; i < charList.length; i += 1) {
-    if (charList[i].uuid === charUuid) {
-      return charList[i];
-    }
-  }
-  return undefined;
-}
-
-/* Get the characteristic from a Device */
-export function getCharacteristicFromDevice(
-  device: noblePeripheralType,
-  serviceUuid: string,
-  charUuid: string
-): ?noblePeripheralType {
-  /* Find the service  */
-  const service = getServiceFromPeripheral(serviceUuid, device);
-  if (!service) { return undefined; }
-  return getCharacteristicFromService(
-    charUuid,
-    service
-  );
-}
+// /* Return a service from a given peripheral by UUID */
+// export function getServiceFromPeripheral(
+//   serviceUuid: string,
+//   peripheral: noblePeripheralType
+// ): ?nobleServiceType {
+//   /* Find the appropriate service from the peripheral */
+//   const servicesList = peripheral.services;
+//   /* Ensure list exists */
+//   if (!servicesList) { return undefined; }
+//   for (let i = 0; i < servicesList.length; i += 1) {
+//     if (servicesList[i].uuid === serviceUuid) {
+//       return servicesList[i];
+//     }
+//   }
+//   return undefined;
+// }
+// /* Returns a characteristic when passed a service */
+// export function getCharacteristicFromService(
+//   charUuid: string,
+//   service: nobleServiceType
+// ): ?nobleCharacteristicType {
+//   /* find the characteristics list */
+//   const charList = service.characteristics;
+//   /* Ensure the list exists */
+//   if (!charList) { return undefined; }
+//   /* Look for the matching UUID */
+//   for (let i = 0; i < charList.length; i += 1) {
+//     if (charList[i].uuid === charUuid) {
+//       return charList[i];
+//     }
+//   }
+//   return undefined;
+// }
 
 /* Returns a characteristic from a given peripheral */
 export function getCharacteristicFromPeripheralId(
@@ -119,33 +134,6 @@ export function readMetaCharacteristicFromId(charUuid: string, serviceUuid: stri
   /* Indicate the read call was successful */
   return true;
 }
-
-/* Return an array from an array like object */
-export function shallowObjToArray(obj: {}): ?mixed[] {
-  const objArray = [];
-  const keys = Object.keys(obj);
-  /* Iterate over the keys */
-  for (let i = 0; i < keys.length; i += 1) {
-    objArray.push(obj[keys[i]]);
-  }
-  return objArray;
-}
-
-/* Return a float from a buffer */
-export function bufferToFloat(buffer: Buffer): ?number {
-  /* Must be four bytes */
-  if (buffer.length !== 4) { return undefined; }
-  /* Array to place bytes in */
-  const floatBytes = [];
-  /* Reverse order */
-  floatBytes[3] = buffer[0];
-  floatBytes[2] = buffer[1];
-  floatBytes[1] = buffer[2];
-  floatBytes[0] = buffer[3];
-  /* Convert to float */
-  return new Buffer(floatBytes).readFloatBE(0);
-}
-
 // /* Get the name of a device from it's ID */
 // export function getNameFromId(id: ?string): ?string {
 

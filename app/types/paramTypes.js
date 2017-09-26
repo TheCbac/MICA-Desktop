@@ -20,7 +20,8 @@ export type nobleCharacteristicType = {
   type: ?string,
   read: () => void,
   subscribe: () => void,
-  write: () => void
+  write: () => void,
+  on: () => void
 };
 /* Noble BLE services */
 export type nobleServiceType = {
@@ -37,27 +38,28 @@ export type newDeviceObjType = {
   rssi: number
 };
 
-// /* Noble Object */
-// export type noblePeripheralType = {
-//   address: string,
-//   addressType: string,
-//   advertisement: {
-//     localName: string,
-//     manufacturerData: ?string,
-//     serviceData: [],
-//     serviceUuids: string[],
-//     txPowerLevel: ?number
-//   },
-//   connectable: boolean,
-//   id: string,
-//   rssi: number,
-//   services: ?nobleServiceType[],
-//   uuid: string,
-//   connect: () => void,
-//   disconnect: () => void,
-//   once: () => void,
-//   discoverSomeServicesAndCharacteristics: () => void
-// };
+/* Noble Object */
+// export type noblePeripheralType = {};
+export type noblePeripheralType = {
+  address: string,
+  addressType: string,
+  advertisement: {
+    localName: string,
+    manufacturerData: ?string,
+    serviceData: [],
+    serviceUuids: string[],
+    txPowerLevel: ?number
+  },
+  connectable: boolean,
+  id: string,
+  rssi: number,
+  services: ?nobleServiceType[],
+  uuid: string,
+  connect: () => void,
+  disconnect: () => void,
+  once: () => void,
+  discoverSomeServicesAndCharacteristics: () => void
+};
 
 
 export type nobleIdType = string;

@@ -2,6 +2,8 @@
 /* **********************************************************
 * File: utils/mica/micaNobleDevices.js
 *
+* ****************** DEPRECATED ******************
+*
 * Brief: Contains the MICA API for interacting with BLE
 * devices via Noble.
 *

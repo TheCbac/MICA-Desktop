@@ -28,7 +28,7 @@ import {
   lostConnectionFromDevice
 } from './devicesActions';
 import { bleStartScan, bleStopScan, bleConnect,
-  bleCancelPending, bleDisconnect, bleReadMetadata } from '../utils/BLE/bleFunctions';
+  bleCancelPending, bleDisconnect, bleInitializeDevice } from '../utils/BLE/bleFunctions';
 import type { thunkType } from '../types/functionTypes';
 
 
@@ -128,8 +128,7 @@ function connectCallBack(id: idType, method: scanTypes, error: ?string): void {
   /* Dispatch an action to indicate connected device */
   store.dispatch(connectedToDevice(id));
   /* Discover parameters about the device */
-  // discoverMicaNoble(id);
-  bleReadMetadata(method, id);
+  bleInitializeDevice(method, id);
 }
 
 /* Cancel an attempt to connect */

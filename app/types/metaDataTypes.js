@@ -88,32 +88,45 @@ export type moduleNameType =
 
 /* Refactoring of the metadata types */
 export type metaDataObjType = {
-  energy?: {
-    [energyId: number]: energyMetaObj
-  },
-  actuation?: {
-    [actuationId: number]: actuationMetaObj
-  },
-  power?: {
-    [powerId: number]: powerMetaObj
-  },
-  sensing?: {
-    [sensingId: number]: sensingMetaObj
-  },
-  communication?: {
-    [communicationId: number]: commMetaObj
-  },
-  control?: {
-    [controlId: number]: controlMetaObj
-  }
+  energy?: energyObjs,
+  actuation?: actuationObjs,
+  power?: powerObjs,
+  sensing?: sensingObjs,
+  communication?: commObjs,
+  control?: controlObjs
+};
+
+/* An object of metadata energy type */
+export type energyObjs = {
+  [energyId: number]: energyMetaObj
+};
+/* An object of metadata actuation type */
+export type actuationObjs = {
+  [actuationId: number]: actuationMetaObj
+};
+/* An object of metadata power type */
+export type powerObjs = {
+  [powerId: number]: powerMetaObj
+};
+/* An object of metadata sensing type */
+export type sensingObjs = {
+  [sensingId: number]: sensingMetaObj
+};
+/* An object of metadata comm type */
+export type commObjs = {
+  [commId: number]: commMetaObj
+};
+/* An object of metadata control type */
+export type controlObjs = {
+  [controlId: number]: controlMetaObj
 };
 
 export type energyMetaObj = {
-  type: string,
+  type: ?string | number,
   name: ?string,
-  numCells: ?number,
-  nomVoltage: ?number,
-  energyFeatures: ?number
+  numCells: ?number | string,
+  nomVoltage: ?string | number,
+  energyFeatures: ?number | string
 };
 /* Actuation metadata type */
 export type actuationMetaObj = {
