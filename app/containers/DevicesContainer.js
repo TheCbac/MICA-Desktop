@@ -16,13 +16,11 @@ import { connect } from 'react-redux';
 import DevicesPage from '../components/Devices/DevicesPage';
 import {
   changeScanMethod,
-  enableScanMethod,
   startStopScan,
   connectToDevice,
   cancelPendingConnection,
   disconnectFromDevice
 } from '../actions/ScanForDevicesActions';
-import { foundAdvertisingDevice } from '../actions/devicesActions';
 import type { stateType } from '../types/stateTypes';
 
 /* Pass the state values into the props */
@@ -37,12 +35,10 @@ function mapStateToProps(state: stateType) {
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   changeScanMethod,
-  enableScanMethod,
   startStopScan,
-  foundAdvertisingDevice,
   connectToDevice,
+  cancelPendingConnection,
   disconnectFromDevice,
-  cancelPendingConnection
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(DevicesPage);

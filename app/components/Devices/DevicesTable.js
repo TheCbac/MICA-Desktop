@@ -23,9 +23,9 @@ type propTypes = {
   /* Variables */
   devices: devicesStateType,
   /* Functions */
-  connectToDevice: () => thunkType,
-  cancelPendingConnection: () => thunkType,
-  disconnectFromDevice: () => thunkType
+  connectToDevice: (deviceId: idType) => thunkType,
+  cancelPendingConnection: (deviceId: idType) => thunkType,
+  disconnectFromDevice: (deviceId: idType) => thunkType
 };
 /* Text for the buttons */
 type connectBtnTextType =

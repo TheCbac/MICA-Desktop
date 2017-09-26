@@ -17,26 +17,28 @@ import { Grid, Col, Row } from 'react-bootstrap';
 import ScanMethodBtn from './ScanMethodBtn';
 import ScanBtn from './ScanBtn';
 import DevicesTable from './DevicesTable';
-import type { scanTypes } from '../../types/paramTypes';
+import type { scanTypes, idType } from '../../types/paramTypes';
 import type { changeScanActionType } from '../../types/actionTypes';
 import type { devicesStateType } from '../../types/stateTypes';
 import type { thunkType } from '../../types/functionTypes';
 
+type propsType = {
+    /* Variables */
+    method: scanTypes,
+    enabled: boolean,
+    scanning: boolean,
+    devices: devicesStateType,
+    /* Functions */
+    changeScanMethod: (method: scanTypes) => changeScanActionType,
+    startStopScan: () => thunkType,
+    connectToDevice: (deviceId: idType) => thunkType,
+    cancelPendingConnection: (deviceId: idType) => thunkType,
+    disconnectFromDevice: (deviceId: idType) => thunkType
+};
+
 export default class DevicesPage extends Component {
   /* Properties, checked with flow */
-  props: {
-      /* Variables */
-      method: scanTypes,
-      enabled: boolean,
-      scanning: boolean,
-      changeScanMethod: (scanTypes) => changeScanActionType,
-      devices: devicesStateType,
-      /* Functions */
-      startStopScan: () => thunkType,
-      connectToDevice: () => thunkType,
-      cancelPendingConnection: () => thunkType,
-      disconnectFromDevice: () => thunkType
-    };
+  props: propsType;
 
   /* Render function */
   render() {
