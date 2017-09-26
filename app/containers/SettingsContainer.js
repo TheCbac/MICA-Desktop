@@ -23,7 +23,7 @@ import {
 
 function mapStateToProps(state) {
   return {
-    deviceSettings: state.devices.deviceSettings
+    devices: state.devices
   };
 }
 

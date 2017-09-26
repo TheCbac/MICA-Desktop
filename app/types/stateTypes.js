@@ -36,6 +36,7 @@ export type devicesStateObjType = {
   address: string,
   name: string,
   rssi: number,
+  active: boolean,
   metadata: metaDataObjType,
   settings: deviceSettingsObjType
  };

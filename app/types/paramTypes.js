@@ -90,7 +90,7 @@ export type deviceChannelType = {
 };
 
 export type deviceParamObj = {
-  [senGenId: number | string]: {
+  [instrumentId: number | string]: {
     channels: deviceChannelType,
     dynamicParams: {
       [paramName: string]: deviceParamType
@@ -142,7 +142,6 @@ export type generatorListType = {
 
 /* Specific object for device settings */
 export type deviceSettingsObjType = {
-  active: boolean,
   sensors: sensorListType,
   generators: generatorListType
 };

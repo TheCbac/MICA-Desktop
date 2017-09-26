@@ -27,7 +27,6 @@ import type {
   reportMetaDataActionType,
   updateSenGenParamActionType
 } from '../types/actionTypes';
-import { getPeripheralFromList } from '../utils/deviceUtils';
 
 
 /* Default state of the devicesReducer */
@@ -80,6 +79,7 @@ const deviceHandlers = {
       address,
       name,
       rssi,
+      active: false,
       metadata: {
         energy: {},
         actuation: {},
@@ -89,7 +89,6 @@ const deviceHandlers = {
         control: {}
       },
       settings: {
-        active: false,
         sensors: {},
         generators: {}
       }
@@ -120,7 +119,7 @@ const deviceHandlers = {
     }
     return update(state, { [id]: {
       state: { $set: 'connected' },
-      settings: { active: { $set: true } }
+      active: { $set: true }
     } });
   },
   /* Cancel a pending connection */
@@ -147,7 +146,7 @@ const deviceHandlers = {
     }
     return update(state, { [id]: {
       state: { $set: 'disconnecting' },
-      settings: { active: { $set: false } }
+      active: { $set: false }
     } });
   },
   /* Disconnection successful, remove from disconnecting list */
@@ -160,7 +159,10 @@ const deviceHandlers = {
     if (state[id].state !== 'disconnecting') {
       return state;
     }
-    return update(state, { [id]: { state: { $set: 'advertising' } } });
+    return update(state, { [id]: {
+      state: { $set: 'advertising' },
+      active: { $set: false }
+    } });
   },
   /* Device was abruptly lost, remove from connected list */
   LOST_CONNECTION_FROM_DEVICE(
@@ -174,7 +176,7 @@ const deviceHandlers = {
     }
     return update(state, { [id]: {
       state: { $set: 'advertising' },
-      settings: { active: { $set: false } }
+      active: { $set: false }
     } });
   },
   /* Metadata was read in successfully */

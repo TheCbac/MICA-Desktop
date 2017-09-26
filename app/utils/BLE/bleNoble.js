@@ -10,7 +10,7 @@
 * 2017.09.25 CC - Document created
 ********************************************************* */
 import store from '../../index';
-import { foundAdvertisingDevice, reportMetaData } from '../../actions/devicesActions';
+import { foundAdvertisingDevice, metaDataReadComplete } from '../../actions/devicesActions';
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
 import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
@@ -165,7 +165,7 @@ function readMetadataCallback(
   /* Parse the metadata */
   const metadata = parseMetaData(charId, data);
   log.debug('readMetaCharCallback: Parsed metadata:', metadata);
-  store.dispatch(reportMetaData(deviceId, metadata));
+  store.dispatch(metaDataReadComplete(deviceId, metadata));
 }
 
 /* TODO: Notifications for data  */

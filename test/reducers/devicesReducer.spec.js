@@ -127,7 +127,7 @@ describe('devicesReducer.spec.js', () => {
       const connectedAction: connectedToDeviceActionType = connectedToDeviceActionFactory(id);
       const connectedState = devicesReducer(connectingState, connectedAction);
       expect(connectedState[id].state).toBe('connected');
-      expect(connectedState[id].settings.active).toBe(true);
+      expect(connectedState[id].active).toBe(true);
     });
   });
   describe('CANCEL_CONNECT_TO_DEVICE', () => {
@@ -158,13 +158,13 @@ describe('devicesReducer.spec.js', () => {
       const connectedAction: connectedToDeviceActionType = connectedToDeviceActionFactory(id);
       const connectedState = devicesReducer(connectingState, connectedAction);
       expect(connectedState[id].state).toBe('connected');
-      expect(connectedState[id].settings.active).toBe(true);
+      expect(connectedState[id].active).toBe(true);
       /* Connect to the device */
       const disconnectingAction: disconnectingFromDeviceActionType =
         disconnectingFromDeviceActionFactory(id);
       const disconnectingState = devicesReducer(connectedState, disconnectingAction);
       expect(disconnectingState[id].state).toBe('disconnecting');
-      expect(disconnectingState[id].settings.active).toBe(false);
+      expect(disconnectingState[id].active).toBe(false);
     });
   });
   describe('DISCONNECTED_FROM_DEVICE', () => {
@@ -180,19 +180,19 @@ describe('devicesReducer.spec.js', () => {
       const connectedAction: connectedToDeviceActionType = connectedToDeviceActionFactory(id);
       const connectedState = devicesReducer(connectingState, connectedAction);
       expect(connectedState[id].state).toBe('connected');
-      expect(connectedState[id].settings.active).toBe(true);
+      expect(connectedState[id].active).toBe(true);
       /* Connect to the device */
       const disconnectingAction: disconnectingFromDeviceActionType =
         disconnectingFromDeviceActionFactory(id);
       const disconnectingState = devicesReducer(connectedState, disconnectingAction);
       expect(disconnectingState[id].state).toBe('disconnecting');
-      expect(disconnectingState[id].settings.active).toBe(false);
+      expect(disconnectingState[id].active).toBe(false);
       /* Connect to the device */
       const disconnectedAction: disconnectedFromDeviceActionType =
       disconnectedFromDeviceActionFactory(id);
       const disconnectedState = devicesReducer(disconnectingState, disconnectedAction);
       expect(disconnectedState[id].state).toBe('advertising');
-      expect(disconnectedState[id].settings.active).toBe(false);
+      expect(disconnectedState[id].active).toBe(false);
     });
   });
   describe('LOST_CONNECTION_FROM_DEVICE', () => {
@@ -208,13 +208,13 @@ describe('devicesReducer.spec.js', () => {
       const connectedAction: connectedToDeviceActionType = connectedToDeviceActionFactory(id);
       const connectedState = devicesReducer(connectingState, connectedAction);
       expect(connectedState[id].state).toBe('connected');
-      expect(connectedState[id].settings.active).toBe(true);
+      expect(connectedState[id].active).toBe(true);
       /* Connect to the device */
       const lostConnectionAction: lostConnectionFromDeviceActionType =
       lostConnectionFromDeviceActionFactory(id);
       const lostConnectionState = devicesReducer(connectedState, lostConnectionAction);
       expect(lostConnectionState[id].state).toBe('advertising');
-      expect(lostConnectionState[id].settings.active).toBe(false);
+      expect(lostConnectionState[id].active).toBe(false);
     });
   });
   /* Metadata */
