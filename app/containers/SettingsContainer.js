@@ -12,11 +12,7 @@
 ********************************************************* */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import sensorSettings from '../components/sensorSettingsComponent';
-import {
-  getSelectedDevices,
-  setSelectedDevices,
-} from '../actions/senGenActions';
+import SettingsPage from '../components/Settings/SettingsPage';
 import {
   setSensorActive,
   setGeneratorActive,
@@ -27,8 +23,6 @@ import {
 
 function mapStateToProps(state) {
   return {
-    selected: state.devices.selected,
-    unselected: state.devices.unselected,
     deviceSettings: state.devices.deviceSettings
   };
 }
@@ -36,14 +30,14 @@ function mapStateToProps(state) {
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-  getSelectedDevices,
-  setSelectedDevices,
+  // getSelectedDevices,
+  // setSelectedDevices,
   setSensorActive,
   setGeneratorActive,
   setSensorChannels,
   setSensorParams
 }, dispatcher);
 
-export default connect(mapStateToProps, mapDispatchToProps)(sensorSettings);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);
 
 /* [] - END OF FILE */

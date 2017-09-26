@@ -25,7 +25,7 @@ import type {
 } from '../../types/paramTypes';
 import parseMetaData from '../mica/metaDataParsers';
 
-log.debugLevel = 5;
+// log.debugLevel = 5;
 log.debug('bleNoble.js logging level set to:', log.debugLevel);
 
 /* Store the Noble objects */

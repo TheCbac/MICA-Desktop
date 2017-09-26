@@ -1,22 +1,24 @@
 // @flow
 /* **********************************************************
-* File: components/GeneratorComponent.js
+* File: components/SensorComponent.js
 *
 * Brief: React component displaying and interacting with
-*   the generators of a device.
+*   the sensors of a device.
 *
 * Authors: Craig Cheney
 *
-* 2017.09.12 CC - Document created
+* 2017.09.12 CC - Rename component from 'senGenComponent'
+*   to 'SensorComponent'
+* 2017.09.05 CC - Document created
 *
 ********************************************************* */
 import React, { Component } from 'react';
-import { Col, Row, Collapse, Well, Label } from 'react-bootstrap';
+import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ChannelSelector from './ChannelSelector';
 import ParamSelector from './ParamSelector';
-import type { nobleIdType, generatorParamType } from '../types/paramTypes';
-import type { thunkType } from '../types/functionTypes';
+import type { nobleIdType, sensorParamType } from '../../types/paramTypes';
+import type { thunkType } from '../../types/functionTypes';
 
 type StateType = {
   open: boolean,
@@ -25,12 +27,12 @@ type StateType = {
 
 type PropsType = {
   deviceId: string,
-  generatorId: string,
-  generatorSettings: generatorParamType,
+  sensorId: string,
+  sensorSettings: sensorParamType,
   /* Action Functions */
-  setGeneratorActive: (
+  setSensorActive: (
     deviceId: nobleIdType,
-    generatorId: number | string,
+    sensorId: number | string,
     newState: boolean
   ) => thunkType,
   setSensorChannels: (
@@ -55,8 +57,8 @@ export default class SenGenComponent extends Component {
     super(props);
     /* set the default state */
     this.state = {
-      open: this.props.generatorSettings.active,
-      active: this.props.generatorSettings.active
+      open: this.props.sensorSettings.active,
+      active: this.props.sensorSettings.active
     };
   }
   /*  */
@@ -108,12 +110,12 @@ export default class SenGenComponent extends Component {
   }
   /* Return a component for selecting the channels */
   getChannels() {
-    const channelVal = this.props.generatorSettings.channels;
-    const { deviceId, generatorId, setSensorChannels } = this.props;
+    const channelVal = this.props.sensorSettings.channels;
+    const { deviceId, sensorId, setSensorChannels } = this.props;
     return (
       <ChannelSelector
         deviceId={deviceId}
-        sensorId={generatorId}
+        sensorId={sensorId}
         channels={channelVal}
         setSensorChannels={setSensorChannels}
       />
@@ -121,7 +123,7 @@ export default class SenGenComponent extends Component {
   }
   /* Returns the parameter selecting component */
   getParams() {
-    const dynamicParamsObj = this.props.generatorSettings.dynamicParams;
+    const dynamicParamsObj = this.props.sensorSettings.dynamicParams;
     const dynamicParamsKeys = Object.keys(dynamicParamsObj);
     /* return a list of components */
     const componentArray = [];
@@ -135,7 +137,7 @@ export default class SenGenComponent extends Component {
           <ParamSelector
             key={i}
             deviceId={this.props.deviceId}
-            sensorId={this.props.generatorId}
+            sensorId={this.props.sensorId}
             paramName={key}
             paramValue={value}
             setSensorParams={this.props.setSensorParams}
@@ -146,11 +148,11 @@ export default class SenGenComponent extends Component {
     return componentArray;
   }
   /* Toggle sensor power */
-  toggleGeneratorPower() {
+  toggleSensorPower() {
     const newActive = !this.state.active;
-    this.props.setGeneratorActive(
+    this.props.setSensorActive(
       this.props.deviceId,
-      this.props.generatorId,
+      this.props.sensorId,
       newActive
     );
     /* Toggle the state of the component and open/close the settings list */
@@ -162,10 +164,7 @@ export default class SenGenComponent extends Component {
       fontFamily: 'Franklin Gothic Book',
       fontSize: '1.5em',
     };
-    const keybindingStyle = {
-      fontSize: '1em'
-    };
-    const { name } = this.props.generatorSettings;
+    const { name } = this.props.sensorSettings;
     return (
       <div>
         <Row />
@@ -182,52 +181,17 @@ export default class SenGenComponent extends Component {
         </Col>
         <Col md={1} xs={1} mdOffset={0} style={sensorStyle}>
           <span className={'pull-right'} style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
-            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleGeneratorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
+            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleSensorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
           </span>
         </Col>
         <Row />
         <Col md={12} xs={12}>
           <Collapse in={this.state.open}>
             <div>
-              <Well style={{ overflow: 'hidden' }}>
-                <div >
-                  {/* this.getChannels() */}
-                  {/* this.getParams() */}
-                  <Col md={12} xs={12}>
-                    <span style={keybindingStyle}>KEYBINDINGS</span>
-                  </Col>
-                  <Row />
-                  <Col md={4} xs={4}>
-                    <span className={'pull-right'}>
-                      Forward <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>W</Label></span>
-                    </span>
-                  </Col>
-                  <Col md={3} xs={3}>
-                    <span className={'pull-right'}>
-                        Left <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>A</Label></span>
-                    </span>
-                  </Col>
-                  <Col md={5} xs={5}>
-                    <span className={'pull-right'}>
-                      Increase Speed <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>Z</Label></span>
-                    </span>
-                  </Col>
-                  <Row />
-                  <Col md={4} xs={4}>
-                    <span className={'pull-right'}>
-                      Backward <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>S</Label></span>
-                    </span>
-                  </Col>
-                  <Col md={3} xs={3}>
-                    <span className={'pull-right'}>
-                      Right <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>D</Label></span>
-                    </span>
-                  </Col>
-                  <Col md={5} xs={5}>
-                    <span className={'pull-right'}>
-                      Decrease Speed <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>C</Label></span>
-                    </span>
-                  </Col>
+              <Well>
+                <div>
+                  { this.getChannels() }
+                  { this.getParams() }
                 </div>
               </Well>
             </div>

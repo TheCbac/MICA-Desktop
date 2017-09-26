@@ -14,9 +14,9 @@ import React, { Component } from 'react';
 import { Col, ButtonToolbar, Row } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
-import micaSensorParams from '../utils/mica/micaSensorParams';
-import type { nobleIdType } from '../types/paramTypes';
-import type { thunkType } from '../types/functionTypes';
+import micaSensorParams from '../../utils/mica/micaSensorParams';
+import type { nobleIdType } from '../../types/paramTypes';
+import type { thunkType } from '../../types/functionTypes';
 
 type propsType = {
   deviceId: nobleIdType,
