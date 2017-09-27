@@ -1,8 +1,8 @@
 /* @flow */
 /* **********************************************************
-* File: SettingsContainer.js
+* File: app/components/Settings/DeviceBlock.js
 *
-* Brief: Block for settings for both the sensors and generators
+* Brief: Block that corresponds to one Device
 *
 * Author: Craig Cheney
 *
@@ -10,7 +10,8 @@
 *
 ********************************************************* */
 import React, { Component } from 'react';
-import { Col } from 'react-bootstrap';
+import FontAwesome from 'react-fontawesome';
+import { Col, Collapse, Well, Row } from 'react-bootstrap';
 import type { idType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
 import type { devicesStateType } from '../../types/stateTypes';
@@ -41,13 +42,72 @@ type propsType = {
   ) => thunkType
 };
 
-export default class SettingsBlock extends Component {
+function caretStyle(device) {
+  const style = {
+    transition: '',
+    textShadow: '',
+    color: '',
+    transform: '',
+    marginLeft: '5px'
+  };
+  if (device.active) {
+    style.textShadow = 'white 0 0 20px';
+    style.color = 'white';
+    style.transition = 'all 2 linear';
+    style.transform = 'rotate(90deg)';
+  }
+  return style;
+}
+
+export default class Device extends Component {
   /* Type Def */
   props: propsType;
-
+  /* Style for the caret */
   /* Get instruments */
-  getInstrument(): [] | string {
-
+  getDevices(type: 'sensors' | 'generators'): [] {
+    const deviceList = [];
+    const deviceIds = Object.keys(this.props.devices);
+    const sensorStyle = {
+      fontFamily: 'Franklin Gothic Book',
+      fontSize: '1.5em',
+    };
+    /* iterate over each device */
+    for (let i = 0; i < deviceIds.length; i++) {
+      /* Get the device in question */
+      const deviceId = deviceIds[i];
+      const device = this.props.devices[deviceId];
+      /* Push to the list */
+      deviceList.push(
+        <Collapse in={device.active}>
+          <div>
+            <Row />
+            <Col md={4} xs={4} style={sensorStyle}>
+              <FontAwesome
+                style={caretStyle(device)}
+                className={'hoverGlow'}
+                name={'angle-right'}
+                size={'lg'}
+              />
+              <span> {device.name}</span>
+            </Col>
+            <Col md={6} xs={6} mdOffset={0} style={sensorStyle}>
+              <hr style={{ borderColor: 'black', marginTop: '15px' }} />
+            </Col>
+            <Col md={12} xs={12}>
+              <div>
+                <Well>
+                  <div>
+                    Test
+                  </div>
+                </Well>
+              </div>
+            </Col>
+          </div>
+        </Collapse>
+      );
+    }
+    /* Return the list */
+    return deviceList;
   }
   /* Get the Settings for the devices */
   getSensors(selectDevice: selectType): [] | string {
@@ -118,7 +178,7 @@ export default class SettingsBlock extends Component {
               */}
             </div>
           </Col>
-          {/* this.getSensors(this.props.selected.sensor) */}
+          {this.getDevices(this.props.type) }
         </Col>
       </Col>
     );

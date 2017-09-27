@@ -30,8 +30,6 @@ function mapStateToProps(state) {
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-  // getSelectedDevices,
-  // setSelectedDevices,
   setSensorActive,
   setGeneratorActive,
   setSensorChannels,
