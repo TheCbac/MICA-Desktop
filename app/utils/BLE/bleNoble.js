@@ -25,6 +25,8 @@ import type {
   idType, newDeviceObjType, noblePeripheralType
 } from '../../types/paramTypes';
 import parseMetaData from '../mica/metaDataParsers';
+import { logDataPoint, getDataIndex } from '../dataStreams/graphBuffer';
+// import { reportToGraph } from '../../components/CollectData/GraphComponent';
 
 // log.debugLevel = 5;
 log.debug('bleNoble.js logging level set to:', log.debugLevel);
@@ -185,7 +187,6 @@ function nobleDiscoverMicaCallback(id: idType, error: ?string): void {
     commCommandChar.subscribe(nobleSubscribeCallback.bind(null, id, 'CommunicationCommand'));
   }
   /* Read the metadata from the device */
-  /* TODO: PICK UP HERE */
   nobleReadMetadata(device);
 }
 
@@ -242,9 +243,12 @@ function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: bool
   if (result.success) {
     const { numChannels, periodLength, scalingConstant, gain, offset } = result.payload;
     const parsed = parseDataPacket(
-      data, numChannels, periodLength, scalingConstant, gain, offset, time
+      data, numChannels, periodLength, scalingConstant, gain, offset, getDataIndex()
     );
-    console.log(parsed.map((point) => point.toPoint()[1]));
+    const points = parsed.map((point) => point.toPoint()[1]);
+    /* Send the data to the graph */
+    logDataPoint(parsed);
+    // reportToGraph(parsed[0]);
   }
   /* Parse the command */
   // /* TODO: implement dynamic packets based on settings */

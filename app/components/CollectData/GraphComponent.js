@@ -9,7 +9,6 @@
 * 2017.09.14 CC - Document created
 *
 ********************************************************* */
-import update from 'immutability-helper';
 import React, { Component } from 'react';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
@@ -17,18 +16,31 @@ import {
  } from 'react-timeseries-charts';
 import { TimeSeries, TimeEvent, TimeRange, Pipeline, percentile, EventOut, Stream } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
+import { getDataPoint, getLastDataPoint } from '../../utils/dataStreams/graphBuffer';
 import type { collectionStateType } from '../../types/stateTypes';
 
 type propsType = {
   collectionSettings: collectionStateType
 };
 type stateType = {
+  startTime: Date,
   time: Date,
-  events: *,
-  percentile50Out: *,
-  percentile90Out: *
+  events: *
 };
 
+
+// export function reportToGraph(event: TimeEvent) {
+//   if (this.props.collectionSettings.collecting) {
+//     const t = new Date(this.state.time.getTime() + increment);
+//     /* Enqueue the event */
+//     const newEvent = this.state.events;
+//     newEvent.enq(event);
+//     /* Update the state */
+//     this.setState({ time: t, events: newEvent });
+//     /* Let the aggregator process the event */
+//     this.stream.addEvent(event);
+//   }
+// }
 
 /* Create a new event  */
 function getNewEvent(t: Date): TimeEvent {
@@ -39,70 +51,52 @@ function getNewEvent(t: Date): TimeEvent {
 const sec = 1000;
 const minute = 60 * sec;
 const hours = 60 * minute;
-const rate = 80;
+const rate = 30;
 const increment = minute;
 const eventsSize = 200;
-const percentileSize = 100;
 
 export default class GraphComponent extends Component {
   /* Type defs */
   props: propsType;
   state: stateType;
-  stream: typeof Stream;
   interval: number;
   /* Initial state */
   constructor(props: propsType) {
     super(props);
     this.state = {
-      time: new Date(2015, 0, 1),
+      startTime: new Date(),
+      time: new Date(),
       events: new RingBuffer(eventsSize),
-      percentile50Out: new RingBuffer(percentileSize),
-      percentile90Out: new RingBuffer(percentileSize)
     };
   }
   /* Setup once created */
   componentDidMount() {
-    this.stream = new Stream();
-    /* Configure the pipeline for the 50 % */
-    Pipeline()
-      .from(this.stream)
-      .windowBy('5m')
-      .emitOn('discard')
-      .aggregate({
-        value: { value: percentile(50) }
-      })
-      .to(EventOut, event => {
-        const events = this.state.percentile50Out;
-        events.enq(event);
-        this.setState({ percentile50Out: events });
-      });
-    /* Pipeline for th 90 %  */
-    Pipeline()
-    .from(this.stream)
-    .windowBy('5m')
-    .emitOn('discard')
-    .aggregate({
-      value: { value: percentile(90) }
-    })
-    .to(EventOut, event => {
-      const events = this.state.percentile90Out;
-      events.enq(event);
-      this.setState({ percentile90Out: events });
-    });
-
     /* Simulate events */
     this.interval = setInterval(
       () => {
         if (this.props.collectionSettings.collecting) {
-          const t = new Date(this.state.time.getTime() + increment);
-          const event = getNewEvent(t);
-          /* Enqueue the event */
-          const newEvent = this.state.events;
-          newEvent.enq(event);
-          /* Update the state */
-          this.setState({ time: t, events: newEvent });
-          /* Let the aggregator process the event */
-          this.stream.addEvent(event);
+          const t = new Date();
+          // const event = getNewEvent(t);
+          // const event = getDataPoint();
+          // const datum = getDataPoint();
+          const datum = getLastDataPoint();
+          if (datum) {
+            const dummyEvent = new TimeEvent(t, 9.8);
+            const dummy2 = new TimeEvent(t, datum.toPoint()[1]);
+            // console.log('GraphComponent', data.toPoint(), event.toPoint());
+            // console.log('datum:', datum, datum.toString(), datum.toPoint());
+            // console.log('dummyEvent:', dummyEvent, dummyEvent.toString(), dummyEvent.toPoint());
+            // console.log('dummy2:', dummy2, dummy2.toString(), dummy2.toPoint());
+            /* Enqueue the event */
+            const newEvent = this.state.events;
+            const newTime = new Date(datum.timestamp());
+            // newEvent.enq(datum);
+            // newEvent.enq(dummyEvent);
+            newEvent.enq(dummy2);
+            // console.log('graphcomponent', newTime.getTime());
+            /* Update the state */
+            this.setState({ time: t, events: newEvent });
+          }
         }
       },
       rate
@@ -116,13 +110,6 @@ export default class GraphComponent extends Component {
   render() {
     const latestTime = this.state.time.toDateString();
     /* Styles */
-    const fiveMinuteStyle = {
-      value: {
-        normal: { fill: '#619F3A', opacity: 0.2 },
-        highlight: { fill: '619F3A', opacity: 0.5 },
-        selected: { fill: '619F3A', opacity: 0.5 }
-      }
-    };
     const scatterStyle = {
       value: {
         normal: {
@@ -136,43 +123,22 @@ export default class GraphComponent extends Component {
       name: 'raw',
       events: this.state.events.peekN(this.state.events.size())
     });
-    /* Create the percentile series */
-    const perc50Series = new TimeSeries({
-      name: 'Five Minute perc50',
-      events: this.state.percentile50Out.peekN(this.state.percentile50Out.size())
-    });
-    const perc90Series = new TimeSeries({
-      name: 'Five Minute perc90',
-      events: this.state.percentile90Out.peekN(this.state.percentile90Out.size())
-    });
     /* Time range */
-    const intitialBeginTime = new Date(2015, 0, 1);
-    const timeWindow = 3 * hours;
-    let beginTime;
-    const endTime = new Date(this.state.time.getTime() + minute);
-    /* Wait until the window is full before moving */
-    if (endTime.getTime() - timeWindow < intitialBeginTime.getTime()) {
-      beginTime = intitialBeginTime;
-    } else {
-      beginTime = new Date(endTime.getTime() - timeWindow);
-    }
-    const timeRange = new TimeRange(beginTime, endTime);
-
+    // const intitialBeginTime = this.state.startTime;
+    // const timeWindow = 5 * sec;
+    // let beginTime;
+    // const endTime = new Date(this.state.time.getTime() + sec);
+    // /* Wait until the window is full before moving */
+    // if (endTime.getTime() - timeWindow < intitialBeginTime.getTime()) {
+    //   beginTime = intitialBeginTime;
+    // } else {
+    //   beginTime = new Date(endTime.getTime() - timeWindow);
+    // }
+    const endTime = this.state.time.getTime();
+    const timeRange = new TimeRange(endTime - (5 * sec), endTime);
     /* Charts */
     const charts = (
       <Charts>
-        <BarChart
-          axis="y"
-          series={perc90Series}
-          style={fiveMinuteStyle}
-          column={['value']}
-        />
-        <BarChart
-          axis="y"
-          series={perc50Series}
-          style={fiveMinuteStyle}
-          column={['value']}
-        />
         <ScatterChart axis="y" series={eventSeries} style={scatterStyle} />
       </Charts>
     );
@@ -183,34 +149,9 @@ export default class GraphComponent extends Component {
       borderWidth: 1,
       borderColor: '#F4F4F4'
     };
-
-    const style = styler([
-      { key: 'perc50', color: '#C5DCB7', width: 1, dashed: true },
-      { key: 'perc90', color: '#DFECD7', width: 2 }
-    ]);
-
-
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
         <div className="row">
-          <div className="col-md-4">
-            <Legend
-              type="swatch"
-              style={style}
-              categories={[
-                {
-                  key: 'perc50',
-                  label: '50th Percentile',
-                  style: { fill: '#C5DCB7' }
-                },
-                {
-                  key: 'perc90',
-                  label: '90th Percentile',
-                  style: { fill: '#DFECD7' }
-                }
-              ]}
-            />
-          </div>
           <div className="col-md-8">
             <span style={dateStyle}>{latestTime}</span>
           </div>
@@ -218,21 +159,25 @@ export default class GraphComponent extends Component {
         <hr />
         <div className="row">
           <div className="col-md-12">
+
             <Resizable>
+
               <ChartContainer timeRange={timeRange}>
                 <ChartRow height="385">
                   <YAxis
                     id="y"
                     label="Value"
-                    min={0}
-                    max={1500}
+                    min={-20}
+                    max={20}
                     width="70"
                     type="linear"
                   />
                   {charts}
                 </ChartRow>
               </ChartContainer>
+
             </Resizable>
+
           </div>
         </div>
       </div>

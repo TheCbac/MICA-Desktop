@@ -44,12 +44,12 @@ export function parseDataPacket(
   scalingConstant: number,
   gain: number,
   offset: number[],
-  startTime: number
+  startIndex: number
 ): TimeEvent[] {
   /* return array */
   const eventArray = [];
   let idx = 0;
-  let t = 0;
+  let t = startIndex;
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -88,7 +88,8 @@ export function parseDataPacket(
         /* dataPoint = K/G*(x-x0) = K/G*x - offset */
         const value = ((scalingConstant / gain) * signedData) - chanOffset;
         /* Limit the precision */
-        channelData[channel] = value.toFixed(5);
+        // channelData[channel] = parseInt(value.toFixed(5), 10);
+        channelData[channel] = value;
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
@@ -99,9 +100,10 @@ export function parseDataPacket(
       /* calculate the microsecond delta */
       const micro = periodLength + timeDifferential;
       /* Update the time */
-      t += micro;
+      // t += micro;
+      const time = new Date();
       /* Create the time event */
-      const event = new TimeEvent(t, channelData);
+      const event = new TimeEvent(time, channelData);
       /* Push the event */
       eventArray.push(event);
     }
