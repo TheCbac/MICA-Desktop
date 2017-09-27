@@ -17,7 +17,8 @@ import {
   setSensorActive,
   setGeneratorActive,
   setSensorChannels,
-  setSensorParams
+  setSensorParams,
+  setDeviceActive
 } from '../actions/devicesActions';
 
 
@@ -30,6 +31,7 @@ function mapStateToProps(state) {
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
+  setDeviceActive,
   setSensorActive,
   setGeneratorActive,
   setSensorChannels,

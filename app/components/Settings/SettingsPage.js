@@ -19,31 +19,34 @@ import DeviceBlock from './DeviceBlock';
 import log from '../../utils/loggingUtils';
 import type { thunkType } from '../../types/functionTypes';
 import type { devicesStateType } from '../../types/stateTypes';
-import type { nobleIdType } from '../../types/paramTypes';
+import type { idType } from '../../types/paramTypes';
+import type { setDeviceActiveActionType } from '../../types/actionTypes';
 
 // log.debugLevel = 5;
 log.debug('sensorSettingsComponent: debug level', log.debugLevel);
 /* Props used in component */
 type propsType = {
   devices: devicesStateType,
+  /* Functions */
+  setDeviceActive: (deviceId: idType, newState: boolean) => setDeviceActiveActionType,
   setSensorActive: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     newState: boolean
   ) => thunkType,
   setGeneratorActive: (
-    deviceId: nobleIdType,
-    generatorId: number | string,
+    deviceId: idType,
+    generatorId: idType,
     newState: boolean
   ) => thunkType,
   setSensorChannels: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     newChannels: number[]
   ) => thunkType,
   setSensorParams: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     paramName: string,
     paramValue: number
   ) => thunkType
@@ -75,6 +78,7 @@ export default class sensorSettings extends Component {
           key={i}
           id={deviceId}
           device={device}
+          setDeviceActive={this.props.setDeviceActive}
           setSensorActive={this.props.setSensorActive}
           setSensorChannels={this.props.setSensorChannels}
           setSensorParams={this.props.setSensorParams}

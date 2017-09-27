@@ -116,25 +116,21 @@ export type reportMetaDataActionType = {
   }
 };
 
-// /* Set the selected devices */
-// export type updateSelectedDeviceAction = {
-//   type: 'UPDATE_SELECTED_DEVICES',
-//   payload: {
-//     sensor: selectType,
-//     generator: selectType,
-//     unselected: {
-//       sensors: selectType[],
-//       generators: selectType[]
-//     }
-//   }
-// };
-
 /* Update the settings of a device */
 export type updateSenGenParamActionType = {
   type: 'UPDATE_SEN_GEN_PARAMS',
   payload: {
     deviceId: idType,
     deviceSettings: deviceSettingsObjType
+  }
+};
+
+/* Set the device active or inactive */
+export type setDeviceActiveActionType = {
+  type: 'SET_DEVICE_ACTIVE',
+  payload: {
+    deviceId: idType,
+    newState: boolean
   }
 };
 /* [] - END OF FILE */

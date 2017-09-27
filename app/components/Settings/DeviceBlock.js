@@ -17,10 +17,13 @@ import GeneratorBlock from './GeneratorBlock';
 import type { idType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
 import type { devicesStateObjType } from '../../types/stateTypes';
+import type { setDeviceActiveActionType } from '../../types/actionTypes';
+
 
 type propsType = {
   id: string,
   device: devicesStateObjType,
+  setDeviceActive: (deviceId: idType, newState: boolean) => setDeviceActiveActionType,
   setSensorActive: (
     deviceId: idType,
     sensorId: idType,
@@ -161,11 +164,10 @@ export default class Device extends Component {
   /* Toggle sensor power */
   toggleSensorPower() {
     const newActive = !this.state.active;
-    // this.props.setSensorActive(
-    //   this.props.deviceId,
-    //   this.props.sensorId,
-    //   newActive
-    // );
+    this.props.setDeviceActive(
+      this.props.id,
+      newActive
+    );
     /* Toggle the state of the component and open/close the settings list */
     this.setState({ active: newActive, open: newActive });
   }

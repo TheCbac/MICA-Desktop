@@ -26,7 +26,8 @@ import type {
   disconnectingFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  updateSenGenParamActionType
+  updateSenGenParamActionType,
+  setDeviceActiveActionType
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
 import type {
@@ -46,6 +47,7 @@ export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
 export const LOST_CONNECTION_FROM_DEVICE = 'LOST_CONNECTION_FROM_DEVICE';
 export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
+export const SET_DEVICE_ACTIVE = 'SET_DEVICE_ACTIVE';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(deviceObj: newDeviceObjType): foundDeviceActionType {
@@ -252,20 +254,35 @@ function constructGeneratorSettings(actuationMeta: actuationObjs): generatorList
   return generatorObj;
 }
 
+/* Set the device active or not  */
+export function setDeviceActive(
+  deviceId: idType,
+  newState: boolean
+): setDeviceActiveActionType {
+  /* Return a function for redux thunk */
+  return {
+    type: SET_DEVICE_ACTIVE,
+    payload: {
+      deviceId,
+      newState
+    }
+  };
+}
+
 /* Set sensor on a device active or inactive  */
 export function setSensorActive(
   deviceId: idType,
-  sensorId: number | string,
+  sensorId: idType,
   newState: boolean
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the state of the device settings - its assumed but
      * unverified if this provides a copy of the state object  */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].active = newState;
+    const { settings } = getState().devices[deviceId];
+    settings.sensors[parseInt(sensorId, 10)].active = newState;
     /* Update the object */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+    dispatch(updateSenGenParams(deviceId, settings));
   };
 }
 
@@ -288,16 +305,16 @@ export function setGeneratorActive(
 /* Update the the state of the channel for a sensor */
 export function setSensorChannels(
   deviceId: idType,
-  sensorId: number | string,
+  sensorId: idType,
   newChannels: number[]
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the state of the device settings */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].channels = newChannels;
-    /* Update the store */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+    const { settings } = getState().devices[deviceId];
+    settings.sensors[parseInt(sensorId, 10)].channels = newChannels;
+    /* Update the object */
+    dispatch(updateSenGenParams(deviceId, settings));
   };
 }
 
@@ -311,10 +328,10 @@ export function setSensorParams(
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the state of the device settings */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].dynamicParams[paramName].value = paramValue;
+    const { settings } = getState().devices[deviceId];
+    settings.sensors[parseInt(sensorId, 10)].dynamicParams[paramName].value = paramValue;
     /* Update the store */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+    dispatch(updateSenGenParams(deviceId, settings));
   };
 }
 

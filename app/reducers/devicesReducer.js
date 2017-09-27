@@ -25,7 +25,8 @@ import type {
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  updateSenGenParamActionType
+  updateSenGenParamActionType,
+  setDeviceActiveActionType
 } from '../types/actionTypes';
 
 
@@ -198,8 +199,6 @@ const deviceHandlers = {
       } });
     }
     return updatedState;
-    /* Update the stored Metadata object.  */
-    // return update(state, { [id]: { metadata: { $set: action.payload.data } } });
   },
   /* Update the active settings for a device */
   UPDATE_SEN_GEN_PARAMS(
@@ -211,6 +210,20 @@ const deviceHandlers = {
     return update(state, {
       [id]: {
         settings: { $set: action.payload.deviceSettings }
+      }
+    });
+  },
+  /* Set a device active or not */
+  SET_DEVICE_ACTIVE(
+    state: devicesStateType,
+    action: setDeviceActiveActionType
+  ): devicesStateType {
+    /* Extract parameters */
+    const { deviceId, newState } = action.payload;
+    /* Set the device to the new state */
+    return update(state, {
+      [deviceId]: {
+        active: { $set: newState }
       }
     });
   }

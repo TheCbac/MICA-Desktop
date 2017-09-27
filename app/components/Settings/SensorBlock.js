@@ -46,7 +46,7 @@ type PropsType = {
     sensorId: idType,
     paramName: string,
     paramValue: number
-  ) => thunkType,
+  ) => thunkType
 };
 
 export default class SensorBlock extends Component {
