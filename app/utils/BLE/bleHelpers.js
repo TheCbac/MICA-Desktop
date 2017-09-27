@@ -69,20 +69,20 @@ export function getServiceFromDevice(
   return undefined;
 }
 
-/* Read a characteristic */
-export function readBleCharacteristic(
-  device: noblePeripheralType,
-  serviceUuid: string,
-  charUuid: string,
-  callback: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
-): bleApiResultType {
-  const apiResult = { success: false, error: '' };
-  /* Get the characteristic */
-  const char = getCharacteristicFromDevice(device, serviceUuid, charUuid);
-  if (!char) { return { ...apiResult, error: 'No characteristic found' }; }
-  /* Read the char */
-  char.read(callback.bind(null, charUuid, device.id));
-  return { success: true };
-}
+// /* Read a characteristic */
+// export function readBleCharacteristic(
+//   device: noblePeripheralType,
+//   serviceUuid: string,
+//   charUuid: string,
+//   callback: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
+// ): bleApiResultType {
+//   const apiResult = { success: false, error: '' };
+//   /* Get the characteristic */
+//   const char = getCharacteristicFromDevice(device, serviceUuid, charUuid);
+//   if (!char) { return { ...apiResult, error: 'No characteristic found' }; }
+//   /* Read the char */
+//   char.read(callback.bind(null, charUuid, device.id));
+//   return { success: true };
+// }
 
 /* [] - END OF FILE */

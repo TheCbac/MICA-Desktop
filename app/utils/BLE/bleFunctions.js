@@ -11,7 +11,7 @@
 * 2017.09.25 CC - Document created
 ********************************************************* */
 import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
-  nobleInitializeDevice
+  nobleInitializeDevice, nobleWriteCharacteristic, nobleReadCharacteristic
 } from './bleNoble';
 import { usbPlaceholder } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
@@ -95,6 +95,40 @@ export function bleInitializeDevice(
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id);
 }
+
+/* Write to a characteristic */
+export function bleWriteCharacteristic(
+  method: scanTypes,
+  id: idType,
+  charUuid: string,
+  payload: number[],
+  callback?: (deviceId: string, charUuid: string, error: string) => void,
+  noResponse?: boolean
+): bleApiResultType {
+  const bleWrapperObj: bleWrapperObjType = {
+    method,
+    bleMethod: nobleWriteCharacteristic,
+    usbMethod: usbPlaceholder
+  };
+  /* Wrap the function */
+  return wrapBle(bleWrapperObj, id, charUuid, payload, callback, noResponse);
+}
+
+export function bleReadCharacteristic(
+  method: scanTypes,
+  id: idType,
+  charUuid: string,
+  callback?: (deviceId: string, charUuid: string, error: string, data: Buffer) => void,
+): bleApiResultType {
+  const bleWrapperObj: bleWrapperObjType = {
+    method,
+    bleMethod: nobleReadCharacteristic,
+    usbMethod: usbPlaceholder
+  };
+  /* Wrap the function */
+  return wrapBle(bleWrapperObj, id, charUuid, callback);
+}
+
 
 /* ==============================  */
 

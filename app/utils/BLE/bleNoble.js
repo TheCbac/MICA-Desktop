@@ -14,9 +14,10 @@ import { foundAdvertisingDevice, metaDataReadComplete } from '../../actions/devi
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
 import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
+import { parseDataPacket } from '../mica/parseDataPacket';
 import log from '../loggingUtils';
 import {
-  getCharacteristicFromDevice, readBleCharacteristic
+  getCharacteristicFromDevice
 } from './bleHelpers';
 import { shallowObjToArray } from '../deviceUtils';
 import type { bleApiResultType } from '../../types/bleTypes';
@@ -91,7 +92,68 @@ export function nobleInitializeDevice(
   return { success: true };
 }
 
+/* Write a characteristic */
+export function nobleWriteCharacteristic(
+  deviceId: idType,
+  charUuid: string,
+  payload: number[],
+  callback?: (deviceId: string, charUuid: string, error: string) => void,
+  noResponse?: boolean
+): bleApiResultType {
+  /* Decide whether or not a response is requested */
+  let withoutResponse = false;
+  if (noResponse != null) {
+    withoutResponse = noResponse;
+  }
+  /* Get the device */
+  const device = nobleObjects[deviceId];
+  if (!device) { return { success: false, error: 'could not find the specified device' }; }
+  /* Get the characteristic */
+  const char = getCharacteristicFromDevice(device, micaServiceUuid, charUuid);
+  if (!char) { return { success: false, error: 'could not find the specified characteristic' }; }
+  /* Convert the array to a buffer */
+  const dataBuffer = new Buffer(payload);
+  /* Write to the device */
+  if (callback) {
+    char.write(dataBuffer, withoutResponse, callback.bind(null, deviceId, charUuid));
+  } else {
+    char.write(dataBuffer, withoutResponse);
+  }
+  return { success: true };
+}
+
+/* Read a characteristic */
+export function nobleReadCharacteristic(
+  deviceId: idType,
+  charUuid: string,
+  callback?: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
+): bleApiResultType {
+  /* Get the device */
+  const device = nobleObjects[deviceId];
+  if (!device) { return { success: false, error: 'could not find the specified device' }; }
+  /* Get the characteristic */
+  const char = getCharacteristicFromDevice(device, micaServiceUuid, charUuid);
+  if (!char) { return { success: false, error: 'No characteristic found' }; }
+  /* Read the char */
+  if (callback) {
+    char.read(callback.bind(null, charUuid, device.id));
+  } else {
+    char.read(logReadCallback.bind(null, charUuid, device.id));
+  }
+  return { success: true };
+}
+
 /* ======== Callbacks ======== */
+
+function logReadCallback(
+  charId: string, deviceId: string, error: ?string, data: Buffer
+): void {
+  if (error) {
+    console.log('Read Char: Error', error, deviceId, charId);
+  } else {
+    console.log('Read Char success:', data, deviceId, charId);
+  }
+}
 
 /* Callback once MICA discovery is done - Subscriptions are done here */
 function nobleDiscoverMicaCallback(id: idType, error: ?string): void {
@@ -145,8 +207,8 @@ function nobleReadMetadata(
   for (let i = 0; i < metadataChars.length; i++) {
     const char = metadataChars[i];
     /* Read from the device */
-    const { success, error } = readBleCharacteristic(
-      device, micaServiceUuid, char, readMetadataCallback);
+    const { success, error } = nobleReadCharacteristic(
+      device.id, char, readMetadataCallback);
     if (!success) {
       result = { success, error, payload: { charUuid: char } };
     }

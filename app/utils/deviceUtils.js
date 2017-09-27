@@ -47,22 +47,22 @@ export function bufferToFloat(buffer: Buffer): ?number {
  *                 DEPRECATED                *
  * ***************************************** */
 
-/* Find a peripheral from a list of peripherals */
-export function getPeripheralFromList(
-  deviceList: noblePeripheralType[],
-  id: nobleIdType
-): {peripheral: ?noblePeripheralType, index: ?number} {
-  /* Iterate over the list */
-  for (let i = 0; i < deviceList.length; i += 1) {
-    /* Check the ID */
-    if (deviceList[i].id === id) {
-      /* Return the matching device */
-      return { peripheral: deviceList[i], index: i };
-    }
-  }
-  /* No device found */
-  return { peripheral: undefined, index: undefined };
-}
+// /* Find a peripheral from a list of peripherals */
+// export function getPeripheralFromList(
+//   deviceList: noblePeripheralType[],
+//   id: nobleIdType
+// ): {peripheral: ?noblePeripheralType, index: ?number} {
+//   /* Iterate over the list */
+//   for (let i = 0; i < deviceList.length; i += 1) {
+//     /* Check the ID */
+//     if (deviceList[i].id === id) {
+//       /* Return the matching device */
+//       return { peripheral: deviceList[i], index: i };
+//     }
+//   }
+//   /* No device found */
+//   return { peripheral: undefined, index: undefined };
+// }
 
 
 // /* Return a service from a given peripheral by UUID */
@@ -100,40 +100,40 @@ export function getPeripheralFromList(
 // }
 
 /* Returns a characteristic from a given peripheral */
-export function getCharacteristicFromPeripheralId(
-  charUuid: string,
-  serviceUuid: string,
-  deviceId: nobleIdType,
-  deviceList: noblePeripheralType[]
-): ?nobleCharacteristicType {
-  /* Find the peripheral */
-  const peripheral = getPeripheralFromList(deviceList, deviceId).peripheral;
-  if (!peripheral) { return undefined; }
-  /* Find the service */
-  const service = getServiceFromPeripheral(serviceUuid, peripheral);
-  /* Ensure a service was found */
-  if (!service) { return undefined; }
-  /* Get the characteristic */
-  return getCharacteristicFromService(charUuid, service);
-}
+// export function getCharacteristicFromPeripheralId(
+//   charUuid: string,
+//   serviceUuid: string,
+//   deviceId: nobleIdType,
+//   deviceList: noblePeripheralType[]
+// ): ?nobleCharacteristicType {
+//   /* Find the peripheral */
+//   const peripheral = getPeripheralFromList(deviceList, deviceId).peripheral;
+//   if (!peripheral) { return undefined; }
+//   /* Find the service */
+//   const service = getServiceFromPeripheral(serviceUuid, peripheral);
+//   /* Ensure a service was found */
+//   if (!service) { return undefined; }
+//   /* Get the characteristic */
+//   return getCharacteristicFromService(charUuid, service);
+// }
 
-export function readMetaCharacteristicFromId(charUuid: string, serviceUuid: string,
-  deviceId: nobleIdType, deviceList: noblePeripheralType[],
-  callback: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
-): boolean {
-  /* find the device from the list */
-  const char = getCharacteristicFromPeripheralId(charUuid, serviceUuid, deviceId, deviceList);
-  /* Ensure the character was found */
-  if (!char) {
-    log.warn('readMetaCharacteristicFrom ID failed to find characteristic',
-    charUuid, 'on device', deviceId);
-    return false;
-  }
-  /* Read the characteristic, passing in the callback, with the bound IDs */
-  char.read(callback.bind(null, charUuid, deviceId));
-  /* Indicate the read call was successful */
-  return true;
-}
+// export function readMetaCharacteristicFromId(charUuid: string, serviceUuid: string,
+//   deviceId: nobleIdType, deviceList: noblePeripheralType[],
+//   callback: (charId: string, deviceId: string, error: ?string, data: Buffer) => void
+// ): boolean {
+//   /* find the device from the list */
+//   const char = getCharacteristicFromPeripheralId(charUuid, serviceUuid, deviceId, deviceList);
+//   /* Ensure the character was found */
+//   if (!char) {
+//     log.warn('readMetaCharacteristicFrom ID failed to find characteristic',
+//     charUuid, 'on device', deviceId);
+//     return false;
+//   }
+//   /* Read the characteristic, passing in the callback, with the bound IDs */
+//   char.read(callback.bind(null, charUuid, deviceId));
+//   /* Indicate the read call was successful */
+//   return true;
+// }
 // /* Get the name of a device from it's ID */
 // export function getNameFromId(id: ?string): ?string {
 
