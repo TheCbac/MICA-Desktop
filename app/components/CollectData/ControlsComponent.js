@@ -12,7 +12,7 @@
 import React, { Component } from 'react';
 import { Row } from 'react-bootstrap';
 import DriveBot from './DriveBotComponent';
-import type { deviceSettingsType } from '../../types/paramTypes';
+import type { devicesStateType } from '../../types/stateTypes';
 
 /* Get the generator component based on ID - should be refactored and moved */
 function mapGeneratorIdToComponent(
@@ -31,7 +31,7 @@ function mapGeneratorIdToComponent(
   }
 }
 type propsType = {
-  deviceSettings: deviceSettingsType
+  devices: devicesStateType
 };
 
 export default class ControlsComponent extends Component {
@@ -40,23 +40,23 @@ export default class ControlsComponent extends Component {
    * active generators */
   getGeneratorControls(): * {
     /* Find the ID of all active devices */
-    const { deviceSettings } = this.props;
-    const deviceKeys = Object.keys(deviceSettings);
+    const { devices } = this.props;
+    const deviceKeys = Object.keys(devices);
     /* Return array */
     const componentArray = [];
     /* Iterate through the devices */
     for (let i = 0; i < deviceKeys.length; i++) {
       const deviceId = deviceKeys[i];
-      const device = deviceSettings[deviceId];
+      const device = devices[deviceId];
       /* Make sure the device is active */
       if (device.active) {
         /* Iterate through all of the generators */
-        const generators = device.generators;
+        const { generators } = device.settings;
         const generatorKeys = Object.keys(generators);
         for (let j = 0; j < generatorKeys.length; j++) {
           const generatorId = generatorKeys[j];
           /* Check to see if it is active */
-          if (generators[generatorId].active) {
+          if (generators[parseInt(generatorId, 10)].active) {
             componentArray.push(mapGeneratorIdToComponent(deviceId, generatorId, j));
           }
         }

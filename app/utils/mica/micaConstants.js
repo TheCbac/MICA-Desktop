@@ -38,6 +38,9 @@ export const micaCharUuids: charUuidObjType = {
   controlCommands: 'cbac07a4b054467db95f773fa6bbb796'
 };
 
+export const moduleNames = ['energy', 'actuation', 'power', 'sensing', 'communication', 'control'];
+
+
 export const micaIDs: bleIdObjType = {
   actuation: {
     '1': 'Signal Voltage',

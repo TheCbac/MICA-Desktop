@@ -2,6 +2,8 @@
 /* **********************************************************
 * File: utils/mica/micaNobleDevices.js
 *
+* ****************** DEPRECATED ******************
+*
 * Brief: Contains the MICA API for interacting with BLE
 * devices via Noble.
 *
@@ -88,7 +90,8 @@ function sensingDataCallback(id: string, data: buffer, isNotification: boolean):
   // console.log('sensingDataCallback:', id, data);
   const time = new Date().getTime();
   /* Parse the command */
-  const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time);
+  /* TODO: implement dynamic packets based on settings */
+  const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time); // hardcoded settings
   // console.log('parsedData:', parsed);
   console.log(parsed.map((point) => point.toPoint()[1]));
 }

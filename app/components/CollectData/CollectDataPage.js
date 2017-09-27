@@ -15,13 +15,16 @@ import GraphSettings from './GraphSettingsComponent';
 import GraphComponent from './GraphComponent';
 import ControlComponent from './ControlsComponent';
 import type { thunkType } from '../../types/functionTypes';
-import type { deviceSettingsType } from '../../types/paramTypes';
-import type { collectionStateType, graphSettingsType } from '../../types/stateTypes';
+import type {
+  collectionStateType,
+  graphSettingsType,
+  devicesStateType
+} from '../../types/stateTypes';
 import type { updateGraphSettingsActionType } from '../../types/collectionActionTypes';
 
 
 type propsType = {
-  deviceSettings: deviceSettingsType,
+  devices: devicesStateType,
   collectionSettings: collectionStateType,
   startCollecting: () => thunkType,
   stopCollecting: () => thunkType,
@@ -35,7 +38,7 @@ export default class CollectDataPage extends Component {
     return (
       <div>
         <Col md={4} lg={4}>
-          <ControlComponent deviceSettings={this.props.deviceSettings} />
+          <ControlComponent devices={this.props.devices} />
           <Row />
           <GraphSettings
             collectionSettings={this.props.collectionSettings}

@@ -14,7 +14,8 @@ import type {
   toggleCollectionStateActionType,
   updateGraphSettingsActionType
 } from '../types/collectionActionTypes';
-import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
+import { bleWriteCharacteristic } from '../utils/BLE/bleFunctions';
+// import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
 import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
 import { encodeStartPacket, encodeStopPacket } from '../utils/mica/parseDataPacket';
@@ -39,30 +40,35 @@ export function startCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const state = getState();
-    const { deviceSettings } = state.devices;
+    const { devices, scanForDevices } = getState();
     /* find all active devices */
-    const deviceKeys = Object.keys(deviceSettings);
+    const deviceIdList = Object.keys(devices);
     /* Keep track of whether a sensor was started */
     let sensorStarted = false;
     /* Iterate over each device */
-    for (let i = 0; i < deviceKeys.length; i++) {
-      const deviceId = deviceKeys[i];
-      const device = deviceSettings[deviceId];
-      /* See if the device is active */
+    for (let i = 0; i < deviceIdList.length; i++) {
+      const deviceId = deviceIdList[i];
+      const device = devices[deviceId];
+      /* Ensure the device is active */
       if (device.active) {
         /* PLACE HOLDER SAMPLE RATE */
         const sampleRate = 100;
+        const { sensors } = device.settings;
         // const startPacket = encodeStartPacket(sampleRate, device.sensors);
         const startPacket = [1, 3, 232, 1, 1, 0];
         console.log('Start packet', startPacket);
         /* Only write if there were active sensors */
         if (startPacket.length) {
           sensorStarted = true;
-          const result = writeCharacteristic(deviceId, micaCharUuids.sensorCommands, startPacket,
+          const result = bleWriteCharacteristic(
+            scanForDevices.method,
+            deviceId,
+            micaCharUuids.sensorCommands,
+            startPacket,
             (dId, charUuid, err) => {
               console.log('writeCharCallback:', dId, charUuid, err);
-            }
+            },
+            true
           );
           console.log('startCollecting: writeResult', result);
         }
@@ -81,22 +87,49 @@ export function stopCollecting(): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* get the new state */
-    const state = getState();
-    const { deviceSettings } = state.devices;
+    const { devices, scanForDevices } = getState();
     /* find all active devices */
-    const deviceKeys = Object.keys(deviceSettings);
+    const deviceIdList = Object.keys(devices);
     /* Iterate over each device */
-    for (let i = 0; i < deviceKeys.length; i++) {
-      const deviceId = deviceKeys[i];
-      const device = deviceSettings[deviceId];
-      /* See if the device is active */
+    for (let i = 0; i < deviceIdList.length; i++) {
+      const deviceId = deviceIdList[i];
+      const device = devices[deviceId];
+      /* Ensure the device is active */
       if (device.active) {
-        const stopPacket = encodeStopPacket(device.sensors);
-        writeCharacteristic(deviceId, micaCharUuids.sensorCommands, stopPacket);
+        const stopPacket = encodeStopPacket(device.settings.sensors);
+        const result = bleWriteCharacteristic(
+          scanForDevices.method,
+          deviceId,
+          micaCharUuids.sensorCommands,
+          stopPacket,
+          (dId, charUuid, err) => {
+            console.log('writeCharCallback:', dId, charUuid, err);
+          },
+          true
+        );
+        console.log('StopCollecting: writeResult', result);
       }
     }
     /* Update the object */
     dispatch(toggleCollectionState(false));
+
+    // /* get the new state */
+    // const state = getState();
+    // const { settings } = state.devices;
+    // /* find all active devices */
+    // const deviceKeys = Object.keys(settings);
+    // /* Iterate over each device */
+    // for (let i = 0; i < deviceKeys.length; i++) {
+    //   const deviceId = deviceKeys[i];
+    //   const device = settings[deviceId];
+    //   /* See if the device is active */
+    //   if (device.active) {
+    //     const stopPacket = encodeStopPacket(device.sensors);
+    //     writeCharacteristic(deviceId, micaCharUuids.sensorCommands, stopPacket);
+    //   }
+    // }
+    // /* Update the object */
+    // dispatch(toggleCollectionState(false));
   };
 }
 

@@ -20,9 +20,11 @@ import {
 
 function mapStateToProps(state) {
   return {
-    connectedDevices: state.devices.connectedDevices,
-    deviceSettings: state.devices.deviceSettings,
+    devices: state.devices,
     collectionSettings: state.collection
+    // connectedDevices: state.devices.connectedDevices,
+    // deviceSettings: state.devices.deviceSettings,
+    // collectionSettings: state.collection
   };
 }
 
