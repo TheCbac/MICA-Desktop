@@ -114,7 +114,7 @@ export type sensorParamType = {
   channels: number[],
   scalingConstant: number,
   gain: number,
-  offset: number,
+  offset: number[],
   units: string,
   dynamicParams: {
     [paramName: string]: dynamicParamType

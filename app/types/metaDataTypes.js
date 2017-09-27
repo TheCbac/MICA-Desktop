@@ -148,7 +148,7 @@ export type sensingMetaObj = {
   scalingConstant: number,
   gain: number,
   units: string,
-  offset: number
+  offset: number[]
 };
 /* Communication Metadata type */
 export type commMetaObj = {

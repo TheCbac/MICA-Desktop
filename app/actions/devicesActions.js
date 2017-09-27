@@ -187,7 +187,7 @@ function constructSensorSettings(sensingMeta: sensingObjs): sensorListType {
   for (let i = 0; i < sensorIdList.length; i++) {
     const sensorId = sensorIdList[i];
     /* Extract the reported settings */
-    const { type: name, scalingConstant, gain, offset, units } = sensingMeta[sensorId];
+    const { type: name, scalingConstant, gain, offset, units } = sensingMeta[parseInt(sensorId, 10)];
     /* Look up the dynamic params */
     const sensorParams = micaSensorParams[sensorId];
     const channels = sensorParams.channels.default;
@@ -224,7 +224,7 @@ function constructGeneratorSettings(actuationMeta: actuationObjs): generatorList
   for (let i = 0; i < generatorIdList.length; i++) {
     const actuationId = generatorIdList[i];
     /* Get the sensor ID */
-    const { type: name } = actuationMeta[actuationId];
+    const { type: name } = actuationMeta[parseInt(actuationId, 10)];
     /* Get the sensor params op */
     const actuatorParams = micaGeneratorParams[actuationId];
     /* Set the device channels */
