@@ -44,12 +44,12 @@ export function parseDataPacket(
   scalingConstant: number,
   gain: number,
   offset: number[],
-  startIndex: number
+  startTime: number
 ): TimeEvent[] {
   /* return array */
   const eventArray = [];
   let idx = 0;
-  let t = startIndex;
+  let t = startTime;
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -89,7 +89,8 @@ export function parseDataPacket(
         const value = ((scalingConstant / gain) * signedData) - chanOffset;
         /* Limit the precision */
         // channelData[channel] = parseInt(value.toFixed(5), 10);
-        channelData[channel] = value;
+        // channelData[channel] = value;
+        channelData.x = value;
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
@@ -98,12 +99,15 @@ export function parseDataPacket(
       /* Get the signed time differential */
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, 12);
       /* calculate the microsecond delta */
-      const micro = periodLength + timeDifferential;
+      // const micro = periodLength + timeDifferential;
+      // @FIXME - incorrect timing logic here
+      const micro = periodLength;
       /* Update the time */
-      // t += micro;
-      const time = new Date();
+      t += micro;
+      // const time = new Date();
       /* Create the time event */
-      const event = new TimeEvent(time, channelData);
+      // console.log('parseData:', t, micro);
+      const event = new TimeEvent(t, channelData);
       /* Push the event */
       eventArray.push(event);
     }
@@ -199,7 +203,9 @@ type settingsResultT = settingsSuccessT | settingsFailedT;
 /* Extract sensor settings from the state */
 export function getSensorSettingsFromState(sensors: sensorListType): settingsResultT {
   /* Extract params - Currently only looking for the first sensor */
-  const periodLength = 0.1; /* TODO: dynamically select */
+  const sampleRate = 100; /* TODO: dynamically select */
+  /* Convert to milliseconds */
+  const periodLength = (1 / sampleRate) * 1000;
   /* Iterate through each sensor */
   const sensorsIdList = Object.keys(sensors);
   for (let i = 0; i < sensorsIdList.length; i++) {

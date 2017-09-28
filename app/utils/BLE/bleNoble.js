@@ -25,7 +25,7 @@ import type {
   idType, newDeviceObjType, noblePeripheralType
 } from '../../types/paramTypes';
 import parseMetaData from '../mica/metaDataParsers';
-import { logDataPoint, getDataIndex } from '../dataStreams/graphBuffer';
+import { logDataPoints, getLastTime } from '../dataStreams/graphBuffer';
 // import { reportToGraph } from '../../components/CollectData/GraphComponent';
 
 // log.debugLevel = 5;
@@ -235,7 +235,7 @@ function readMetadataCallback(
 /* Receive data packets back from the sensing module. */
 function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: boolean): void {
   // console.log('nobleSensingDataCallback:', id, data);
-  const time = new Date().getTime();
+  // const time = new Date().getTime();
   /* Get the settings */
   const { devices } = store.getState();
   const { sensors } = devices[id].settings;
@@ -243,12 +243,12 @@ function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: bool
   if (result.success) {
     const { numChannels, periodLength, scalingConstant, gain, offset } = result.payload;
     const parsed = parseDataPacket(
-      data, numChannels, periodLength, scalingConstant, gain, offset, getDataIndex()
+      data, numChannels, periodLength, scalingConstant, gain, offset, getLastTime()
     );
-    const points = parsed.map((point) => point.toPoint()[1]);
     /* Send the data to the graph */
-    logDataPoint(parsed);
+    logDataPoints(parsed);
     // reportToGraph(parsed[0]);
+    // const points = parsed.map((point) => point.toPoint()[1]);
   }
   /* Parse the command */
   // /* TODO: implement dynamic packets based on settings */

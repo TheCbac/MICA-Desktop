@@ -211,6 +211,7 @@ function constructSensorSettings(sensingMeta: sensingObjs): sensorListType {
       gain,
       offset,
       units,
+      sampleRate: 100,
       dynamicParams: dynamicParamsDefault
     };
   }

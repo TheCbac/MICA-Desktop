@@ -12,11 +12,11 @@
 import React, { Component } from 'react';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
-  styler, Resizable, BarChart, ScatterChart, Legend
+  styler, Resizable, BarChart, Legend
  } from 'react-timeseries-charts';
-import { TimeSeries, TimeEvent, TimeRange, Pipeline, percentile, EventOut, Stream } from 'pondjs';
+import { TimeSeries, TimeEvent, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
-import { getDataPoint, getLastDataPoint } from '../../utils/dataStreams/graphBuffer';
+import { getDataPointDecimated, getLastDataPointsDecimated } from '../../utils/dataStreams/graphBuffer';
 import type { collectionStateType } from '../../types/stateTypes';
 
 type propsType = {
@@ -28,32 +28,16 @@ type stateType = {
   events: *
 };
 
-
-// export function reportToGraph(event: TimeEvent) {
-//   if (this.props.collectionSettings.collecting) {
-//     const t = new Date(this.state.time.getTime() + increment);
-//     /* Enqueue the event */
-//     const newEvent = this.state.events;
-//     newEvent.enq(event);
-//     /* Update the state */
-//     this.setState({ time: t, events: newEvent });
-//     /* Let the aggregator process the event */
-//     this.stream.addEvent(event);
-//   }
-// }
-
-/* Create a new event  */
-function getNewEvent(t: Date): TimeEvent {
-  const base = (Math.sin(t.getTime() / 10000000) * 350) + 500;
-  return new TimeEvent(t, parseInt(base + (Math.random() * 1000), 10));
-}
-
-const sec = 1000;
-const minute = 60 * sec;
-const hours = 60 * minute;
-const rate = 30;
-const increment = minute;
+const sec2ms = 1000;
+/* Number of data points to display on the screen */
 const eventsSize = 200;
+const axes = ['x'];
+const sampleRate = 100; /* TODO: make dynamic */
+
+/* Graph refresh rate in Hz */
+const refreshRate = 20;
+/* Graph refresh period in ms */
+const refreshPeriod = (1 / refreshRate) * sec2ms;
 
 export default class GraphComponent extends Component {
   /* Type defs */
@@ -63,10 +47,25 @@ export default class GraphComponent extends Component {
   /* Initial state */
   constructor(props: propsType) {
     super(props);
+    /* Get the last events */
+    const eventBuffer = new RingBuffer(eventsSize);
+    /* TODO: make dynamic with sample rate */
+    const prevEvents = getLastDataPointsDecimated(eventsSize, sampleRate / refreshRate);
+    /* Populate the buffer */
+    for (let i = 0; i < prevEvents.length; i++) {
+      eventBuffer.enq(prevEvents[i]);
+    }
+    /* Get the start time */
+    let startTime = new Date();
+    let endTime = startTime;
+    if (prevEvents.length) {
+      startTime = new Date(prevEvents[0].timestamp());
+      endTime = new Date(prevEvents[prevEvents.length - 1].timestamp());
+    }
     this.state = {
-      startTime: new Date(),
-      time: new Date(),
-      events: new RingBuffer(eventsSize),
+      startTime,
+      time: endTime,
+      events: eventBuffer,
     };
   }
   /* Setup once created */
@@ -76,30 +75,29 @@ export default class GraphComponent extends Component {
       () => {
         if (this.props.collectionSettings.collecting) {
           const t = new Date();
-          // const event = getNewEvent(t);
-          // const event = getDataPoint();
-          // const datum = getDataPoint();
-          const datum = getLastDataPoint();
+          /* Get the sample rate */
+          const datum = getDataPointDecimated(sampleRate / refreshRate);
           if (datum) {
-            const dummyEvent = new TimeEvent(t, 9.8);
-            const dummy2 = new TimeEvent(t, datum.toPoint()[1]);
+            // const dummyEvent = new TimeEvent(t, 9.8);
+            // const dummy2 = new TimeEvent(t, datum.toPoint()[1]);
             // console.log('GraphComponent', data.toPoint(), event.toPoint());
             // console.log('datum:', datum, datum.toString(), datum.toPoint());
             // console.log('dummyEvent:', dummyEvent, dummyEvent.toString(), dummyEvent.toPoint());
             // console.log('dummy2:', dummy2, dummy2.toString(), dummy2.toPoint());
             /* Enqueue the event */
             const newEvent = this.state.events;
-            const newTime = new Date(datum.timestamp());
-            // newEvent.enq(datum);
+            // const newTime = new Date(datum.timestamp());
+            newEvent.enq(datum);
             // newEvent.enq(dummyEvent);
-            newEvent.enq(dummy2);
+            // newEvent.enq(dummy2);
             // console.log('graphcomponent', newTime.getTime());
             /* Update the state */
             this.setState({ time: t, events: newEvent });
           }
         }
       },
-      rate
+      /* Call function every refresh period */
+      refreshPeriod
     );
   }
   /* Clear Interval on unmount */
@@ -109,37 +107,33 @@ export default class GraphComponent extends Component {
   /* Render function */
   render() {
     const latestTime = this.state.time.toDateString();
-    /* Styles */
-    const scatterStyle = {
-      value: {
-        normal: {
-          fill: 'steelblue',
-          opacity: 0.5
-        }
-      }
-    };
     /* Create the time series */
     const eventSeries = new TimeSeries({
       name: 'raw',
       events: this.state.events.peekN(this.state.events.size())
     });
     /* Time range */
-    // const intitialBeginTime = this.state.startTime;
-    // const timeWindow = 5 * sec;
-    // let beginTime;
-    // const endTime = new Date(this.state.time.getTime() + sec);
-    // /* Wait until the window is full before moving */
-    // if (endTime.getTime() - timeWindow < intitialBeginTime.getTime()) {
-    //   beginTime = intitialBeginTime;
-    // } else {
-    //   beginTime = new Date(endTime.getTime() - timeWindow);
-    // }
     const endTime = this.state.time.getTime();
-    const timeRange = new TimeRange(endTime - (5 * sec), endTime);
+    const timeRange = new TimeRange(endTime - (5 * sec2ms), endTime);
+    /* Styles */
+    const lineStyle = {
+      x: {
+        stroke: 'steelblue',
+        strokeWidth: 2,
+        opacity: 0.5
+      }
+    };
     /* Charts */
     const charts = (
       <Charts>
-        <ScatterChart axis="y" series={eventSeries} style={scatterStyle} />
+        <LineChart
+          axis="y"
+          series={eventSeries}
+          style={lineStyle}
+          columns={axes}
+          interpolation="curveLinear"
+          breakLine
+        />
       </Charts>
     );
     /* Styler */
@@ -159,9 +153,7 @@ export default class GraphComponent extends Component {
         <hr />
         <div className="row">
           <div className="col-md-12">
-
             <Resizable>
-
               <ChartContainer timeRange={timeRange}>
                 <ChartRow height="385">
                   <YAxis
@@ -175,9 +167,7 @@ export default class GraphComponent extends Component {
                   {charts}
                 </ChartRow>
               </ChartContainer>
-
             </Resizable>
-
           </div>
         </div>
       </div>

@@ -116,6 +116,7 @@ export type sensorParamType = {
   gain: number,
   offset: number[],
   units: string,
+  sampleRate: number,
   dynamicParams: {
     [paramName: string]: dynamicParamType
   }
