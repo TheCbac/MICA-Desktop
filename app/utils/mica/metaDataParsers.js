@@ -191,6 +191,7 @@ function parseSensingMetadata(data: Buffer): sensingObjs {
   let scalingConstant;
   let gain;
   let units = '';
+  let offset = [];
   let i = 0;
   /* Iterate over each energy source in packet */
   while (i < data.length) {
@@ -203,9 +204,12 @@ function parseSensingMetadata(data: Buffer): sensingObjs {
     /* Reset the name length */
     channelNames = [];
     channelNameLength = [];
+    offset = [];
     /* Get the length of the name of each channel */
     for (let j = 0; j < numChannels; j++) {
       channelNameLength.push(data[i++]);
+      /* Construct the default offset for each channel */
+      offset.push(0); /* TODO: include dynamic offsets */
     }
     /* Populate the sensor name list */
     for (let chIndex = 0; chIndex < numChannels; chIndex++) {
@@ -238,7 +242,7 @@ function parseSensingMetadata(data: Buffer): sensingObjs {
       scalingConstant,
       gain,
       units,
-      offset: 0
+      offset
     };
   }
   return sensorsObj;

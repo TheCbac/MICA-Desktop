@@ -16,9 +16,11 @@ import type {
 } from '../types/collectionActionTypes';
 import { bleWriteCharacteristic } from '../utils/BLE/bleFunctions';
 // import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
-import { micaServiceUuid, micaCharUuids } from '../utils/mica/micaConstants';
-import type { stateType, graphSettingsType } from '../types/stateTypes';
+import { micaCharUuids } from '../utils/mica/micaConstants';
+import { resetBuffer, resetStartTime } from '../utils/dataStreams/graphBuffer';
+import log from '../utils/loggingUtils';
 import { encodeStartPacket, encodeStopPacket } from '../utils/mica/parseDataPacket';
+import type { stateType, graphSettingsType } from '../types/stateTypes';
 import type { thunkType } from '../types/functionTypes';
 
 
@@ -54,8 +56,8 @@ export function startCollecting(): thunkType {
         /* PLACE HOLDER SAMPLE RATE */
         const sampleRate = 100;
         const { sensors } = device.settings;
-        // const startPacket = encodeStartPacket(sampleRate, device.sensors);
-        const startPacket = [1, 3, 232, 1, 1, 0];
+        const startPacket = encodeStartPacket(sampleRate, sensors);
+        // const startPacket = [1, 3, 232, 1, 1, 0];
         console.log('Start packet', startPacket);
         /* Only write if there were active sensors */
         if (startPacket.length) {
@@ -78,6 +80,10 @@ export function startCollecting(): thunkType {
     if (sensorStarted) {
       /* Indicate that the device is being collected */
       dispatch(toggleCollectionState(true));
+      /* Reset the data buffer */
+      resetBuffer();
+      /* Reset the start time of the data collection */
+      resetStartTime();
     }
   };
 }
@@ -96,18 +102,21 @@ export function stopCollecting(): thunkType {
       const device = devices[deviceId];
       /* Ensure the device is active */
       if (device.active) {
+        /* Create the stop packet */
         const stopPacket = encodeStopPacket(device.settings.sensors);
-        const result = bleWriteCharacteristic(
+        /* Write to the characteristic */
+        bleWriteCharacteristic(
           scanForDevices.method,
           deviceId,
           micaCharUuids.sensorCommands,
           stopPacket,
           (dId, charUuid, err) => {
-            console.log('writeCharCallback:', dId, charUuid, err);
+            if (err) {
+              log.warn('writeCharCallback:', dId, charUuid, err);
+            }
           },
           true
         );
-        console.log('StopCollecting: writeResult', result);
       }
     }
     /* Update the object */

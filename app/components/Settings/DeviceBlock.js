@@ -17,7 +17,10 @@ import GeneratorBlock from './GeneratorBlock';
 import type { idType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
 import type { devicesStateObjType } from '../../types/stateTypes';
-import type { setDeviceActiveActionType } from '../../types/actionTypes';
+import type {
+  setDeviceActiveActionType,
+  setSensorChannelsActionT
+} from '../../types/actionTypes';
 
 
 type propsType = {
@@ -33,7 +36,7 @@ type propsType = {
     deviceId: idType,
     sensorId: idType,
     newChannels: number[]
-  ) => thunkType,
+  ) => setSensorChannelsActionT,
   setSensorParams: (
     deviceId: idType,
     sensorId: idType,

@@ -83,6 +83,15 @@ export type deviceParamType = {
   btnType: 'radio' | 'checkbox'
 };
 
+export type deviceRangeParamT = {
+  display: string,
+  address: number,
+  default: number,
+  gain: (range: number) => number,
+  options: deviceOptionsType[],
+  btnType: 'radio' | 'checkbox'
+};
+
 export type deviceChannelType = {
   display: string,
   default: number[],
@@ -93,6 +102,7 @@ export type deviceParamObj = {
   [instrumentId: number | string]: {
     channels: deviceChannelType,
     dynamicParams: {
+      range: deviceRangeParamT,
       [paramName: string]: deviceParamType
     }
   }
@@ -114,8 +124,9 @@ export type sensorParamType = {
   channels: number[],
   scalingConstant: number,
   gain: number,
-  offset: number,
+  offset: number[],
   units: string,
+  sampleRate: number,
   dynamicParams: {
     [paramName: string]: dynamicParamType
   }

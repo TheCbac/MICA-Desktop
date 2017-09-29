@@ -1,4 +1,5 @@
 // @flow
+/* eslint quote-props: ["error", "as-needed", { "numbers": true }] */
 /* eslint no-bitwise: "off" */ /* CC: Channels use bitwise masks */
 /* **********************************************************
 * File: utils/mica/micaSensorParams.js
@@ -12,7 +13,12 @@
 *
 ********************************************************* */
 import { nameToId } from './micaConstants';
-import type { deviceParamType, deviceChannelType, deviceParamObj } from '../../types/paramTypes';
+import type {
+  deviceParamType,
+  deviceChannelType,
+  deviceParamObj,
+  deviceRangeParamT
+} from '../../types/paramTypes';
 
 /* Object to be passed to Sensor Settings Component */
 const sensorParams: deviceParamObj = {};
@@ -22,12 +28,18 @@ const sensorParams: deviceParamObj = {};
 const accId = nameToId('Accelerometer').id;
 if (accId) {
   /* Range */
-  const range: deviceParamType = {
+  const range: deviceRangeParamT = {
     display: 'Range (g)',
     address: 0x0F,
     default: 3,
     gain(value) {
-      return 1 / parseInt(value, 10);
+      const gainParams = {
+        '3': 2,
+        '5': 4,
+        '8': 8,
+        '12': 16
+      };
+      return 1 / gainParams[value];
     },
     options: [[2, 3], [4, 5], [8, 8], [16, 12]].map(option => ({
       name: 'range',
@@ -82,12 +94,19 @@ if (accId) {
 const gyrId = nameToId('Gyroscope').id;
 if (gyrId) {
   /* Gyroscope range */
-  const range: deviceParamType = {
+  const range: deviceRangeParamT = {
     display: 'Range (°/s)',
     address: 0x0F,
     default: 0,
     gain(value) {
-      return 1 / parseInt(value, 10);
+      const gainParams = {
+        '4': 125,
+        '3': 250,
+        '2': 500,
+        '1': 1000,
+        '0': 2000
+      };
+      return 1 / gainParams[value];
     },
     options: [
       [125, 4],

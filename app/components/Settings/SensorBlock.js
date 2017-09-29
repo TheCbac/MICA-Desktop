@@ -20,6 +20,7 @@ import ChannelSelector from './ChannelSelector';
 import ParamSelector from './ParamSelector';
 import type { idType, sensorParamType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
+import type { setSensorChannelsActionT } from '../../types/actionTypes';
 
 type StateType = {
   open: boolean,
@@ -40,7 +41,7 @@ type PropsType = {
     deviceId: idType,
     sensorId: idType,
     newChannels: number[]
-  ) => thunkType,
+  ) => setSensorChannelsActionT,
   setSensorParams: (
     deviceId: idType,
     sensorId: idType,

@@ -24,6 +24,7 @@ import {
 import { DATA_CLOCK_FREQ, CMD_START, CMD_STOP } from './micaConstants';
 import log from '../loggingUtils';
 import type { periodCountType, sensorListType } from '../../types/paramTypes';
+import type { bleApiResultType } from '../../types/bleTypes';
 
 
 /* Converts a twos complement word of numBits length to a signed int */
@@ -35,7 +36,7 @@ export function twosCompToSigned(value: number, numBits: number): number {
   return value;
 }
 
-/* take two on the parsing function */
+/* take two on the parsing function only works for single sensors right now */
 export function parseDataPacket(
   packetData: Buffer,
   numChannels: number,
@@ -48,7 +49,7 @@ export function parseDataPacket(
   /* return array */
   const eventArray = [];
   let idx = 0;
-  let t = 0;
+  let t = startTime;
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -87,7 +88,9 @@ export function parseDataPacket(
         /* dataPoint = K/G*(x-x0) = K/G*x - offset */
         const value = ((scalingConstant / gain) * signedData) - chanOffset;
         /* Limit the precision */
-        channelData[channel] = value.toFixed(5);
+        // channelData[channel] = parseInt(value.toFixed(5), 10);
+        // channelData[channel] = value;
+        channelData.x = value;
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
@@ -96,10 +99,14 @@ export function parseDataPacket(
       /* Get the signed time differential */
       const timeDifferential = twosCompToSigned(timeDifferentialTwos, 12);
       /* calculate the microsecond delta */
-      const micro = periodLength + timeDifferential;
+      // const micro = periodLength + timeDifferential;
+      // @FIXME - incorrect timing logic here
+      const micro = periodLength;
       /* Update the time */
       t += micro;
+      // const time = new Date();
       /* Create the time event */
+      // console.log('parseData:', t, micro);
       const event = new TimeEvent(t, channelData);
       /* Push the event */
       eventArray.push(event);
@@ -140,7 +147,6 @@ export function encodeStartPacket(sampleRate: number, sensorList: sensorListType
   const startPacket = [];
   /* Iterate over each sensor */
   const sensorIds = Object.keys(sensorList);
-  console.log('encodeStartPacket', sensorList, sensorIds);
   for (let i = 0; i < sensorIds.length; i++) {
     /* Get the specific sensor */
     const sensorId = parseInt(sensorIds[i], 10);
@@ -177,6 +183,54 @@ export function encodeStartPacket(sampleRate: number, sensorList: sensorListType
 // eslint-disable-next-line no-unused-vars
 export function encodeStopPacket(sensorList: sensorListType): number[] {
   return [CMD_STOP];
+}
+
+type settingsSuccessT = {
+  success: true,
+  payload: {
+    numChannels: number,
+    periodLength: number,
+    scalingConstant: number,
+    gain: number,
+    offset: number[]
+  }
+};
+type settingsFailedT = {
+  success: false,
+  error: string
+};
+type settingsResultT = settingsSuccessT | settingsFailedT;
+/* Extract sensor settings from the state */
+export function getSensorSettingsFromState(sensors: sensorListType): settingsResultT {
+  /* Extract params - Currently only looking for the first sensor */
+  const sampleRate = 100; /* TODO: dynamically select */
+  /* Convert to milliseconds */
+  const periodLength = (1 / sampleRate) * 1000;
+  /* Iterate through each sensor */
+  const sensorsIdList = Object.keys(sensors);
+  for (let i = 0; i < sensorsIdList.length; i++) {
+    /* Get the specific sensor */
+    const sensorId = parseInt(sensorsIdList[i], 10);
+    const sensor = sensors[sensorId];
+    /* Ensure the sensor is active */
+    if (sensor.active) {
+      const numChannels = sensor.channels.length;
+      const { gain, scalingConstant, offset } = sensor;
+      /* Return success */
+      return {
+        success: true,
+        payload: {
+          numChannels,
+          periodLength,
+          scalingConstant,
+          gain,
+          offset
+        }
+      };
+    }
+  }
+  /* No active devices */
+  return { success: false, error: 'No active devices found' };
 }
 
 /* [] - END OF FILE */

@@ -14,7 +14,7 @@ import { foundAdvertisingDevice, metaDataReadComplete } from '../../actions/devi
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
 import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
-import { parseDataPacket } from '../mica/parseDataPacket';
+import { parseDataPacket, getSensorSettingsFromState } from '../mica/parseDataPacket';
 import log from '../loggingUtils';
 import {
   getCharacteristicFromDevice
@@ -25,6 +25,8 @@ import type {
   idType, newDeviceObjType, noblePeripheralType
 } from '../../types/paramTypes';
 import parseMetaData from '../mica/metaDataParsers';
+import { logDataPoints, getLastTime } from '../dataStreams/graphBuffer';
+// import { reportToGraph } from '../../components/CollectData/GraphComponent';
 
 // log.debugLevel = 5;
 log.debug('bleNoble.js logging level set to:', log.debugLevel);
@@ -185,7 +187,6 @@ function nobleDiscoverMicaCallback(id: idType, error: ?string): void {
     commCommandChar.subscribe(nobleSubscribeCallback.bind(null, id, 'CommunicationCommand'));
   }
   /* Read the metadata from the device */
-  /* TODO: PICK UP HERE */
   nobleReadMetadata(device);
 }
 
@@ -230,15 +231,28 @@ function readMetadataCallback(
   store.dispatch(metaDataReadComplete(deviceId, metadata));
 }
 
-/* TODO: Notifications for data  */
-function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: boolean): void {
-  // console.log('nobleSensingDataCallback:', id, data);
-  const time = new Date().getTime();
+/* ############### Sensing Data Callback ############### */
+/* Receive data packets back from the sensing module. */
+function nobleSensingDataCallback(id: idType, data: Buffer): void {
+  /* Get the settings */
+  const { devices } = store.getState();
+  const { sensors } = devices[id].settings;
+  const result = getSensorSettingsFromState(sensors);
+  if (result.success) {
+    const { numChannels, periodLength, scalingConstant, gain, offset } = result.payload;
+    console.log('NobleSensingCallback', gain);
+    const parsed = parseDataPacket(
+      data, numChannels, periodLength, scalingConstant, gain, offset, getLastTime()
+    );
+    /* Send the data to the graph */
+    logDataPoints(parsed);
+    // reportToGraph(parsed[0]);
+    // const points = parsed.map((point) => point.toPoint()[1]);
+  }
   /* Parse the command */
-  /* TODO: implement dynamic packets based on settings */
-  const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time); // hardcoded settings
-  // console.log('parsedData:', parsed);
-  console.log(parsed.map((point) => point.toPoint()[1]));
+  // /* TODO: implement dynamic packets based on settings */
+  // const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time); // hardcoded settings
+  /* Log the packet for debugging */
 }
 
 /* Call back function for subscriptions */
