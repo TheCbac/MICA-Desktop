@@ -233,15 +233,14 @@ function readMetadataCallback(
 
 /* ############### Sensing Data Callback ############### */
 /* Receive data packets back from the sensing module. */
-function nobleSensingDataCallback(id: idType, data: Buffer, isNotification: boolean): void {
-  // console.log('nobleSensingDataCallback:', id, data);
-  // const time = new Date().getTime();
+function nobleSensingDataCallback(id: idType, data: Buffer): void {
   /* Get the settings */
   const { devices } = store.getState();
   const { sensors } = devices[id].settings;
   const result = getSensorSettingsFromState(sensors);
   if (result.success) {
     const { numChannels, periodLength, scalingConstant, gain, offset } = result.payload;
+    console.log('NobleSensingCallback', gain);
     const parsed = parseDataPacket(
       data, numChannels, periodLength, scalingConstant, gain, offset, getLastTime()
     );

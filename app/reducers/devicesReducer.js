@@ -26,7 +26,9 @@ import type {
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
   updateSenGenParamActionType,
-  setDeviceActiveActionType
+  setDeviceActiveActionType,
+  setSensorChannelsActionT,
+  setSensorRangeActionT
 } from '../types/actionTypes';
 
 
@@ -210,6 +212,35 @@ const deviceHandlers = {
     return update(state, {
       [id]: {
         settings: { $set: action.payload.deviceSettings }
+      }
+    });
+  },
+  /* Select which channels are active */
+  SET_SENSOR_CHANNELS(
+    state: devicesStateType,
+    action: setSensorChannelsActionT
+  ): devicesStateType {
+    const { deviceId, sensorId, channels } = action.payload;
+    /* Set the new values */
+    return update(state, {
+      [deviceId]: {
+        settings: { sensors: { [sensorId]: { channels: { $set: channels } } } }
+      }
+    });
+  },
+  /* Select the range (and gain) of the device */
+  SET_SENSOR_RANGE(
+    state: devicesStateType,
+    action: setSensorRangeActionT
+  ): devicesStateType {
+    const { deviceId, sensorId, range, gain } = action.payload;
+    /* Set the new values */
+    return update(state, {
+      [deviceId]: {
+        settings: { sensors: { [sensorId]: {
+          gain: { $set: gain },
+          dynamicParams: { range: { value: { $set: range } } }
+        } } },
       }
     });
   },

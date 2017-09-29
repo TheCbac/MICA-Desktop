@@ -14,7 +14,8 @@ import micaSensorParams from '../utils/mica/micaSensorParams';
 import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
 import type { idType, deviceSettingsObjType,
   generatorParamType, newDeviceObjType,
-  sensorListType, generatorListType
+  sensorListType, generatorListType,
+  deviceRangeParamT
  } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
@@ -27,7 +28,9 @@ import type {
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
   updateSenGenParamActionType,
-  setDeviceActiveActionType
+  setDeviceActiveActionType,
+  setSensorChannelsActionT,
+  setSensorRangeActionT
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
 import type {
@@ -48,6 +51,8 @@ export const LOST_CONNECTION_FROM_DEVICE = 'LOST_CONNECTION_FROM_DEVICE';
 export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 export const SET_DEVICE_ACTIVE = 'SET_DEVICE_ACTIVE';
+export const SET_SENSOR_CHANNELS = 'SET_SENSOR_CHANNELS';
+export const SET_SENSOR_RANGE = 'SET_SENSOR_RANGE';
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(deviceObj: newDeviceObjType): foundDeviceActionType {
@@ -307,32 +312,57 @@ export function setGeneratorActive(
 export function setSensorChannels(
   deviceId: idType,
   sensorId: idType,
-  newChannels: number[]
-): thunkType {
-  /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
-    /* Get the state of the device settings */
-    const { settings } = getState().devices[deviceId];
-    settings.sensors[parseInt(sensorId, 10)].channels = newChannels;
-    /* Update the object */
-    dispatch(updateSenGenParams(deviceId, settings));
+  channels: number[]
+): setSensorChannelsActionT {
+  return {
+    type: SET_SENSOR_CHANNELS,
+    payload: {
+      deviceId,
+      sensorId,
+      channels
+    }
   };
 }
+
+/* Update the the state of the channel for a sensor */
+export function setSensorRange(
+  deviceId: idType,
+  sensorId: idType,
+  range: number
+): setSensorRangeActionT {
+  /* Look up the gain mapping function from the param library */
+  const rangeParams: deviceRangeParamT = micaSensorParams[sensorId].dynamicParams.range;
+  const gain = rangeParams.gain(range);
+  return {
+    type: SET_SENSOR_RANGE,
+    payload: {
+      deviceId,
+      sensorId,
+      range,
+      gain
+    }
+  };
+}
+
 
 /* Update the dynamic parameters in the store */
 export function setSensorParams(
   deviceId: idType,
-  sensorId: number | string,
+  sensorId: idType,
   paramName: string,
   paramValue: number
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
-    /* Get the state of the device settings */
-    const { settings } = getState().devices[deviceId];
-    settings.sensors[parseInt(sensorId, 10)].dynamicParams[paramName].value = paramValue;
-    /* Update the store */
-    dispatch(updateSenGenParams(deviceId, settings));
+    if (paramName === 'range') {
+      dispatch(setSensorRange(deviceId, sensorId, paramValue));
+    } else {
+      /* Get the state of the device settings */
+      const { settings } = getState().devices[deviceId];
+      settings.sensors[parseInt(sensorId, 10)].dynamicParams[paramName].value = paramValue;
+      /* Update the store */
+      dispatch(updateSenGenParams(deviceId, settings));
+    }
   };
 }
 

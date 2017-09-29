@@ -56,8 +56,8 @@ export function startCollecting(): thunkType {
         /* PLACE HOLDER SAMPLE RATE */
         const sampleRate = 100;
         const { sensors } = device.settings;
-        // const startPacket = encodeStartPacket(sampleRate, device.sensors);
-        const startPacket = [1, 3, 232, 1, 1, 0];
+        const startPacket = encodeStartPacket(sampleRate, sensors);
+        // const startPacket = [1, 3, 232, 1, 1, 0];
         console.log('Start packet', startPacket);
         /* Only write if there were active sensors */
         if (startPacket.length) {

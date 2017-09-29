@@ -16,7 +16,7 @@ import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import micaSensorParams from '../../utils/mica/micaSensorParams';
 import type { idType } from '../../types/paramTypes';
-import type { thunkType } from '../../types/functionTypes';
+import type { setSensorChannelsActionT } from '../../types/actionTypes';
 
 type propsType = {
   /* parameters */
@@ -28,7 +28,7 @@ type propsType = {
     deviceId: idType,
     sensorId: idType,
     newChannels: number[]
-  ) => thunkType
+  ) => setSensorChannelsActionT
 };
 
 type stateType = {

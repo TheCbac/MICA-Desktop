@@ -125,6 +125,27 @@ export type updateSenGenParamActionType = {
   }
 };
 
+/* Set the sensor channels active or not */
+export type setSensorChannelsActionT = {
+  type: 'SET_SENSOR_CHANNELS',
+  payload: {
+    deviceId: idType,
+    sensorId: idType,
+    channels: number[]
+  }
+};
+
+/* Sets the range of the sensors, and the gain */
+export type setSensorRangeActionT = {
+  type: 'SET_SENSOR_RANGE',
+  payload: {
+    deviceId: idType,
+    sensorId: idType,
+    range: number,
+    gain: number
+  }
+};
+
 /* Set the device active or inactive */
 export type setDeviceActiveActionType = {
   type: 'SET_DEVICE_ACTIVE',

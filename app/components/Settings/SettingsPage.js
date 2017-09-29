@@ -20,7 +20,10 @@ import log from '../../utils/loggingUtils';
 import type { thunkType } from '../../types/functionTypes';
 import type { devicesStateType } from '../../types/stateTypes';
 import type { idType } from '../../types/paramTypes';
-import type { setDeviceActiveActionType } from '../../types/actionTypes';
+import type {
+  setDeviceActiveActionType,
+  setSensorChannelsActionT
+} from '../../types/actionTypes';
 
 // log.debugLevel = 5;
 log.debug('sensorSettingsComponent: debug level', log.debugLevel);
@@ -43,7 +46,7 @@ type propsType = {
     deviceId: idType,
     sensorId: idType,
     newChannels: number[]
-  ) => thunkType,
+  ) => setSensorChannelsActionT,
   setSensorParams: (
     deviceId: idType,
     sensorId: idType,

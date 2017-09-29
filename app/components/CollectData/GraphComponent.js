@@ -104,6 +104,10 @@ export default class GraphComponent extends Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
+  graphMin(): number {
+    return
+  }
   /* Render function */
   render() {
     const latestTime = this.state.time.toDateString();
@@ -143,6 +147,11 @@ export default class GraphComponent extends Component {
       borderWidth: 1,
       borderColor: '#F4F4F4'
     };
+    const defaultMin = -20;
+    const defaultMax = 20;
+    const chartMin = eventSeries.min('x') < defaultMin ? eventSeries.min('x') : defaultMin;
+    const chartMax = eventSeries.max('x') > defaultMax ? eventSeries.max('x') : defaultMax;
+
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
         <div className="row">
@@ -159,8 +168,8 @@ export default class GraphComponent extends Component {
                   <YAxis
                     id="y"
                     label="Value"
-                    min={-20}
-                    max={20}
+                    min={chartMin}
+                    max={chartMax}
                     width="70"
                     type="linear"
                   />
