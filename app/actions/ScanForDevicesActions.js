@@ -9,16 +9,13 @@
 *
 ********************************************************* */
 import type { stateType } from '../types/stateTypes';
-import type { scanTypes, nobleIdType } from '../types/paramTypes';
+import type { scanTypes, idType } from '../types/paramTypes';
 import type {
   enableScanActionType,
   changeScanActionType,
   scanStateActionType,
 } from '../types/actionTypes';
 import { Noble } from '../utils/nativeModules';
-import { micaServiceUuid } from '../utils/mica/micaConstants';
-import { getPeripheralFromList } from '../utils/deviceUtils';
-import { discoverMicaNoble } from '../utils/mica/micaNobleDevices';
 import log from '../utils/loggingUtils';
 import store from '../index';
 import {
@@ -30,7 +27,10 @@ import {
   disconnectedFromDevice,
   lostConnectionFromDevice
 } from './devicesActions';
-import { getSelectedDevices } from './senGenActions';
+import { bleStartScan, bleStopScan, bleConnect,
+  bleCancelPending, bleDisconnect, bleInitializeDevice } from '../utils/BLE/bleFunctions';
+import type { thunkType } from '../types/functionTypes';
+
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -80,55 +80,46 @@ export function changeScanState(method: scanTypes,
   };
 }
 /* Starts and stops the scanning events - dispatches events based on results */
-export function startStopScan() {
+export function startStopScan(): thunkType {
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the current state */
-    const scanState = getState().scanForDevices;
+    const { method, scanning, enabled } = getState().scanForDevices;
     /* Only scan if the current method is enabled */
-    if (scanState.enabled) {
-      switch (scanState.method) {
-        case 'ble':
-        /* If not scanning start a scan */
-          if (!scanState.scanning) {
-            /* Start scanning - triggers a callback that updates the state */
-            Noble.startScanning([micaServiceUuid], false);
-            /* Dispatch the event */
-            dispatch(clearAdvertisingList());
-          } else {
-            /* Stop scanning - triggers callback that updates the state */
-            Noble.stopScanning();
-          }
-          break;
-        case 'usb':
-          break;
-        default:
-          break;
+    if (enabled) {
+      /* If not scanning start a scan */
+      if (!scanning) {
+        const startResult = bleStartScan(method);
+        /* Clear the advertising list */
+        if (startResult.success) { dispatch(clearAdvertisingList()); }
+        /* Callbacks determine when the scan state itself is changed */
+      } else {
+        /* Stop the scan */
+        bleStopScan(method);
+        /* Callbacks determine when the scan state itself is changed */
       }
     }
   };
 }
 
-/* Connecting to the a MICA Device - Redux Thunk */
-export function connectToDevice(advertisingDeviceId: nobleIdType) {
+/* Connect to a device */
+export function connectToDevice(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
-    /* get the current devices */
-    const advertisingList = getState().devices.advertising;
-    /* Get the device from the advertising list */
-    const { peripheral } = getPeripheralFromList(advertisingList, advertisingDeviceId);
-    if (peripheral) {
-      /* Move to advertising list */
-      dispatch(connectingToDevice(peripheral.id));
-      /* Connect to the peripheral - pass the ID to the callback */
-      peripheral.connect(connectCallBack.bind(null, peripheral.id));
-      /* Register a callback function for a disconnect event */
-      peripheral.once('disconnect', disconnectCallback.bind(null, peripheral.id));
-    }
+    /* get the current state */
+    const { method } = getState().scanForDevices;
+    /* Move to advertising list */
+    dispatch(connectingToDevice(deviceId));
+    /* Attempt to connect */
+    bleConnect(
+      method,
+      deviceId,
+      connectCallBack.bind(null, deviceId, method),
+      disconnectCallback.bind(null, deviceId, method)
+    );
   };
 }
-
 /* Callback when a device has been connected (or timeout) */
-function connectCallBack(id: nobleIdType, error: ?string): void {
+function connectCallBack(id: idType, method: scanTypes, error: ?string): void {
   if (error) {
     log.error('Failed to connect to device:', id);
     return;
@@ -137,64 +128,57 @@ function connectCallBack(id: nobleIdType, error: ?string): void {
   /* Dispatch an action to indicate connected device */
   store.dispatch(connectedToDevice(id));
   /* Discover parameters about the device */
-  discoverMicaNoble(id);
+  bleInitializeDevice(method, id);
 }
 
-export function cancelPendingConnection(deviceId: nobleIdType) {
+/* Cancel an attempt to connect */
+export function cancelPendingConnection(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
-    /* Find the device in the connecting list */
-    const connectingList = getState().devices.connecting;
-    /* Get the peripheral and cancel the pending connection */
-    const { peripheral } = getPeripheralFromList(connectingList, deviceId);
-    /* Ensure the device was found */
-    if (!peripheral) { return; }
-    /* Disconnect from the device */
-    peripheral.disconnect();
-    /* Issue the action  */
+    /* get the state */
+    const state = getState();
+    const { method } = state.scanForDevices;
+    const { state: deviceState } = state.devices[deviceId];
+    /* Ensure the connection is pending */
+    if (deviceState !== 'connecting') { return; }
+    /* Update the state */
     dispatch(cancelConnectToDevice(deviceId));
+    /* Take an steps necessary to disconnect */
+    bleCancelPending(method, deviceId);
   };
 }
+
 /* Disconnect from a device */
-export function disconnectFromDevice(connectedDeviceId: nobleIdType) {
+export function disconnectFromDevice(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
-    /* get the currently connected devices */
-    const connectedList = getState().devices.connected;
-    /* Get the device from the advertising list */
-    const { peripheral } = getPeripheralFromList(connectedList, connectedDeviceId);
-    if (peripheral) {
-      /* Move to disconnecting list */
-      dispatch(disconnectingFromDevice(peripheral.id));
-      /* Connect to the peripheral
-      * Disconnect call back was registered when the device connected */
-      peripheral.disconnect();
-    }
+    /* get the current state */
+    const { method } = getState().scanForDevices;
+    /* Update the store */
+    dispatch(disconnectingFromDevice(deviceId));
+    /* Perform the BLE disconnect */
+    bleDisconnect(method, deviceId);
   };
 }
 
 /* Callback for when a device becomes disconnected */
-function disconnectCallback(id: nobleIdType): void {
-  /* Get the state */
-  const deviceList = store.getState().devices;
-  /* Disconnection was planned */
-  const disconnectingDevice = getPeripheralFromList(deviceList.disconnecting, id).peripheral;
-  if (disconnectingDevice) {
-    /* Dispatch a disconnect event */
+function disconnectCallback(id: idType): void {
+  /* Get the devices */
+  const { devices } = store.getState();
+  const device = devices[id];
+  /* Ensure something was found */
+  if (!device) {
+    log.warn('disconnectCallback: Unknown device id', id);
+    return;
+  }
+  /* Issue the corresponding action */
+  if (device.state === 'disconnecting') {
+    /* Planned disconnection */
     store.dispatch(disconnectedFromDevice(id));
-    return;
-  }
-  /* Disconnection was not planned */
-  const lostDevice = getPeripheralFromList(deviceList.connected, id).peripheral;
-  if (lostDevice) {
-    /* Dispatch a disconnect event */
+  } else {
+    /* Unplanned disconnection */
     store.dispatch(lostConnectionFromDevice(id));
-    /* Update the meta data */
-    store.dispatch(getSelectedDevices());
-    return;
   }
-  /* Cancel con */
-  log.info('disconnectCallback: Device in unknown state:', id);
 }
 
 /* [] - END OF FILE */

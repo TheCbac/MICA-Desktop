@@ -10,8 +10,7 @@
 ********************************************************* */
 import type {
   scanTypes,
-  noblePeripheralType,
-  nobleIdType,
+  idType,
   deviceSettingsObjType
 } from './paramTypes';
 import type { metaDataObjType, moduleNameType } from './metaDataTypes';
@@ -46,14 +45,18 @@ export type scanStateActionType = {
 
 /* Clear the advertising device list */
 export type clearAdvertisingActionType = {
-  type: 'CLEAR_ADVERTISING_LIST'
+  type: 'CLEAR_ADVERTISING_LIST',
+  payload: {}
 };
 
 /* A new advertising device was found */
 export type foundDeviceActionType = {
   type: 'FOUND_ADVERTISING_DEVICE',
   payload: {
-    peripheral: noblePeripheralType
+    deviceId: idType,
+    name: string,
+    rssi: number,
+    address: string
   }
 };
 
@@ -61,7 +64,7 @@ export type foundDeviceActionType = {
 export type connectingToDeviceActionType = {
   type: 'CONNECTING_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -69,7 +72,7 @@ export type connectingToDeviceActionType = {
 export type cancelConnectToDeviceActionType = {
   type: 'CANCEL_CONNECT_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -77,7 +80,7 @@ export type cancelConnectToDeviceActionType = {
 export type connectedToDeviceActionType = {
   type: 'CONNECTED_TO_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -85,7 +88,7 @@ export type connectedToDeviceActionType = {
 export type disconnectingFromDeviceActionType = {
   type: 'DISCONNECTING_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -93,7 +96,7 @@ export type disconnectingFromDeviceActionType = {
 export type disconnectedFromDeviceActionType = {
   type: 'DISCONNECTED_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
@@ -101,29 +104,15 @@ export type disconnectedFromDeviceActionType = {
 export type lostConnectionFromDeviceActionType = {
   type: 'LOST_CONNECTION_FROM_DEVICE',
   payload: {
-    peripheralId: nobleIdType
+    deviceId: idType
   }
 };
 
 export type reportMetaDataActionType = {
   type: 'REPORT_META_DATA',
   payload: {
-    peripheralId: string,
-    data: ?metaDataObjType,
-    moduleName: ?moduleNameType
-  }
-};
-
-/* Set the selected devices */
-export type updateSelectedDeviceAction = {
-  type: 'UPDATE_SELECTED_DEVICES',
-  payload: {
-    sensor: selectType,
-    generator: selectType,
-    unselected: {
-      sensors: selectType[],
-      generators: selectType[]
-    }
+    deviceId: string,
+    data: metaDataObjType
   }
 };
 
@@ -131,8 +120,38 @@ export type updateSelectedDeviceAction = {
 export type updateSenGenParamActionType = {
   type: 'UPDATE_SEN_GEN_PARAMS',
   payload: {
-    deviceId: nobleIdType,
+    deviceId: idType,
     deviceSettings: deviceSettingsObjType
+  }
+};
+
+/* Set the sensor channels active or not */
+export type setSensorChannelsActionT = {
+  type: 'SET_SENSOR_CHANNELS',
+  payload: {
+    deviceId: idType,
+    sensorId: idType,
+    channels: number[]
+  }
+};
+
+/* Sets the range of the sensors, and the gain */
+export type setSensorRangeActionT = {
+  type: 'SET_SENSOR_RANGE',
+  payload: {
+    deviceId: idType,
+    sensorId: idType,
+    range: number,
+    gain: number
+  }
+};
+
+/* Set the device active or inactive */
+export type setDeviceActiveActionType = {
+  type: 'SET_DEVICE_ACTIVE',
+  payload: {
+    deviceId: idType,
+    newState: boolean
   }
 };
 /* [] - END OF FILE */

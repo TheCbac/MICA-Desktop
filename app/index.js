@@ -17,7 +17,6 @@ import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import { updatePending } from './actions/appWideActions';
 import './app.global.css';
-import './actions/nobleCallbackActions';
 
 const store = configureStore();
 

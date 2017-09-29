@@ -20,7 +20,8 @@ export type nobleCharacteristicType = {
   type: ?string,
   read: () => void,
   subscribe: () => void,
-  write: () => void
+  write: () => void,
+  on: () => void
 };
 /* Noble BLE services */
 export type nobleServiceType = {
@@ -29,7 +30,16 @@ export type nobleServiceType = {
   characteristics: ?nobleCharacteristicType[]
 };
 
+/* Object emitted when a device has been found */
+export type newDeviceObjType = {
+  deviceId: idType,
+  address: string,
+  name: string,
+  rssi: number
+};
+
 /* Noble Object */
+// export type noblePeripheralType = {};
 export type noblePeripheralType = {
   address: string,
   addressType: string,
@@ -53,6 +63,8 @@ export type noblePeripheralType = {
 
 
 export type nobleIdType = string;
+/* ID of a device */
+export type idType = string;
 
 /* Options for the parameter settings */
 export type deviceOptionsType = {
@@ -71,6 +83,15 @@ export type deviceParamType = {
   btnType: 'radio' | 'checkbox'
 };
 
+export type deviceRangeParamT = {
+  display: string,
+  address: number,
+  default: number,
+  gain: (range: number) => number,
+  options: deviceOptionsType[],
+  btnType: 'radio' | 'checkbox'
+};
+
 export type deviceChannelType = {
   display: string,
   default: number[],
@@ -78,9 +99,10 @@ export type deviceChannelType = {
 };
 
 export type deviceParamObj = {
-  [senGenId: number | string]: {
+  [instrumentId: number | string]: {
     channels: deviceChannelType,
     dynamicParams: {
+      range: deviceRangeParamT,
       [paramName: string]: deviceParamType
     }
   }
@@ -102,8 +124,9 @@ export type sensorParamType = {
   channels: number[],
   scalingConstant: number,
   gain: number,
-  offset: number,
+  offset: number[],
   units: string,
+  sampleRate: number,
   dynamicParams: {
     [paramName: string]: dynamicParamType
   }
@@ -119,20 +142,25 @@ export type generatorParamType = {
   }
 };
 
-/* Specific object for device settings */
-export type deviceSettingsObjType = {
-  active: boolean,
-  sensors: {
-    [sensorId: number | string]: sensorParamType
-  },
-  generators: {
-    [generatorId: number | string]: generatorParamType
-  }
+/* A list of sensors */
+export type sensorListType = {
+  [sensorId: number]: sensorParamType
 };
 
-/* Top level state type */
-export type deviceSettingsType = {
-  [deviceId: string]: deviceSettingsObjType
+export type generatorListType = {
+  [generatorId: number]: generatorParamType
+};
+
+/* Specific object for device settings */
+export type deviceSettingsObjType = {
+  sensors: sensorListType,
+  generators: generatorListType
+};
+
+/* A period count */
+export type periodCountType = {
+  msb: number,
+  lsb: number
 };
 
 /* [] - END OF FILE */

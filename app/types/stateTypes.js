@@ -10,11 +10,10 @@
 ********************************************************* */
 import type {
   scanTypes,
-  noblePeripheralType,
-  deviceSettingsType
+  deviceSettingsObjType
 } from './paramTypes';
 
-import type { metaDataType } from './metaDataTypes';
+import type { metaDataObjType } from './metaDataTypes';
 
 /* State Type for the ScanForDevicesComponent */
 export type scanStateType = {
@@ -29,16 +28,33 @@ export type selectType = {
   id: ?string
 };
 
+/* Options for the BLE modules */
+export type bleStateType = 'advertising' | 'connecting' | 'connected' | 'disconnecting' | 'disconnected';
+
+export type devicesStateObjType = {
+  state: bleStateType,
+  address: string,
+  name: string,
+  rssi: number,
+  active: boolean,
+  metadata: metaDataObjType,
+  settings: deviceSettingsObjType
+ };
+/* Keep track of the devices connected */
 export type devicesStateType = {
-  advertising: noblePeripheralType[],
-  connecting: noblePeripheralType[],
-  connected: noblePeripheralType[],
-  disconnecting: noblePeripheralType[],
-  metadata: metaDataType,
-  selected: { sensor: selectType, generator: selectType},
-  unselected: { sensors: selectType[], generators: selectType[]},
-  deviceSettings: deviceSettingsType
+  [deviceId: string]: devicesStateObjType
 };
+
+// export type devicesStateType = {
+//   advertising: noblePeripheralType[],
+//   connecting: noblePeripheralType[],
+//   connected: noblePeripheralType[],
+//   disconnecting: noblePeripheralType[],
+//   metadata: metaDataType,
+//   selected: { sensor: selectType, generator: selectType},
+//   unselected: { sensors: selectType[], generators: selectType[]},
+//   deviceSettings: deviceSettingsType
+// };
 
 /* For app wide actions */
 export type appWideStateType = {

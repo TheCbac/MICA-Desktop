@@ -10,11 +10,13 @@
 * 2017.07.10 CC - Document created
 *
 ********************************************************* */
-import { getSelectedDevices } from './senGenActions';
 import micaSensorParams from '../utils/mica/micaSensorParams';
 import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
-import type { noblePeripheralType, nobleIdType, deviceSettingsObjType,
-  sensorParamType, generatorParamType } from '../types/paramTypes';
+import type { idType, deviceSettingsObjType,
+  generatorParamType, newDeviceObjType,
+  sensorListType, generatorListType,
+  deviceRangeParamT
+ } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,
@@ -25,14 +27,16 @@ import type {
   disconnectingFromDeviceActionType,
   lostConnectionFromDeviceActionType,
   reportMetaDataActionType,
-  updateSenGenParamActionType
+  updateSenGenParamActionType,
+  setDeviceActiveActionType,
+  setSensorChannelsActionT,
+  setSensorRangeActionT
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
 import type {
   metaDataObjType,
-  moduleNameType,
-  sensingMetaObj,
-  actuationMetaObj
+  sensingObjs,
+  actuationObjs
 } from '../types/metaDataTypes';
 import type { thunkType } from '../types/functionTypes';
 
@@ -46,13 +50,21 @@ export const DISCONNECTED_FROM_DEVICE = 'DISCONNECTED_FROM_DEVICE';
 export const LOST_CONNECTION_FROM_DEVICE = 'LOST_CONNECTION_FROM_DEVICE';
 export const REPORT_META_DATA = 'REPORT_META_DATA';
 export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
+export const SET_DEVICE_ACTIVE = 'SET_DEVICE_ACTIVE';
+export const SET_SENSOR_CHANNELS = 'SET_SENSOR_CHANNELS';
+export const SET_SENSOR_RANGE = 'SET_SENSOR_RANGE';
 
 /* Action creator for when an advertising MICA device is discovered */
-export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDeviceActionType {
+export function foundAdvertisingDevice(deviceObj: newDeviceObjType): foundDeviceActionType {
+  /* Could use a spread operator - destructure and pass back for clarity */
+  const { deviceId, name, rssi, address } = deviceObj;
   return {
     type: FOUND_ADVERTISING_DEVICE,
     payload: {
-      peripheral
+      deviceId,
+      name,
+      rssi,
+      address
     }
   };
 }
@@ -61,135 +73,133 @@ export function foundAdvertisingDevice(peripheral: noblePeripheralType): foundDe
 export function clearAdvertisingList(): clearAdvertisingActionType {
   return {
     type: CLEAR_ADVERTISING_LIST,
+    payload: {}
   };
 }
 
 /* Move peripheral from advertising to connecting */
-export function connectingToDevice(peripheralId: nobleIdType): connectingToDeviceActionType {
+export function connectingToDevice(deviceId: idType): connectingToDeviceActionType {
   return {
     type: CONNECTING_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 /* Successfully connected, move from connecting to connected */
-export function connectedToDevice(peripheralId: nobleIdType): connectedToDeviceActionType {
+export function connectedToDevice(deviceId: idType): connectedToDeviceActionType {
   return {
     type: CONNECTED_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Cancel a pending connection */
-export function cancelConnectToDevice(peripheralId: nobleIdType): cancelConnectToDeviceActionType {
+export function cancelConnectToDevice(deviceId: idType): cancelConnectToDeviceActionType {
   return {
     type: CANCEL_CONNECT_TO_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function disconnectingFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): disconnectingFromDeviceActionType {
   return {
     type: DISCONNECTING_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function disconnectedFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): disconnectedFromDeviceActionType {
   return {
     type: DISCONNECTED_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Disconnect from a connected device */
 export function lostConnectionFromDevice(
-  peripheralId: nobleIdType
+  deviceId: idType
 ): lostConnectionFromDeviceActionType {
   return {
     type: LOST_CONNECTION_FROM_DEVICE,
     payload: {
-      peripheralId
+      deviceId
     }
   };
 }
 
 /* Report Metadata */
 export function reportMetaData(
-  deviceId: nobleIdType,
-  metaData: ?metaDataObjType,
-  moduleName: ?moduleNameType
+  deviceId: idType,
+  metaData: metaDataObjType,
 ): reportMetaDataActionType {
   return {
     type: REPORT_META_DATA,
     payload: {
-      peripheralId: deviceId,
+      deviceId,
       data: metaData,
-      moduleName
     }
   };
 }
-
-
 /* Wrapper for reporting metadata - check to see if the metadata is complete */
 export function metaDataReadComplete(
-  deviceId: nobleIdType,
-  metaData: ?metaDataObjType,
-  moduleName: ?moduleNameType
+  deviceId: idType,
+  metadata: metaDataObjType,
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
+    /* Get the existing params */
+    const existingSettings = getState().devices[deviceId].settings;
     /* Report the metadata */
-    dispatch(reportMetaData(deviceId, metaData, moduleName));
-    /* Get the state  */
-    const state = getState();
-    /* Get the metadata for a device */
-    const deviceMetadata = state.devices.metadata[deviceId];
-    /* get the number of metadata reads */
-    const numMetadata = Object.keys(deviceMetadata).length;
-    /* If all of the modules have been read, update the selected device */
-    if (numMetadata === 6) {
-      dispatch(getSelectedDevices());
-      /* Set the default parameters */
-      dispatch(setDefaultSenGenParams(deviceId));
+    dispatch(reportMetaData(deviceId, metadata));
+    const modules = Object.keys(metadata);
+    for (let i = 0; i < modules.length; i++) {
+      const moduleName = modules[i];
+      const module = metadata[moduleName];
+      if (moduleName === 'sensing') {
+        /* Update sensor settings */
+        const sensorSettings = constructSensorSettings(module);
+        existingSettings.sensors = sensorSettings;
+        dispatch(updateSenGenParams(deviceId, existingSettings));
+      } else if (moduleName === 'actuation') {
+        const generatorSettings = constructGeneratorSettings(module);
+        existingSettings.generators = generatorSettings;
+        dispatch(updateSenGenParams(deviceId, existingSettings));
+      }
     }
   };
 }
 
-/* Get the sensing devices settings from the metadata */
-function constructSensingSettings(sensingMeta: sensingMetaObj[]): {
-  [sensorId: number | string]: sensorParamType
-} {
-  const sensorObj = {};
-  for (let i = 0; i < sensingMeta.length; i++) {
-    const sensorMeta = sensingMeta[i];
-    /* Get the sensor ID */
-    const { id, scalingConstant, gain, offset, units } = sensorMeta;
-    const sensorName = sensorMeta.type;
-    /* Get the sensor params op */
-    const sensorParams = micaSensorParams[id];
-    /* Set the device channels */
+/* Extract the default sensor settings */
+function constructSensorSettings(sensingMeta: sensingObjs): sensorListType {
+  const sensorSettings = {};
+  const sensorIdList = Object.keys(sensingMeta);
+  /* Iterate through each sensor reported */
+  for (let i = 0; i < sensorIdList.length; i++) {
+    const sensorId = sensorIdList[i];
+    /* Extract the reported settings */
+    const { type: name, scalingConstant, gain, offset, units } = sensingMeta[parseInt(sensorId, 10)];
+    /* Look up the dynamic params */
+    const sensorParams = micaSensorParams[sensorId];
     const channels = sensorParams.channels.default;
-    /* Get the dynamic params keys */
     const dynamicParams = sensorParams.dynamicParams;
     const dynamicParamKeys = Object.keys(dynamicParams);
     const dynamicParamsDefault = {};
-    /* Iterate through the parameters  */
+    /* Iterate through the dynamic params */
     for (let j = 0; j < dynamicParamKeys.length; j++) {
       /* Get the parameter */
       const key = dynamicParamKeys[j];
@@ -197,34 +207,32 @@ function constructSensingSettings(sensingMeta: sensingMetaObj[]): {
       const defaultVal = dynamicParams[key].default;
       dynamicParamsDefault[key] = { address, value: defaultVal };
     }
-    /* Construct the Sensor parameter object */
-    const senParamObj: sensorParamType = {
-      name: sensorName,
-      active: !i, /* Set first device active by default */
+    /* Add the settings */
+    sensorSettings[sensorId] = {
+      name,
+      active: !i, /* Set first sensor active by default */
       channels,
       scalingConstant,
       gain,
       offset,
       units,
+      sampleRate: 100,
       dynamicParams: dynamicParamsDefault
     };
-    /* Push the sensor, set the first sensor active */
-    sensorObj[id] = senParamObj;
   }
-  return sensorObj;
+  return sensorSettings;
 }
 
 /* Get the sensing devices settings from the metadata */
-function constructGeneratorSettings(actuationMeta: actuationMetaObj[]): {
-  [sensorId: number | string]: generatorParamType
-} {
-  const sensorObj = {};
-  for (let i = 0; i < actuationMeta.length; i++) {
-    const actuatorMeta = actuationMeta[i];
+function constructGeneratorSettings(actuationMeta: actuationObjs): generatorListType {
+  const generatorObj = {};
+  const generatorIdList = Object.keys(actuationMeta);
+  for (let i = 0; i < generatorIdList.length; i++) {
+    const actuationId = generatorIdList[i];
     /* Get the sensor ID */
-    const { id, type } = actuatorMeta;
+    const { type: name } = actuationMeta[parseInt(actuationId, 10)];
     /* Get the sensor params op */
-    const actuatorParams = micaGeneratorParams[id];
+    const actuatorParams = micaGeneratorParams[actuationId];
     /* Set the device channels */
     const channels = actuatorParams.channels.default;
     /* Get the dynamic params keys */
@@ -241,65 +249,52 @@ function constructGeneratorSettings(actuationMeta: actuationMetaObj[]): {
     }
     /* Construct the Sensor parameter object */
     const senParamObj: generatorParamType = {
-      name: type,
+      name,
       channels,
       active: !i, /* Set first device active by default */
       dynamicParams: dynamicParamsDefault
     };
     /* Push the sensor, set the first sensor active */
-    sensorObj[id] = senParamObj;
+    generatorObj[actuationId] = senParamObj;
   }
-  return sensorObj;
+  return generatorObj;
 }
 
-/* Read the default sensor parameters from the device */
-export function setDefaultSenGenParams(deviceId: nobleIdType): thunkType {
+/* Set the device active or not  */
+export function setDeviceActive(
+  deviceId: idType,
+  newState: boolean
+): setDeviceActiveActionType {
   /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
-    /* Get the current state */
-    const devices = getState().devices;
-    /* Get the metadata */
-    const deviceMetadata = devices.metadata[deviceId];
-    /* Ensure data is there */
-    if (!deviceMetadata) { return; }
-    /* get the sensing and actuation metadata */
-    const sensingMeta = deviceMetadata.sensing;
-    const actuationMeta = deviceMetadata.actuation;
-    if (!sensingMeta || !actuationMeta) { return; }
-    /* -- Begin constructing the return objects -- */
-    const sensorObj = constructSensingSettings(sensingMeta);
-    const generatorObj = constructGeneratorSettings(actuationMeta);
-    /* Return the device settings */
-    const deviceSettingsObj = {
-      active: true,
-      sensors: sensorObj,
-      generators: generatorObj
-    };
-    dispatch(updateSenGenParams(deviceId, deviceSettingsObj));
+  return {
+    type: SET_DEVICE_ACTIVE,
+    payload: {
+      deviceId,
+      newState
+    }
   };
 }
 
-
 /* Set sensor on a device active or inactive  */
 export function setSensorActive(
-  deviceId: nobleIdType,
-  sensorId: number | string,
+  deviceId: idType,
+  sensorId: idType,
   newState: boolean
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
     /* Get the state of the device settings - its assumed but
      * unverified if this provides a copy of the state object  */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].active = newState;
+    const { settings } = getState().devices[deviceId];
+    settings.sensors[parseInt(sensorId, 10)].active = newState;
     /* Update the object */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+    dispatch(updateSenGenParams(deviceId, settings));
   };
 }
 
 /* Set the Generator instrument active or inactive */
 export function setGeneratorActive(
-  deviceId: nobleIdType,
+  deviceId: idType,
   generatorId: number | string,
   newState: boolean
 ): thunkType {
@@ -315,40 +310,65 @@ export function setGeneratorActive(
 
 /* Update the the state of the channel for a sensor */
 export function setSensorChannels(
-  deviceId: nobleIdType,
-  sensorId: number | string,
-  newChannels: number[]
-): thunkType {
-  /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
-    /* Get the state of the device settings */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].channels = newChannels;
-    /* Update the store */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+  deviceId: idType,
+  sensorId: idType,
+  channels: number[]
+): setSensorChannelsActionT {
+  return {
+    type: SET_SENSOR_CHANNELS,
+    payload: {
+      deviceId,
+      sensorId,
+      channels
+    }
   };
 }
 
+/* Update the the state of the channel for a sensor */
+export function setSensorRange(
+  deviceId: idType,
+  sensorId: idType,
+  range: number
+): setSensorRangeActionT {
+  /* Look up the gain mapping function from the param library */
+  const rangeParams: deviceRangeParamT = micaSensorParams[sensorId].dynamicParams.range;
+  const gain = rangeParams.gain(range);
+  return {
+    type: SET_SENSOR_RANGE,
+    payload: {
+      deviceId,
+      sensorId,
+      range,
+      gain
+    }
+  };
+}
+
+
 /* Update the dynamic parameters in the store */
 export function setSensorParams(
-  deviceId: nobleIdType,
-  sensorId: number | string,
+  deviceId: idType,
+  sensorId: idType,
   paramName: string,
   paramValue: number
 ): thunkType {
   /* Return a function for redux thunk */
   return (dispatch: () => void, getState: () => stateType): void => {
-    /* Get the state of the device settings */
-    const deviceSettings = getState().devices.deviceSettings[deviceId];
-    deviceSettings.sensors[sensorId].dynamicParams[paramName].value = paramValue;
-    /* Update the store */
-    dispatch(updateSenGenParams(deviceId, deviceSettings));
+    if (paramName === 'range') {
+      dispatch(setSensorRange(deviceId, sensorId, paramValue));
+    } else {
+      /* Get the state of the device settings */
+      const { settings } = getState().devices[deviceId];
+      settings.sensors[parseInt(sensorId, 10)].dynamicParams[paramName].value = paramValue;
+      /* Update the store */
+      dispatch(updateSenGenParams(deviceId, settings));
+    }
   };
 }
 
 /* Change the active parameters */
 export function updateSenGenParams(
-  deviceId: nobleIdType,
+  deviceId: idType,
   deviceSettings: deviceSettingsObjType
 ): updateSenGenParamActionType {
   return {

@@ -12,7 +12,8 @@
 import React, { Component } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import FA from 'react-fontawesome';
-import { writeCharacteristic } from '../../utils/mica/micaNobleDevices';
+import { bleWriteCharacteristic, bleReadCharacteristic
+ } from '../../utils/BLE/bleFunctions';
 import { micaCharUuids } from '../../utils/mica/micaConstants';
 
 type propsType = {
@@ -35,14 +36,14 @@ export default class DriveBot extends Component {
     };
   }
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.onKeyDown);
-    window.addEventListener('keyup', this.onKeyUp);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-  }
+  // componentDidMount() {
+  //   window.addEventListener('keydown', this.onKeyDown);
+  //   window.addEventListener('keyup', this.onKeyUp);
+  // }
+  // componentWillUnmount() {
+  //   window.removeEventListener('keydown', this.onKeyDown);
+  //   window.removeEventListener('keyup', this.onKeyUp);
+  // }
   onKeyDown = (event: {keyCode: number}): void => {
     /* If a key is already pressed, do nothing */
     if (this.state.keyPressed) { return; }
@@ -78,7 +79,7 @@ export default class DriveBot extends Component {
   onMouseDown(direction: directionType): void {
     const { deviceId } = this.props;
     /* Get the characteristic UUID */
-    const { communicationCommands } = micaCharUuids;
+    const { communicationCommands, energyMetadata } = micaCharUuids;
     let directionWord;
     switch (direction) {
       case 'forward':
@@ -97,7 +98,22 @@ export default class DriveBot extends Component {
         directionWord = 0x00;
     }
     const data = [0x05, 0x01, 0x01, directionWord, 0xff, 0xff, 0x00, 0x00];
-    writeCharacteristic(deviceId, communicationCommands, data);
+
+
+    bleReadCharacteristic('ble', deviceId, energyMetadata);
+    // const result = bleWriteCharacteristic(
+    //   'ble',
+    //   deviceId,
+    //   communicationCommands,
+    //   data,
+    //   (dId, charUuid, err) => {
+    //     console.log('writeCharCallback:', dId, charUuid, err);
+    //   },
+    //   true
+    // );
+
+
+    // writeCharacteristic(deviceId, communicationCommands, data);
     console.log('clickedDrivebot', direction, deviceId);
   }
 
@@ -107,7 +123,17 @@ export default class DriveBot extends Component {
     const { communicationCommands } = micaCharUuids;
     /* Needs to be refactored to be dynamic */
     const data = [0x05, 0x01, 0x01, 0x00, 0xff, 0xff, 0x00, 0x00];
-    writeCharacteristic(deviceId, communicationCommands, data);
+
+    // const result = bleWriteCharacteristic(
+    //   'ble',
+    //   deviceId,
+    //   communicationCommands,
+    //   data,
+    //   (dId, charUuid, err) => {
+    //     console.log('writeCharCallback:', dId, charUuid, err);
+    //   },
+    //   true
+    // );
   }
 
   render() {

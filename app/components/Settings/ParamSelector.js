@@ -14,19 +14,19 @@ import React, { Component } from 'react';
 import { Col, ButtonToolbar, Row } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
-import micaSensorParams from '../utils/mica/micaSensorParams';
-import type { nobleIdType } from '../types/paramTypes';
-import type { thunkType } from '../types/functionTypes';
+import micaSensorParams from '../../utils/mica/micaSensorParams';
+import type { idType } from '../../types/paramTypes';
+import type { thunkType } from '../../types/functionTypes';
 
 type propsType = {
-  deviceId: nobleIdType,
-  sensorId: string,
+  deviceId: idType,
+  sensorId: idType,
   paramName: string,
   paramValue: number,
   /* Action Functions */
   setSensorParams: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     paramName: string,
     paramValue: number
   ) => thunkType

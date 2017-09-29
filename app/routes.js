@@ -12,10 +12,10 @@ import React from 'react';
 import { HashRouter as Router } from 'react-router-dom';
 import { Switch, Route, hashHistory } from 'react-router';
 import App from './containers/App';
-import DevicesPage from './containers/DevicesPage';
+import DevicesContainer from './containers/DevicesContainer';
 import CollectDataContainer from './containers/CollectDataContainer';
-import AnalysisPage from './containers/AnalysisPage';
-import SenGenPage from './containers/SenGenPage';
+import AnalysisContainer from './containers/AnalysisContainer';
+import SettingsContainer from './containers/SettingsContainer';
 import AppModalContainer from './containers/AppModalContainer';
 
 export default () => (
@@ -24,9 +24,9 @@ export default () => (
       <AppModalContainer />
       <Switch>
         <Route path="/collectData" component={CollectDataContainer} />
-        <Route path="/sengen" component={SenGenPage} />
-        <Route path="/analyze" component={AnalysisPage} />
-        <Route path="/" component={DevicesPage} />
+        <Route path="/settings" component={SettingsContainer} />
+        <Route path="/analyze" component={AnalysisContainer} />
+        <Route path="/" component={DevicesContainer} />
       </Switch>
     </App>
   </Router>

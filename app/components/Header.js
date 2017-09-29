@@ -28,7 +28,7 @@ export default class Header extends Component {
             <IndexLinkContainer to="/" activeClassName="active">
               <NavItem>DEVICES</NavItem>
             </IndexLinkContainer>
-            <LinkContainer to="/sengen" activeClassName="active">
+            <LinkContainer to="/settings" activeClassName="active">
               <NavItem>SETTINGS</NavItem>
             </LinkContainer>
             <LinkContainer to="/collectData" activeClassName="active">

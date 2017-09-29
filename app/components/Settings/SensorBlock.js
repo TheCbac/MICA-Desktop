@@ -1,12 +1,13 @@
 // @flow
 /* **********************************************************
-* File: components/SensorComponent.js
+* File: components/Settings/SensorBlock.js
 *
 * Brief: React component displaying and interacting with
-*   the sensors of a device.
+*   the sensors of a device. Refactor of SensorComponent
 *
 * Authors: Craig Cheney
 *
+* 2017.09.26 CC - Rename component SensorBlock
 * 2017.09.12 CC - Rename component from 'senGenComponent'
 *   to 'SensorComponent'
 * 2017.09.05 CC - Document created
@@ -17,8 +18,9 @@ import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ChannelSelector from './ChannelSelector';
 import ParamSelector from './ParamSelector';
-import type { nobleIdType, sensorParamType } from '../types/paramTypes';
-import type { thunkType } from '../types/functionTypes';
+import type { idType, sensorParamType } from '../../types/paramTypes';
+import type { thunkType } from '../../types/functionTypes';
+import type { setSensorChannelsActionT } from '../../types/actionTypes';
 
 type StateType = {
   open: boolean,
@@ -26,29 +28,29 @@ type StateType = {
 };
 
 type PropsType = {
-  deviceId: string,
-  sensorId: string,
+  deviceId: idType,
+  sensorId: idType,
   sensorSettings: sensorParamType,
   /* Action Functions */
   setSensorActive: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     newState: boolean
   ) => thunkType,
   setSensorChannels: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     newChannels: number[]
-  ) => thunkType,
+  ) => setSensorChannelsActionT,
   setSensorParams: (
-    deviceId: nobleIdType,
-    sensorId: number | string,
+    deviceId: idType,
+    sensorId: idType,
     paramName: string,
     paramValue: number
   ) => thunkType
 };
 
-export default class SenGenComponent extends Component {
+export default class SensorBlock extends Component {
   /* type defs */
   state: StateType;
   props: PropsType;

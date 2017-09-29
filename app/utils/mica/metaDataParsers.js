@@ -6,7 +6,9 @@
 * Brief: Functions for parsing metadata in a MICA format
 *
 * Author: Craig Cheney
-* Date: 2017.08.29
+*
+* 2017.09.25 CC - Refactored types
+* 2017.08.29 CC - Document Created
 *
 * @TODO: unit tests, and error checking on the data
 ********************************************************* */
@@ -17,14 +19,13 @@ import {
   micaCharUuids
 } from './micaConstants';
 import type {
-  energyMetaObj,
-  actuationMetaObj,
-  powerMetaObj,
-  sensingMetaObj,
-  commMetaObj,
-  controlMetaObj,
+  energyObjs,
+  actuationObjs,
+  powerObjs,
+  sensingObjs,
+  commObjs,
+  controlObjs,
   metaDataObjType,
-  moduleNameType
 } from '../../types/metaDataTypes';
 
 const ID_NONE = 0;
@@ -33,21 +34,32 @@ const ID_NONE = 0;
  * this can be consolidated at some point */
 export default function parseMetaData(
   charId: string, data: Buffer
-): {metadata: ?metaDataObjType, moduleName: ?moduleNameType} {
+): metaDataObjType {
+// ): {metadata: ?metaDataObjType, moduleName: ?moduleNameType} {
   /* Act according to the type */
   switch (charId) {
     case micaCharUuids.energyMetadata:
-      return { metadata: parseEnergyMetadata(data), moduleName: 'energy' };
+      return { energy: parseEnergyMetadata(data) };
+      // return { metadata: parseEnergyMetadata(data), moduleName: 'energy' };
     case micaCharUuids.actuationMetadata:
-      return { metadata: parseActuationMetadata(data), moduleName: 'actuation' };
+      return { actuation: parseActuationMetadata(data) };
+
+      // return { metadata: parseActuationMetadata(data), moduleName: 'actuation' };
     case micaCharUuids.powerMetadata:
-      return { metadata: parsePowerMetadata(data), moduleName: 'power' };
+      return { power: parsePowerMetadata(data) };
+
+      // return { metadata: parsePowerMetadata(data), moduleName: 'power' };
     case micaCharUuids.sensorMetadata:
-      return { metadata: parseSensingMetadata(data), moduleName: 'sensing' };
+      return { sensing: parseSensingMetadata(data) };
+
+      // return { metadata: parseSensingMetadata(data), moduleName: 'sensing' };
     case micaCharUuids.communicationMetadata:
-      return { metadata: parseCommMetadata(data), moduleName: 'communication' };
+      return { communication: parseCommMetadata(data) };
+
+      // return { metadata: parseCommMetadata(data), moduleName: 'communication' };
     case micaCharUuids.controlMetadata:
-      return { metadata: parseControlMetaData(data), moduleName: 'control' };
+      return { control: parseControlMetaData(data) };
+      // return { metadata: parseControlMetaData(data), moduleName: 'control' };
     /* Unknown Char ID */
     default:
       log.warn('parseMetaData: unknown metadata CharacterID', charId);
@@ -56,8 +68,8 @@ export default function parseMetaData(
 }
 
 /* Parses the metadata sent by the Energy module */
-function parseEnergyMetadata(data: Buffer): ?energyMetaObj[] {
-  const batteryArray = [];
+function parseEnergyMetadata(data: Buffer): energyObjs {
+  const energyObj = {};
   let id;
   let nameLength;
   let name = '';
@@ -70,7 +82,7 @@ function parseEnergyMetadata(data: Buffer): ?energyMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the length of the name */
     nameLength = data[i++];
     /* Construct the source name according to length */
@@ -83,22 +95,21 @@ function parseEnergyMetadata(data: Buffer): ?energyMetaObj[] {
     nomVoltage = data[i++] / 10;
     energyFeatures = data[i++];
     /* Store the energy source */
-    batteryArray.push({
-      id,
+    energyObj[id] = {
       type: moduleToName('energy', id),
       name,
       numCells,
       nomVoltage,
       energyFeatures
-    });
+    };
   }
-  return batteryArray;
+  return energyObj;
 }
 
 
 /* Parse the data reported by the Actuation meta data */
-function parseActuationMetadata(data: Buffer): ?actuationMetaObj[] {
-  const actuationArray = [];
+function parseActuationMetadata(data: Buffer): actuationObjs {
+  const actuationObj = {};
   const channelNameLength = [];
   const channelNames = [];
   let id;
@@ -109,7 +120,7 @@ function parseActuationMetadata(data: Buffer): ?actuationMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the number of channels */
     numChannels = data[i++];
     /* Get the length of the name of each channel */
@@ -126,19 +137,18 @@ function parseActuationMetadata(data: Buffer): ?actuationMetaObj[] {
       channelNames.push(chanName);
     }
     /* Store the Actuators */
-    actuationArray.push({
-      id,
+    actuationObj[id] = {
       type: moduleToName('actuation', id),
       numChannels,
       channelNames
-    });
+    };
   }
-  return actuationArray;
+  return actuationObj;
 }
 
 /* Parse the power metadata options */
-function parsePowerMetadata(data: Buffer): ?powerMetaObj[] {
-  const powerArray = [];
+function parsePowerMetadata(data: Buffer): powerObjs {
+  const powerObj = {};
   let id;
   let nameLength;
   let name = '';
@@ -149,7 +159,7 @@ function parsePowerMetadata(data: Buffer): ?powerMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the length of the name */
     nameLength = data[i++];
     /* Construct the source name according to length */
@@ -159,20 +169,20 @@ function parsePowerMetadata(data: Buffer): ?powerMetaObj[] {
     /* Encoded in units of 100 mV, convert to volts */
     nomVoltage = data[i++] / 10;
     /* Store the Actuators */
-    powerArray.push({
+    powerObj[id] = {
       id,
       type: moduleToName('power', id),
       name,
       nomVoltage
-    });
+    };
   }
 
-  return powerArray;
+  return powerObj;
 }
 
 /* sensing metadata  */
-function parseSensingMetadata(data: Buffer): ?sensingMetaObj[] {
-  const sensorsArray = [];
+function parseSensingMetadata(data: Buffer): sensingObjs {
+  const sensorsObj = {};
   let channelNames = [];
   let channelNameLength = [];
   let id;
@@ -181,21 +191,25 @@ function parseSensingMetadata(data: Buffer): ?sensingMetaObj[] {
   let scalingConstant;
   let gain;
   let units = '';
+  let offset = [];
   let i = 0;
   /* Iterate over each energy source in packet */
   while (i < data.length) {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the number of channels */
     numChannels = data[i++];
     /* Reset the name length */
     channelNames = [];
     channelNameLength = [];
+    offset = [];
     /* Get the length of the name of each channel */
     for (let j = 0; j < numChannels; j++) {
       channelNameLength.push(data[i++]);
+      /* Construct the default offset for each channel */
+      offset.push(0); /* TODO: include dynamic offsets */
     }
     /* Populate the sensor name list */
     for (let chIndex = 0; chIndex < numChannels; chIndex++) {
@@ -221,23 +235,22 @@ function parseSensingMetadata(data: Buffer): ?sensingMetaObj[] {
       units += String.fromCharCode(data[i++]);
     }
     /* Store the Actuators */
-    sensorsArray.push({
-      id,
+    sensorsObj[id] = {
       type: moduleToName('sensing', id),
       numChannels,
       channelNames,
       scalingConstant,
       gain,
       units,
-      offset: 0
-    });
+      offset
+    };
   }
-  return sensorsArray;
+  return sensorsObj;
 }
 
 /* Parse the comm metadata options */
-function parseCommMetadata(data: Buffer): ?commMetaObj[] {
-  const commArray = [];
+function parseCommMetadata(data: Buffer): commObjs {
+  const commObj = {};
   let id;
   let numDevices = 0;
   let nameLengthArray = [];
@@ -249,7 +262,7 @@ function parseCommMetadata(data: Buffer): ?commMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the number of peripherals attached ot the comm device */
     numDevices = data[i++];
     /* Check the number of devices */
@@ -272,19 +285,18 @@ function parseCommMetadata(data: Buffer): ?commMetaObj[] {
       }
     }
     /* Store the Actuators */
-    commArray.push({
-      id,
+    commObj[id] = {
       type: moduleToName('communication', id),
       numDevices,
       deviceNames
-    });
+    };
   }
-  return commArray;
+  return commObj;
 }
 
 /* Parse the Control metadata options */
-function parseControlMetaData(data: Buffer): ?controlMetaObj[] {
-  const controlArray = [];
+function parseControlMetaData(data: Buffer): controlObjs {
+  const controlObj = {};
   let id;
   let numDevices = 0;
   let nameLengthArray = [];
@@ -296,7 +308,7 @@ function parseControlMetaData(data: Buffer): ?controlMetaObj[] {
     /* Get the ID of the energy source */
     id = data[i++];
     /* Only collect parameters if available */
-    if (id === ID_NONE) { return null; }
+    if (id === ID_NONE) { return {}; }
     /* Get the number of peripherals attached ot the comm device */
     numDevices = data[i++];
     /* Check the number of devices */
@@ -304,7 +316,7 @@ function parseControlMetaData(data: Buffer): ?controlMetaObj[] {
       /* Reset and fill the name length array */
       nameLengthArray = [];
       for (let j = 0; j < numDevices; j++) {
-        /* Get the length of the Comm device name*/
+        /* Get the length of the Comm device name */
         nameLengthArray.push(data[i++]);
       }
       /* Get the names */
@@ -319,13 +331,12 @@ function parseControlMetaData(data: Buffer): ?controlMetaObj[] {
       }
     }
     /* Store the Actuators */
-    controlArray.push({
-      id,
+    controlObj[id] = {
       type: moduleToName('control', id),
       numDevices,
       deviceNames
-    });
+    };
   }
-  return controlArray;
+  return controlObj;
 }
 /* [] - END OF FILE */
