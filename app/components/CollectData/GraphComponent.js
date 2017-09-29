@@ -104,10 +104,6 @@ export default class GraphComponent extends Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
-
-  graphMin(): number {
-    return
-  }
   /* Render function */
   render() {
     const latestTime = this.state.time.toDateString();
