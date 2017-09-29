@@ -14,7 +14,7 @@ import {
   parseDataPacket2,
   twosCompToSigned,
   sampleRateToPeriodCount,
-  channelArrayToWord,
+  channelObjToWord,
   encodeStartPacket,
   encodeStopPacket
 } from '../../../app/utils/mica/parseDataPacket';
@@ -22,51 +22,60 @@ import {
   CMD_START,
   CMD_STOP
 } from '../../../app/utils/mica/micaConstants';
+import { channelArrayToObj } from '../../factories/factories';
 import type { sensorParamType, sensorListType } from '../../../app/types/paramTypes';
 
 const accId = 0x01;
-const accSensor: sensorParamType = {
-  name: 'Accelerometer',
-  active: true,
-  channels: [
-    0
-  ],
-  scalingConstant: 0.004784999880939722,
-  gain: 0.5,
-  offset: [0, 0, 0],
-  units: 'm/s^2',
-  sampleRate: 100,
-  dynamicParams: {
-    range: {
-      address: 15,
-      value: 3
-    },
-    bandwidth: {
-      address: 16,
-      value: 11
-    }
-  }
-};
-
 const gyrId = 0x02;
-const gyrSensor: sensorParamType = {
-  name: 'Gyroscope',
-  active: true,
-  channels: [
-    0
-  ],
-  scalingConstant: 0.03406799957156181,
-  gain: 1,
-  offset: [0, 0, 0],
-  units: 'rad/s',
-  sampleRate: 100,
-  dynamicParams: {
-    range: {
-      address: 15,
-      value: 0
+/* Return an accelerometer */
+function accFactory(): sensorParamType {
+  return {
+    name: 'Accelerometer',
+    active: true,
+    channels: {
+      '0': { active: true, name: 'X', offset: 0 },
+      '1': { active: false, name: 'Y', offset: 0 },
+      '2': { active: false, name: 'Z', offset: 0 },
+    },
+    scalingConstant: 0.004784999880939722,
+    gain: 0.5,
+    units: 'm/s^2',
+    sampleRate: 100,
+    dynamicParams: {
+      range: {
+        address: 15,
+        value: 3
+      },
+      bandwidth: {
+        address: 16,
+        value: 11
+      }
     }
-  }
-};
+  };
+}
+
+/* Return a gyroscope  */
+function gyrFactory(): sensorParamType {
+  return {
+    name: 'Gyroscope',
+    active: true,
+    channels: {
+      '0': { active: true, name: 'X', offset: 0 },
+      '1': { active: false, name: 'Y', offset: 0 },
+      '2': { active: false, name: 'Z', offset: 0 },
+    },
+    scalingConstant: 0.03406799957156181,
+    gain: 1,
+    units: 'rad/s',
+    sampleRate: 100,
+    dynamicParams: {
+      range: {
+        address: 15,
+        value: 0
+      }
+    }
+  };
+}
 
 /* Test suite */
 describe('parseDataPacket.spec.js', () => {
@@ -78,12 +87,12 @@ describe('parseDataPacket.spec.js', () => {
       const dLSB = 0xB0;
       const simplePacket = new Buffer([tMSB, tLSB, dMSB, dLSB]);
       /* Parse the packet */
-      const { scalingConstant, gain, offset, sampleRate } = accSensor;
+      const accSensor = accFactory();
+      const { scalingConstant, channels, gain, sampleRate } = accSensor;
       const periodLength = 1 / sampleRate;
       const startTime = new Date().getTime();
-      const channelNames = ['x'];
       const dataArray = parseDataPacket2(
-        simplePacket, channelNames, periodLength, scalingConstant, gain, offset, startTime
+        simplePacket, channels, periodLength, scalingConstant, gain, startTime
       );
       /* Evaluate */
       expect(dataArray.length).toBe(1);
@@ -95,7 +104,7 @@ describe('parseDataPacket.spec.js', () => {
       const timeDiff = -1.808; /* Milliseconds */
       expect(sample).toBeCloseTo(accValue);
       expect(timeStamp).toBe(Math.round(startTime + timeDiff));
-      expect(dataPoint.toJSON().data.x).toBeCloseTo(accValue);
+      expect(dataPoint.toJSON().data.X).toBeCloseTo(accValue);
     });
     it('should parse a three channel data packet', () => {
       const tMSB = 0x8F;
@@ -103,16 +112,19 @@ describe('parseDataPacket.spec.js', () => {
       const d1 = 0xBF;
       const d12 = 0xBB;
       const d2 = 0xFB;
-      const d3 = 0x71;
-      const d34 = 0x00;
+      const d3 = 0x40;
+      const d34 = 0x50;
       const simplePacket = new Buffer([tMSB, tLSB, d1, d12, d2, d3, d34]);
+      const acc = accFactory();
+      acc.channels['0'].active = true;
+      acc.channels['1'].active = true;
+      acc.channels['2'].active = true;
       /* Parse the packet */
-      const { scalingConstant, gain, offset, sampleRate } = accSensor;
+      const { scalingConstant, channels, gain, sampleRate } = acc;
       const periodLength = 1 / sampleRate;
       const startTime = new Date().getTime();
-      const channelNames = ['x', 'y', 'z'];
       const dataArray = parseDataPacket2(
-        simplePacket, channelNames, periodLength, scalingConstant, gain, offset, startTime
+        simplePacket, channels, periodLength, scalingConstant, gain, startTime
       );
       /* Evaluate */
       expect(dataArray.length).toBe(1);
@@ -122,9 +134,9 @@ describe('parseDataPacket.spec.js', () => {
       const accValue = -9.847;
       const timeDiff = -1.808; /* Milliseconds */
       expect(timeStamp).toBe(Math.round(startTime + timeDiff));
-      expect(dataPoint.toJSON().data.x).toBeCloseTo(accValue);
-      expect(dataPoint.toJSON().data.y).toBeCloseTo(accValue);
-      expect(dataPoint.toJSON().data.z).toBeCloseTo(-accValue);
+      expect(dataPoint.toJSON().data.X).toBeCloseTo(accValue);
+      expect(dataPoint.toJSON().data.Y).toBeCloseTo(accValue);
+      expect(dataPoint.toJSON().data.Z).toBeCloseTo(-accValue);
     });
   });
   describe('Two Complement', () => {
@@ -167,21 +179,22 @@ describe('parseDataPacket.spec.js', () => {
       expect(lsb).toEqual(0x50);
     });
   });
-  describe('channelArrayToWord', () => {
+  describe('channelObjToWord', () => {
     it('Channel Array to word produces the correct result', () => {
-      expect(channelArrayToWord([])).toEqual(0);
-      expect(channelArrayToWord([0])).toEqual(1);
-      expect(channelArrayToWord([1])).toEqual(2);
-      expect(channelArrayToWord([0, 1])).toEqual(3);
-      expect(channelArrayToWord([2])).toEqual(4);
-      expect(channelArrayToWord([0, 2])).toEqual(5);
-      expect(channelArrayToWord([1, 2])).toEqual(6);
-      expect(channelArrayToWord([0, 1, 2])).toEqual(7);
+      expect(channelObjToWord(channelArrayToObj([]))).toEqual(0);
+      expect(channelObjToWord(channelArrayToObj([0]))).toEqual(1);
+      expect(channelObjToWord(channelArrayToObj([1]))).toEqual(2);
+      expect(channelObjToWord(channelArrayToObj([0, 1]))).toEqual(3);
+      expect(channelObjToWord(channelArrayToObj([2]))).toEqual(4);
+      expect(channelObjToWord(channelArrayToObj([0, 2]))).toEqual(5);
+      expect(channelObjToWord(channelArrayToObj([1, 2]))).toEqual(6);
+      expect(channelObjToWord(channelArrayToObj([0, 1, 2]))).toEqual(7);
     });
   });
   describe('encodeStartPacket', () => {
     /* Format: startCommand, pcMSB, pcLSB, sensorId, channels, numParams, params */
     it('Return start packet for one sensor with no params', () => {
+      const accSensor = accFactory();
       const accNoParam = { ...accSensor, dynamicParams: {} };
       const sensorList: sensorListType = {};
       sensorList[accId] = accNoParam;
@@ -198,7 +211,8 @@ describe('parseDataPacket.spec.js', () => {
       ]);
     });
     it('Return start packet for one sensor with params', () => {
-      const accWithParam = { ...accSensor, channels: [0, 1] };
+      const accSensor = accFactory();
+      const accWithParam = { ...accSensor, channels: channelArrayToObj([0, 1]) };
       const sensorList: sensorListType = {};
       sensorList[accId] = accWithParam;
       const sampleRate = 10;
@@ -215,8 +229,10 @@ describe('parseDataPacket.spec.js', () => {
       ]);
     });
     it('Return start packet for two sensor with params', () => {
-      const acc = { ...accSensor, channels: [2] };
-      const gyr = { ...gyrSensor, channels: [0, 2] };
+      const accSensor = accFactory();
+      const gyrSensor = gyrFactory();
+      const acc = { ...accSensor, channels: channelArrayToObj([2]) };
+      const gyr = { ...gyrSensor, channels: channelArrayToObj([0, 2]) };
       const sensorList: sensorListType = {};
       sensorList[accId] = acc;
       sensorList[gyrId] = gyr;
@@ -241,7 +257,9 @@ describe('parseDataPacket.spec.js', () => {
       ]);
     });
     it('Do not include inactive sensors', () => {
-      const acc = { ...accSensor, channels: [2] };
+      const accSensor = accFactory();
+      const gyrSensor = gyrFactory();
+      const acc = { ...accSensor, channels: channelArrayToObj([2]) };
       const gyr = { ...gyrSensor, active: false };
       const sensorList: sensorListType = {};
       sensorList[accId] = acc;
@@ -261,6 +279,8 @@ describe('parseDataPacket.spec.js', () => {
       ]);
     });
     it('Inactive sensors should return an empty array', () => {
+      const accSensor = accFactory();
+      const gyrSensor = gyrFactory();
       const acc = { ...accSensor, active: false };
       const gyr = { ...gyrSensor, active: false };
       const sensorList: sensorListType = {};

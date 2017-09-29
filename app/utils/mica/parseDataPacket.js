@@ -23,7 +23,7 @@ import {
 } from '../bitConstants';
 import { DATA_CLOCK_FREQ, CMD_START, CMD_STOP } from './micaConstants';
 import log from '../loggingUtils';
-import type { periodCountType, sensorListType } from '../../types/paramTypes';
+import type { periodCountType, sensorListType, channelsT } from '../../types/paramTypes';
 import type { sensingObjs } from '../../types/metaDataTypes';
 
 
@@ -122,18 +122,16 @@ export function parseDataPacket(
 /* Take 2 on the parse data function - still needs to support multichannel */
 export function parseDataPacket2(
   packetData: Buffer,
-  channelNames: string[],
+  channels: channelsT,
   periodLength: number,
   scalingConstant: number,
   gain: number,
-  offset: number[],
   startTime: number
 ): TimeEvent[] {
   /* return array */
   const eventArray = [];
   let idx = 0;
   let t = startTime;
-  console.log('packetData:', packetData);
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -149,9 +147,14 @@ export function parseDataPacket2(
         const secondsLsb = packetData.readUInt8(idx++); // eslint-disable-line no-unused-vars
       }
       /* ***************** Data information ***************** */
+      /* Get the active channels */
+      const activeChannelIds = channelsToActiveList(channels);
+      /* Assemble the data */
       const channelData = {};
       /* Iterate through the channels */
-      for (let channel = 0; channel < channelNames.length; channel++) {
+      for (let channel = 0; channel < activeChannelIds.length; channel++) {
+        const channelId = activeChannelIds[channel];
+        const channelParams = channels[channelId];
         let rawData;
         /* If an even numbered channel */
         if (!(channel & MASK_BIT_ODD)) {
@@ -165,14 +168,12 @@ export function parseDataPacket2(
           const dataLsb = packetData.readUInt8(idx++);
           rawData = ((dataMsb & MASK_NIBBLE_LOW) << SHIFT_BYTE_ONE) | dataLsb;
         }
-        /* Record the results */
-        const chanOffset = offset[channel];
         /* Convert from two's complement to signed */
         const signedData = twosCompToSigned(rawData, 12);
         /* dataPoint = K/G*(x-x0) = K/G*x - offset */
-        const value = ((scalingConstant / gain) * signedData) - chanOffset;
+        const value = ((scalingConstant / gain) * signedData) - channelParams.offset;
         /* Limit the precision */
-        channelData[channelNames[channel]] = value;
+        channelData[channelParams.name] = value;
       }
       /* ***************** End Packet Data Parsing ***************** */
       /* Calculate the time differential */
@@ -209,12 +210,29 @@ export function sampleRateToPeriodCount(sampleRate: number): periodCountType {
   const lsb = (periodCount & MASK_BYTE_ONE);
   return { msb, lsb };
 }
-/* Returns the channel word given an array of channel indices */
-export function channelArrayToWord(channelArray: number[]): number {
+
+/* Returns a the list of active channel IDs */
+export function channelsToActiveList(channels: channelsT): string[] {
+  /* Get the active channels */
+  const activeChannelIds = [];
+  const channelIds = Object.keys(channels);
+  for (let i = 0; i < channelIds.length; i++) {
+    const channelId = channelIds[i];
+    const channel = channels[channelId];
+    if (channel.active) {
+      activeChannelIds.push(channelId);
+    }
+  }
+  return activeChannelIds;
+}
+
+/* Returns the channel word given the channels parameter */
+export function channelObjToWord(channels: channelsT): number {
+  const channelArray = channelsToActiveList(channels);
   let channelWord = 0;
   /* Iterate through the channels */
   for (let i = 0; i < channelArray.length; i++) {
-    channelWord |= (0x01 << channelArray[i]);
+    channelWord |= (0x01 << parseInt(channelArray[i], 10));
   }
   return channelWord;
 }
@@ -232,7 +250,7 @@ export function encodeStartPacket(sampleRate: number, sensorList: sensorListType
     /* Ensure the sensor is active */
     if (sensor.active) {
       /* get the channels */
-      const channels = channelArrayToWord(sensor.channels);
+      const channels = channelObjToWord(sensor.channels);
       /* Get the dynamic params */
       const paramList = [];
       const paramKeys = Object.keys(sensor.dynamicParams);
@@ -266,11 +284,10 @@ export function encodeStopPacket(sensorList: sensorListType): number[] {
 type settingsSuccessT = {
   success: true,
   payload: {
-    channelNames: string[],
+    channels: channelsT,
     periodLength: number,
     scalingConstant: number,
-    gain: number,
-    offset: number[]
+    gain: number
   }
 };
 type settingsFailedT = {
@@ -292,16 +309,15 @@ export function getSensorSettingsFromState(sensors: sensorListType): settingsRes
     const sensor = sensors[sensorId];
     /* Ensure the sensor is active */
     if (sensor.active) {
-      const { gain, scalingConstant, offset, channels } = sensor;
+      const { gain, scalingConstant, channels } = sensor;
       /* Return success */
       return {
         success: true,
         payload: {
-          channelNames,
+          channels,
           periodLength,
           scalingConstant,
           gain,
-          offset
         }
       };
     }
