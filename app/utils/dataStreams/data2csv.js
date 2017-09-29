@@ -30,7 +30,7 @@ export function createCsv(series: TimeSeries): string {
       const entry = points[row][chan];
       /* Time stamp channel */
       if (chan === 0) {
-        /* Convert time relative to start and into second */
+        /* Convert time relative to start and into seconds */
         const deltaTime = (entry - startTime) / 1000;
         csvString += deltaTime.toFixed(3);
       } else {
@@ -39,7 +39,7 @@ export function createCsv(series: TimeSeries): string {
         csvString += entry.toFixed(5);
       }
 
-      /* append the col delimeter */
+      /* append the col delimiter */
       csvString += colDelimiter;
     }
     /* Start a new row */

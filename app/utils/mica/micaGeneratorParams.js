@@ -1,4 +1,5 @@
 // @flow
+/* eslint quote-props: ["error", "as-needed", { "numbers": true }] */
 /* **********************************************************
 * File: utils/mica/micaGeneratorParams.js
 *
@@ -11,7 +12,7 @@
 *
 ********************************************************* */
 import { nameToId } from './micaConstants';
-import type { deviceParamType, deviceChannelType, deviceParamObj } from '../../types/paramTypes';
+import type { deviceChannelType, deviceParamObj } from '../../types/paramTypes';
 
 /* Object to containing the generator parameters */
 const generatorParams: deviceParamObj = {};
@@ -22,8 +23,10 @@ if (driveBotId) {
   /* Channels of drive bot... not clear how to use this */
   const drivebotChannels: deviceChannelType = {
     display: 'Motors',
-    default: [0, 1],
-    options: ['Left Motor', 'Right Motor']
+    default: {
+      '0': { active: true, name: 'Left Motor', offset: 0 },
+      '1': { active: true, name: 'Right Motor', offset: 0 }
+    },
   };
   /* Construct Drivebot settings Obj */
   generatorParams[driveBotId] = {

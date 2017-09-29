@@ -94,8 +94,7 @@ export type deviceRangeParamT = {
 
 export type deviceChannelType = {
   display: string,
-  default: number[],
-  options: string[]
+  default: channelsT
 };
 
 export type deviceParamObj = {
@@ -117,14 +116,23 @@ export type dynamicParamType = {
   value: number
 };
 
+export type channelObjT = {
+  active: boolean,
+  name: string,
+  offset: number
+};
+
+export type channelsT = {
+  [channelId: string]: channelObjT
+};
+
 /* Parameter type for updating a sensor */
 export type sensorParamType = {
   name: string,
   active: boolean,
-  channels: number[],
+  channels: channelsT,
   scalingConstant: number,
   gain: number,
-  offset: number[],
   units: string,
   sampleRate: number,
   dynamicParams: {
@@ -136,7 +144,7 @@ export type sensorParamType = {
 export type generatorParamType = {
   name: string,
   active: boolean,
-  channels: number[],
+  channels: channelsT,
   dynamicParams: {
     [paramName: string]: dynamicParamType
   }

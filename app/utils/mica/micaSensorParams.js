@@ -76,8 +76,11 @@ if (accId) {
   * reconciled with metadata */
   const accChannels: deviceChannelType = {
     display: 'Data Channels',
-    default: [0],
-    options: ['X', 'Y', 'Z']
+    default: {
+      '0': { active: true, name: 'X', offset: 0 },
+      '1': { active: false, name: 'Y', offset: 0 },
+      '2': { active: false, name: 'Z', offset: 0 },
+    }
   };
   /* Construct the Accelerometer settings obj */
   sensorParams[accId] = {
@@ -125,8 +128,11 @@ if (gyrId) {
   /* Channels available on the gyroscope */
   const gyrChannels: deviceChannelType = {
     display: 'Data Channels',
-    default: [0],
-    options: ['X', 'Y', 'Z']
+    default: {
+      '0': { active: true, name: 'X', offset: 0 },
+      '1': { active: false, name: 'Y', offset: 0 },
+      '2': { active: false, name: 'Z', offset: 0 },
+    }
   };
   /* Push the Gyroscope Settings */
   sensorParams[gyrId] = {

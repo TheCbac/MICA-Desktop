@@ -14,7 +14,7 @@ import { foundAdvertisingDevice, metaDataReadComplete } from '../../actions/devi
 import { changeScanState, enableScanMethod } from '../../actions/ScanForDevicesActions';
 import { Noble } from '../nativeModules';
 import { micaServiceUuid, micaCharUuids } from '../mica/micaConstants';
-import { parseDataPacket, getSensorSettingsFromState } from '../mica/parseDataPacket';
+import { parseDataPacket2, getSensorSettingsFromState } from '../mica/parseDataPacket';
 import log from '../loggingUtils';
 import {
   getCharacteristicFromDevice
@@ -236,23 +236,18 @@ function readMetadataCallback(
 function nobleSensingDataCallback(id: idType, data: Buffer): void {
   /* Get the settings */
   const { devices } = store.getState();
-  const { sensors } = devices[id].settings;
+  const device = devices[id];
+  const { sensors } = device.settings;
   const result = getSensorSettingsFromState(sensors);
   if (result.success) {
-    const { numChannels, periodLength, scalingConstant, gain, offset } = result.payload;
+    const { channelNames, periodLength, scalingConstant, gain, offset } = result.payload;
     console.log('NobleSensingCallback', gain);
-    const parsed = parseDataPacket(
-      data, numChannels, periodLength, scalingConstant, gain, offset, getLastTime()
+    const parsed = parseDataPacket2(
+      data, channelNames, periodLength, scalingConstant, gain, offset, getLastTime()
     );
-    /* Send the data to the graph */
+    /* Store the data for retrieval by the graph component */
     logDataPoints(parsed);
-    // reportToGraph(parsed[0]);
-    // const points = parsed.map((point) => point.toPoint()[1]);
   }
-  /* Parse the command */
-  // /* TODO: implement dynamic packets based on settings */
-  // const parsed = parseDataPacket(data, 1, 0.1, 1, 1, [0], time); // hardcoded settings
-  /* Log the packet for debugging */
 }
 
 /* Call back function for subscriptions */

@@ -11,7 +11,8 @@
 import type {
   scanTypes,
   idType,
-  deviceSettingsObjType
+  deviceSettingsObjType,
+  channelsT
 } from './paramTypes';
 import type { metaDataObjType, moduleNameType } from './metaDataTypes';
 import type { selectType } from './stateTypes';

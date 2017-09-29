@@ -9,7 +9,9 @@
 * 2017.09.20 CC - Document created
 *
 ********************************************************* */
+import { TimeEvent } from 'pondjs';
 import {
+  parseDataPacket2,
   twosCompToSigned,
   sampleRateToPeriodCount,
   channelArrayToWord,
@@ -31,8 +33,9 @@ const accSensor: sensorParamType = {
   ],
   scalingConstant: 0.004784999880939722,
   gain: 0.5,
-  offset: 0,
+  offset: [0, 0, 0],
   units: 'm/s^2',
+  sampleRate: 100,
   dynamicParams: {
     range: {
       address: 15,
@@ -54,8 +57,9 @@ const gyrSensor: sensorParamType = {
   ],
   scalingConstant: 0.03406799957156181,
   gain: 1,
-  offset: 0,
+  offset: [0, 0, 0],
   units: 'rad/s',
+  sampleRate: 100,
   dynamicParams: {
     range: {
       address: 15,
@@ -66,6 +70,63 @@ const gyrSensor: sensorParamType = {
 
 /* Test suite */
 describe('parseDataPacket.spec.js', () => {
+  describe('parseDataPacket', () => {
+    it('should parse a simple one value data packet', () => {
+      const tMSB = 0x8F;
+      const tLSB = 0x00;
+      const dMSB = 0xBF;
+      const dLSB = 0xB0;
+      const simplePacket = new Buffer([tMSB, tLSB, dMSB, dLSB]);
+      /* Parse the packet */
+      const { scalingConstant, gain, offset, sampleRate } = accSensor;
+      const periodLength = 1 / sampleRate;
+      const startTime = new Date().getTime();
+      const channelNames = ['x'];
+      const dataArray = parseDataPacket2(
+        simplePacket, channelNames, periodLength, scalingConstant, gain, offset, startTime
+      );
+      /* Evaluate */
+      expect(dataArray.length).toBe(1);
+      const dataPoint = dataArray[0];
+      const timeStamp = dataPoint.toPoint()[0];
+      const sample = dataPoint.toPoint()[1];
+      /* Expected value */
+      const accValue = -9.847;
+      const timeDiff = -1.808; /* Milliseconds */
+      expect(sample).toBeCloseTo(accValue);
+      expect(timeStamp).toBe(Math.round(startTime + timeDiff));
+      expect(dataPoint.toJSON().data.x).toBeCloseTo(accValue);
+    });
+    it('should parse a three channel data packet', () => {
+      const tMSB = 0x8F;
+      const tLSB = 0x00;
+      const d1 = 0xBF;
+      const d12 = 0xBB;
+      const d2 = 0xFB;
+      const d3 = 0x71;
+      const d34 = 0x00;
+      const simplePacket = new Buffer([tMSB, tLSB, d1, d12, d2, d3, d34]);
+      /* Parse the packet */
+      const { scalingConstant, gain, offset, sampleRate } = accSensor;
+      const periodLength = 1 / sampleRate;
+      const startTime = new Date().getTime();
+      const channelNames = ['x', 'y', 'z'];
+      const dataArray = parseDataPacket2(
+        simplePacket, channelNames, periodLength, scalingConstant, gain, offset, startTime
+      );
+      /* Evaluate */
+      expect(dataArray.length).toBe(1);
+      const dataPoint = dataArray[0];
+      const timeStamp = dataPoint.toPoint()[0];
+      /* Expected value */
+      const accValue = -9.847;
+      const timeDiff = -1.808; /* Milliseconds */
+      expect(timeStamp).toBe(Math.round(startTime + timeDiff));
+      expect(dataPoint.toJSON().data.x).toBeCloseTo(accValue);
+      expect(dataPoint.toJSON().data.y).toBeCloseTo(accValue);
+      expect(dataPoint.toJSON().data.z).toBeCloseTo(-accValue);
+    });
+  });
   describe('Two Complement', () => {
     /* Two's Complement */
     it('twosCompToSigned returns the correct values', () => {

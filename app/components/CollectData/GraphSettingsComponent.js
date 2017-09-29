@@ -39,12 +39,10 @@ type stateType = {
 
 /* Save the latest run */
 function saveDialog(): void {
-  console.log('save dialog');
   const options = {
     defaultPath: 'data.csv'
   };
   remote.dialog.showSaveDialog(options, (filePath?: string) => {
-    console.log('pathIs:', filePath);
     if (filePath) {
       saveLastRun(filePath);
     }

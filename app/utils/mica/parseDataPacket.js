@@ -24,7 +24,7 @@ import {
 import { DATA_CLOCK_FREQ, CMD_START, CMD_STOP } from './micaConstants';
 import log from '../loggingUtils';
 import type { periodCountType, sensorListType } from '../../types/paramTypes';
-import type { bleApiResultType } from '../../types/bleTypes';
+import type { sensingObjs } from '../../types/metaDataTypes';
 
 
 /* Converts a twos complement word of numBits length to a signed int */
@@ -50,6 +50,7 @@ export function parseDataPacket(
   const eventArray = [];
   let idx = 0;
   let t = startTime;
+  console.log('packetData:', packetData);
   /* Protect against corrupt packets */
   try {
     /* Iterate through the whole packet */
@@ -108,6 +109,83 @@ export function parseDataPacket(
       /* Create the time event */
       // console.log('parseData:', t, micro);
       const event = new TimeEvent(t, channelData);
+      /* Push the event */
+      eventArray.push(event);
+    }
+  } catch (err) {
+    log.warn('ParseDataPacket corrupted packet', err);
+  }
+  /* Return the event array */
+  return eventArray;
+}
+
+/* Take 2 on the parse data function - still needs to support multichannel */
+export function parseDataPacket2(
+  packetData: Buffer,
+  channelNames: string[],
+  periodLength: number,
+  scalingConstant: number,
+  gain: number,
+  offset: number[],
+  startTime: number
+): TimeEvent[] {
+  /* return array */
+  const eventArray = [];
+  let idx = 0;
+  let t = startTime;
+  console.log('packetData:', packetData);
+  /* Protect against corrupt packets */
+  try {
+    /* Iterate through the whole packet */
+    while (idx < packetData.length) {
+      /* ***************** Time information **************** */
+      const timeMsb = packetData.readUInt8(idx++);
+      const timeLsb = packetData.readUInt8(idx++);
+      /* If the rollunder flag is set read secondsLSB */
+      /* Currently no error correction is done with secondsLsb, but it
+       * needs to be read to maintain packet index integrity  */
+      const rollunder = (timeLsb & FLAG_DATA_ROLLUNDER);
+      if (rollunder) {
+        const secondsLsb = packetData.readUInt8(idx++); // eslint-disable-line no-unused-vars
+      }
+      /* ***************** Data information ***************** */
+      const channelData = {};
+      /* Iterate through the channels */
+      for (let channel = 0; channel < channelNames.length; channel++) {
+        let rawData;
+        /* If an even numbered channel */
+        if (!(channel & MASK_BIT_ODD)) {
+          const dataMsb = packetData.readUInt8(idx++);
+          const dataLsb = packetData.readUInt8(idx++);
+          rawData = (dataMsb << SHIFT_BYTE_HALF) |
+            ((dataLsb >> SHIFT_BYTE_HALF) & MASK_NIBBLE_LOW);
+        } else { /* If an Odd numbered channel */
+          /* Unpack the MSB of odd channels from the previous byte */
+          const dataMsb = packetData.readUInt8(idx - 1);
+          const dataLsb = packetData.readUInt8(idx++);
+          rawData = ((dataMsb & MASK_NIBBLE_LOW) << SHIFT_BYTE_ONE) | dataLsb;
+        }
+        /* Record the results */
+        const chanOffset = offset[channel];
+        /* Convert from two's complement to signed */
+        const signedData = twosCompToSigned(rawData, 12);
+        /* dataPoint = K/G*(x-x0) = K/G*x - offset */
+        const value = ((scalingConstant / gain) * signedData) - chanOffset;
+        /* Limit the precision */
+        channelData[channelNames[channel]] = value;
+      }
+      /* ***************** End Packet Data Parsing ***************** */
+      /* Calculate the time differential */
+      const timeDifferentialTwos = (timeMsb << SHIFT_BYTE_HALF) |
+        ((timeLsb >> SHIFT_BYTE_HALF) & MASK_NIBBLE_LOW);
+      /* Get the signed time differential */
+      const timeDifferential = twosCompToSigned(timeDifferentialTwos, 12);
+      /* calculate the microsecond delta */
+      const milliDelta = periodLength + (timeDifferential / 1000);
+      /* Update the time */
+      t += milliDelta;
+      /* Create the time event */
+      const event = new TimeEvent(Math.round(t), channelData);
       /* Push the event */
       eventArray.push(event);
     }
@@ -188,7 +266,7 @@ export function encodeStopPacket(sensorList: sensorListType): number[] {
 type settingsSuccessT = {
   success: true,
   payload: {
-    numChannels: number,
+    channelNames: string[],
     periodLength: number,
     scalingConstant: number,
     gain: number,
@@ -214,13 +292,12 @@ export function getSensorSettingsFromState(sensors: sensorListType): settingsRes
     const sensor = sensors[sensorId];
     /* Ensure the sensor is active */
     if (sensor.active) {
-      const numChannels = sensor.channels.length;
-      const { gain, scalingConstant, offset } = sensor;
+      const { gain, scalingConstant, offset, channels } = sensor;
       /* Return success */
       return {
         success: true,
         payload: {
-          numChannels,
+          channelNames,
           periodLength,
           scalingConstant,
           gain,
