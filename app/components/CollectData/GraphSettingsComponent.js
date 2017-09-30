@@ -16,6 +16,8 @@ import React, { Component } from 'react';
 import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
+import { remote } from 'electron';
+import { saveLastRun } from '../../utils/dataStreams/graphBuffer';
 import type { thunkType } from '../../types/functionTypes';
 import type {
   collectionStateType,
@@ -34,6 +36,18 @@ type propsType = {
 type stateType = {
   value: number
 };
+
+/* Save the latest run */
+function saveDialog(): void {
+  const options = {
+    defaultPath: 'data.csv'
+  };
+  remote.dialog.showSaveDialog(options, (filePath?: string) => {
+    if (filePath) {
+      saveLastRun(filePath);
+    }
+  });
+}
 
 export default class GraphSettings extends Component {
   /* Type Def the props */
@@ -124,7 +138,7 @@ export default class GraphSettings extends Component {
           <Button block bsStyle="warning">PAUSE DISPLAY</Button>
         </Col>
         <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
-          <Button block bsStyle="primary">SAVE RUN</Button>
+          <Button block bsStyle="primary" onClick={() => saveDialog()}>SAVE RUN</Button>
         </Col>
         <Row />
         <Col xs={12} style={{ position: 'absolute', bottom: '25px' }}>

@@ -22,7 +22,7 @@ type propsType = {
   /* parameters */
   deviceId: idType,
   sensorId: idType,
-  channels: number[],
+  channels: channelsT,
   /* Functions */
   setSensorChannels: (
     deviceId: idType,
@@ -35,6 +35,19 @@ type stateType = {
   channels: number[]
 };
 
+/* Get the channels */
+function channelIdsFromObj(Obj: channelsT): number[] {
+  const channelIds = Object.keys(Obj);
+  const valueArray = [];
+  for (let i = 0; i < channelIds.length; i++) {
+    const { active } = Obj[channelIds[i]];
+    if (active) {
+      valueArray.push(parseInt(channelIds[i], 10));
+    }
+  }
+  return valueArray;
+}
+
 export default class ChannelSelector extends Component {
   /* Type Defs */
   props: propsType;
@@ -43,22 +56,24 @@ export default class ChannelSelector extends Component {
   constructor(props: propsType) {
     super(props);
     /* Set the default state */
+
     this.state = {
-      channels: props.channels
+      channels: channelIdsFromObj(props.channels)
     };
   }
   /* Return the channels that are available */
   getChannels() {
-    /* Look up the channels from the library */
-    const channelsObj = micaSensorParams[this.props.sensorId].channels;
+    const { channels } = this.props;
+    const channelIds = Object.keys(channels);
     /* Create a button for each channel */
     const buttonArray = [];
-    const numChan = channelsObj.options.length;
+    const numChan = channelIds.length;
     for (let i = 0; i < numChan; i++) {
+      const id = channelIds[i];
       /* Create the button */
       buttonArray.push((
-        <ToggleButton key={i.toString()} value={i}>
-          {channelsObj.options[i]}
+        <ToggleButton key={i.toString()} value={parseInt(id, 10)}>
+          {channels[id].name}
         </ToggleButton>
       ));
     }
@@ -70,6 +85,8 @@ export default class ChannelSelector extends Component {
     this.setState({ channels });
     /* Update the stored channels */
     const { deviceId, sensorId } = this.props;
+    /* Get the channels from the props */
+
     this.props.setSensorChannels(deviceId, sensorId, channels);
   }
   /* At least one channel warning */
@@ -86,6 +103,7 @@ export default class ChannelSelector extends Component {
       );
     }
   }
+
   /* Render function */
   render() {
     return (

@@ -75,8 +75,8 @@ export function sensingMetaObjFactory(): {id: number, metaObj:sensingMetaObj} {
   /* Return object */
   const metaObj = {
     type: sensingModule.id,
-    numChannels: faker.random.number(),
-    channelNames: [faker.random.arrayElement(['X', 'Y', 'Z'])],
+    numChannels: 3,
+    channelNames: ['X', 'Y', 'Z'],
     scalingConstant: Math.random(),
     gain: faker.random.number(),
     units: faker.hacker.noun(),

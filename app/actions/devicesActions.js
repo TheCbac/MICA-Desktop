@@ -15,7 +15,7 @@ import micaGeneratorParams from '../utils/mica/micaGeneratorParams';
 import type { idType, deviceSettingsObjType,
   generatorParamType, newDeviceObjType,
   sensorListType, generatorListType,
-  deviceRangeParamT
+  deviceRangeParamT, channelsT
  } from '../types/paramTypes';
 import type {
   foundDeviceActionType,
@@ -192,7 +192,7 @@ function constructSensorSettings(sensingMeta: sensingObjs): sensorListType {
   for (let i = 0; i < sensorIdList.length; i++) {
     const sensorId = sensorIdList[i];
     /* Extract the reported settings */
-    const { type: name, scalingConstant, gain, offset, units } = sensingMeta[parseInt(sensorId, 10)];
+    const { type: name, scalingConstant, gain, units } = sensingMeta[parseInt(sensorId, 10)];
     /* Look up the dynamic params */
     const sensorParams = micaSensorParams[sensorId];
     const channels = sensorParams.channels.default;
@@ -214,7 +214,6 @@ function constructSensorSettings(sensingMeta: sensingObjs): sensorListType {
       channels,
       scalingConstant,
       gain,
-      offset,
       units,
       sampleRate: 100,
       dynamicParams: dynamicParamsDefault
