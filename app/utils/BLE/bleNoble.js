@@ -240,10 +240,9 @@ function nobleSensingDataCallback(id: idType, data: Buffer): void {
   const { sensors } = device.settings;
   const result = getSensorSettingsFromState(sensors);
   if (result.success) {
-    const { channelNames, periodLength, scalingConstant, gain, offset } = result.payload;
-    console.log('NobleSensingCallback', gain);
+    const { channels, periodLength, scalingConstant, gain } = result.payload;
     const parsed = parseDataPacket2(
-      data, channelNames, periodLength, scalingConstant, gain, offset, getLastTime()
+      data, channels, periodLength, scalingConstant, gain, getLastTime()
     );
     /* Store the data for retrieval by the graph component */
     logDataPoints(parsed);

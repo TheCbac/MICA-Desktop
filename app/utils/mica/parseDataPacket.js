@@ -25,6 +25,7 @@ import { DATA_CLOCK_FREQ, CMD_START, CMD_STOP } from './micaConstants';
 import log from '../loggingUtils';
 import type { periodCountType, sensorListType, channelsT } from '../../types/paramTypes';
 import type { sensingObjs } from '../../types/metaDataTypes';
+import type { devicesStateType } from '../../types/stateTypes';
 
 
 /* Converts a twos complement word of numBits length to a signed int */
@@ -148,7 +149,7 @@ export function parseDataPacket2(
       }
       /* ***************** Data information ***************** */
       /* Get the active channels */
-      const activeChannelIds = channelsToActiveList(channels);
+      const activeChannelIds = channelsToActiveIdList(channels);
       /* Assemble the data */
       const channelData = {};
       /* Iterate through the channels */
@@ -211,8 +212,39 @@ export function sampleRateToPeriodCount(sampleRate: number): periodCountType {
   return { msb, lsb };
 }
 
+
+/* MOVE TO MORE RELEVANT SPOT */
+/* returns a list of active devices */
+export function getActiveDeviceList(devices: devicesStateType): string[] {
+  const idList = [];
+  const deviceIds = Object.keys(devices);
+  /* Iterate through all of the devices */
+  for (let i = 0; i < deviceIds.length; i++) {
+    const id = deviceIds[i];
+    const device = devices[id];
+    if (device.active) {
+      idList.push(id);
+    }
+  }
+  return idList;
+}
+
+export function getActiveSensorList(sensors: sensorListType): string[] {
+  const idList = [];
+  const sensorIds = Object.keys(sensors);
+  /* Iterate through all of the sensors */
+  for (let i = 0; i < sensorIds.length; i++) {
+    const id = sensorIds[i];
+    const sensor = sensors[parseInt(id, 10)];
+    if (sensor.active) {
+      idList.push(id);
+    }
+  }
+  return idList;
+}
+
 /* Returns a the list of active channel IDs */
-export function channelsToActiveList(channels: channelsT): string[] {
+export function channelsToActiveIdList(channels: channelsT): string[] {
   /* Get the active channels */
   const activeChannelIds = [];
   const channelIds = Object.keys(channels);
@@ -226,9 +258,24 @@ export function channelsToActiveList(channels: channelsT): string[] {
   return activeChannelIds;
 }
 
+/* Returns a the list of active channel IDs */
+export function channelsToActiveNameList(channels: channelsT): string[] {
+  /* Get the active channels */
+  const activeChannelNames = [];
+  const channelIds = Object.keys(channels);
+  for (let i = 0; i < channelIds.length; i++) {
+    const channelId = channelIds[i];
+    const channel = channels[channelId];
+    if (channel.active) {
+      activeChannelNames.push(channel.name);
+    }
+  }
+  return activeChannelNames;
+}
+
 /* Returns the channel word given the channels parameter */
 export function channelObjToWord(channels: channelsT): number {
-  const channelArray = channelsToActiveList(channels);
+  const channelArray = channelsToActiveIdList(channels);
   let channelWord = 0;
   /* Iterate through the channels */
   for (let i = 0; i < channelArray.length; i++) {
