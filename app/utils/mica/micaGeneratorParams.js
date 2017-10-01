@@ -8,6 +8,8 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.09.30 CC - Added coil definitions. Still a WIP, and
+*   needs to be heavily refactored. More or less hardcoded.
 * 2017.09.07 CC - Document created
 *
 ********************************************************* */
@@ -34,7 +36,37 @@ if (driveBotId) {
     dynamicParams: { }
   };
 }
-/* No Params object */
+/* Power Voltage */
+const { id: pVoltId } = nameToId('Power Voltage');
+if (pVoltId) {
+  const pVoltChannels: deviceChannelType = {
+    display: 'Coil',
+    default: {
+      '0': { active: true, name: 'Coil', offset: 0 },
+    },
+  };
+  /* Construct Pvolt settings Obj */
+  generatorParams[pVoltId] = {
+    channels: pVoltChannels,
+    dynamicParams: { }
+  };
+}
+
+/* Power Current */
+const { id: pCurrentId } = nameToId('Power Current');
+if (pCurrentId) {
+  const pCurrentChannels: deviceChannelType = {
+    display: 'Coil',
+    default: {
+      '0': { active: true, name: 'Coil', offset: 0 },
+    },
+  };
+  /* Construct pCurrentId settings Obj */
+  generatorParams[pCurrentId] = {
+    channels: pCurrentChannels,
+    dynamicParams: { }
+  };
+}
 
 /* Export the parameters */
 export { generatorParams as default };

@@ -101,7 +101,7 @@ export type deviceParamObj = {
   [instrumentId: number | string]: {
     channels: deviceChannelType,
     dynamicParams: {
-      range: deviceRangeParamT,
+      range?: deviceRangeParamT,
       [paramName: string]: deviceParamType
     }
   }

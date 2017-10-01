@@ -142,6 +142,63 @@ if (gyrId) {
     }
   };
 }
+
+/* *********** Load Cell  *********** */
+
+/* Add the Gyroscope key */
+const lcellId = nameToId('Load Cell').id;
+if (lcellId) {
+  /* Gyroscope range */
+  const range: deviceRangeParamT = {
+    display: 'Gain',
+    address: 0,
+    default: 1024,
+    gain(value) {
+      return 2 ** (value - 1);
+    },
+    options: [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map(option => ({
+      name: 'gain',
+      value: option,
+      word: option ? Math.log2(option) + 1 : 0,
+      display: option.toString(),
+    })),
+    btnType: 'radio'
+  };
+  /* Channels available on the gyroscope */
+  const lcellChannels: deviceChannelType = {
+    display: 'Data Channels',
+    default: {
+      '0': { active: true, name: 'Channel 1', offset: 0 },
+    }
+  };
+  /* Push the Gyroscope Settings */
+  sensorParams[lcellId] = {
+    channels: lcellChannels,
+    dynamicParams: {
+      range
+    }
+  };
+}
+
+/* *********** Current Sensor  *********** */
+
+/* Add the Gyroscope key */
+const { id: iOutId } = nameToId('Output Current');
+if (iOutId) {
+  /* Channels available on the gyroscope */
+  const iOutChannels: deviceChannelType = {
+    display: 'Data Channels',
+    default: {
+      '0': { active: true, name: 'Coil Current', offset: 0 },
+    }
+  };
+  /* Push the Gyroscope Settings */
+  sensorParams[iOutId] = {
+    channels: iOutChannels,
+    dynamicParams: {}
+  };
+}
+
 /* Export the sensor list */
 export { sensorParams as default };
 

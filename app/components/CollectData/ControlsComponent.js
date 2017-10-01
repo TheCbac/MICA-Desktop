@@ -12,6 +12,7 @@
 import React, { Component } from 'react';
 import { Row } from 'react-bootstrap';
 import DriveBot from './DriveBotComponent';
+import CoilControl from './CoilControl';
 import type { devicesStateType } from '../../types/stateTypes';
 
 /* Get the generator component based on ID - should be refactored and moved */
@@ -22,6 +23,8 @@ function mapGeneratorIdToComponent(
   /* */
   const id = parseInt(generatorId, 10);
   switch (id) {
+    case 3:
+      return (<CoilControl key={key} deviceId={deviceId} />);
     case 5:
       return (<DriveBot key={key} deviceId={deviceId} />);
     default:
