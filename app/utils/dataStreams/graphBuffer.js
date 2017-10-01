@@ -10,7 +10,10 @@
 * 2017.09.27 CC - Document created
 *
 ********************************************************* */
-import { TimeEvent } from 'pondjs';
+import { TimeEvent, TimeSeries } from 'pondjs';
+import jetpack from 'fs-jetpack';
+import { createCsv } from './data2csv';
+
 
 /* Object to store point */
 let startTime: number;
@@ -105,6 +108,18 @@ export function getLastDataPointsDecimated(N?: number, decimation?: number): Tim
   }
   return returnArray;
 }
-/* PICKUP ON TESTS */
 
-/* [] - END OF FILE */
+/* Saves the current list of events in the buffer to the specified location */
+export function saveLastRun(path: string): void {
+  /* Create a time series from the dataArray */
+  const timeSeries = new TimeSeries({
+    name: 'testData',
+    events: dataArray
+  });
+  /* convert to a csv */
+  const csvData = createCsv(timeSeries);
+  /* Write the data */
+  jetpack.write(path, csvData);
+}
+
+/* [] - 'END' OF FILE */

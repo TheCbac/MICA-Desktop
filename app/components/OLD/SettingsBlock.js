@@ -2,10 +2,13 @@
 /* **********************************************************
 * File: app/components/Settings/DeviceBlock.js
 *
+* ---------------- DEPRECATED ----------------
+*
 * Brief: Block that corresponds to one Device
 *
 * Author: Craig Cheney
 *
+* 2017.09.28 CC - DOCUMENT DEPRECATED
 * 2017.09.26 CC - Document created, refactored from SettingsPage
 *
 ********************************************************* */

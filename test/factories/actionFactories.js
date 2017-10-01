@@ -21,8 +21,10 @@ import type {
   disconnectingFromDeviceActionType,
   disconnectedFromDeviceActionType,
   lostConnectionFromDeviceActionType,
-  reportMetaDataActionType
+  reportMetaDataActionType,
+  setSensorChannelsActionT
 } from '../../app/types/actionTypes';
+import { moduleNameType } from '../../app/types/metaDataTypes';
 import { metadataObjFactory } from './metadataFactories';
 
 /* Return an action creator for finding an advertising device */
@@ -120,15 +122,31 @@ export function lostConnectionFromDeviceActionFactory(
 
 /* Connection to a device was lost */
 export function reportMetadataFactory(
-  id?: idType
+  id?: idType,
+  name?: moduleNameType
 ): reportMetaDataActionType {
   const deviceId = id || deviceIdFactory();
-  const data = metadataObjFactory();
+  const data = metadataObjFactory(name);
   return {
     type: 'REPORT_META_DATA',
     payload: {
       deviceId,
       data
+    }
+  };
+}
+
+export function setChannelsFactory(
+  deviceId: idType,
+  sensingId : idType,
+  channels: number[]
+): setSensorChannelsActionT {
+  return {
+    type: 'SET_SENSOR_CHANNELS',
+    payload: {
+      deviceId,
+      sensingId,
+      channels
     }
   };
 }

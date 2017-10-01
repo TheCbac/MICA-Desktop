@@ -221,12 +221,28 @@ const deviceHandlers = {
     action: setSensorChannelsActionT
   ): devicesStateType {
     const { deviceId, sensorId, channels } = action.payload;
-    /* Set the new values */
-    return update(state, {
-      [deviceId]: {
-        settings: { sensors: { [sensorId]: { channels: { $set: channels } } } }
-      }
-    });
+    /* Make a copy of the state */
+    let updatedState = update(state, {});
+    /* Get the IDs of all the channels in the sensors */
+    const channelIds = Object.keys(
+      state[deviceId].settings.sensors[parseInt(sensorId, 10)].channels
+    );
+    console.log('SET_SENSOR', channelIds);
+    /* Iterate though all of the channels */
+    for (let i = 0; i < channelIds.length; i++) {
+      const channelId = parseInt(channelIds[i], 10);
+      /* See if that channel is supposed to be active */
+      const channelState: boolean = channels.indexOf(channelId) >= 0;
+      /* Set all the channels active or not */
+      updatedState = update(updatedState, {
+        [deviceId]: {
+          settings: {
+            sensors: { [sensorId]: { channels: { [channelId]: { active: { $set: channelState } } } } }
+          }
+        }
+      });
+    }
+    return updatedState;
   },
   /* Select the range (and gain) of the device */
   SET_SENSOR_RANGE(

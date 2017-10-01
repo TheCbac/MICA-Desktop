@@ -36,14 +36,14 @@ export default class DriveBot extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   window.addEventListener('keydown', this.onKeyDown);
-  //   window.addEventListener('keyup', this.onKeyUp);
-  // }
-  // componentWillUnmount() {
-  //   window.removeEventListener('keydown', this.onKeyDown);
-  //   window.removeEventListener('keyup', this.onKeyUp);
-  // }
+  componentDidMount() {
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+  }
   onKeyDown = (event: {keyCode: number}): void => {
     /* If a key is already pressed, do nothing */
     if (this.state.keyPressed) { return; }
@@ -99,18 +99,18 @@ export default class DriveBot extends Component {
     }
     const data = [0x05, 0x01, 0x01, directionWord, 0xff, 0xff, 0x00, 0x00];
 
-
-    bleReadCharacteristic('ble', deviceId, energyMetadata);
-    // const result = bleWriteCharacteristic(
-    //   'ble',
-    //   deviceId,
-    //   communicationCommands,
-    //   data,
-    //   (dId, charUuid, err) => {
-    //     console.log('writeCharCallback:', dId, charUuid, err);
-    //   },
-    //   true
-    // );
+    // Debugging
+    // bleReadCharacteristic('ble', deviceId, energyMetadata);
+    const result = bleWriteCharacteristic(
+      'ble',
+      deviceId,
+      communicationCommands,
+      data,
+      (dId, charUuid, err) => {
+        console.log('writeCharCallback:', dId, charUuid, err);
+      },
+      true
+    );
 
 
     // writeCharacteristic(deviceId, communicationCommands, data);

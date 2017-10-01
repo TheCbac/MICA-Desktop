@@ -49,7 +49,10 @@ export default class CollectDataPage extends Component {
         </Col>
 
         <Col md={8} lg={8}>
-          <GraphComponent collectionSettings={this.props.collectionSettings} />
+          <GraphComponent
+            collectionSettings={this.props.collectionSettings}
+            devices={this.props.devices}
+          />
         </Col>
       </div>
     );

@@ -22,7 +22,8 @@ import {
   disconnectingFromDeviceActionFactory,
   disconnectedFromDeviceActionFactory,
   lostConnectionFromDeviceActionFactory,
-  reportMetadataFactory
+  reportMetadataFactory,
+  setChannelsFactory
  } from '../factories/actionFactories';
 import type { devicesStateType, devicesStateObjType } from '../../app/types/stateTypes';
 import type {
@@ -236,6 +237,16 @@ describe('devicesReducer.spec.js', () => {
       }
     });
   });
+  // TODO: implement
+  // /* Selecting which channels to use */
+  // describe('SET_SENSOR_CHANNELS', () => {
+  //   it('Should set the selected channels active', () => {
+  //     const deviceId = deviceIdFactory();
+  //     const state: devicesStateType = {
+  //       [deviceId]:
+  //     }
+  //   });
+  // });
 });
 
 /* [] - END OF FILE */
