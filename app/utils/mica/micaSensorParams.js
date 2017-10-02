@@ -77,9 +77,9 @@ if (accId) {
   const accChannels: deviceChannelType = {
     display: 'Data Channels',
     default: {
-      '0': { active: true, name: 'X', offset: 0 },
+      '0': { active: false, name: 'X', offset: 0 },
       '1': { active: false, name: 'Y', offset: 0 },
-      '2': { active: false, name: 'Z', offset: 0 },
+      '2': { active: true, name: 'Z', offset: 0 },
     }
   };
   /* Construct the Accelerometer settings obj */
@@ -152,7 +152,7 @@ if (lcellId) {
   const range: deviceRangeParamT = {
     display: 'Gain',
     address: 0,
-    default: 1024,
+    default: 11,
     gain(value) {
       return 2 ** (value - 1);
     },
