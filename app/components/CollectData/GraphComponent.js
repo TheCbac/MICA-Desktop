@@ -25,8 +25,12 @@ import {
   getActiveDeviceList,
   getActiveSensorList
 } from '../../utils/mica/parseDataPacket';
-import type { idType } from '../../types/paramTypes';
-import type { collectionStateType, devicesStateType } from '../../types/stateTypes';
+import type { idType, sensorParamType } from '../../types/paramTypes';
+import type {
+  collectionStateType,
+  devicesStateType,
+  devicesStateObjType
+} from '../../types/stateTypes';
 
 type propsT = {
   collectionSettings: collectionStateType,
@@ -51,7 +55,7 @@ const sampleRate = 100; /* TODO: make dynamic */
 const windowLength = 5000;
 
 /* Graph refresh rate in Hz */
-const refreshRate = 10;
+const refreshRate = 20;
 /* Graph refresh period in ms */
 const refreshPeriod = (1 / refreshRate) * sec2ms;
 
@@ -96,6 +100,98 @@ function getChartLimits(deviceId: idType, sensorId: idType): axisLimitT {
     min,
     max
   };
+}
+/* Return the Y axes */
+function constructYAxis(
+  deviceId: idType, device: devicesStateObjType,
+  sensorId: idType, sensor: sensorParamType,
+  sensorCount: number
+): { leftAxis: *, rightAxis: * } {
+  /* Push to left or right */
+  const leftAxis = [];
+  const rightAxis = [];
+  /* Get the bounds */
+  const { min, max } = getChartLimits(deviceId, sensorId);
+  /* Create the component */
+  const axis = (
+    <YAxis
+      id={`${deviceId}-${sensorId}`}
+      label={`${sensor.name} [${sensor.units}]`}
+      min={min}
+      max={max}
+      width="70"
+      type="linear"
+      key={sensorCount}
+    />
+  );
+  /* Push even axes to the left, odd to right */
+  if (sensorCount % 2 === 0) {
+    leftAxis.push(axis);
+  } else {
+    rightAxis.push(axis);
+  }
+  return {
+    leftAxis,
+    rightAxis
+  };
+}
+type styleT = {
+  key: string,
+  color: string,
+  width: number
+};
+type categoryT = {
+  key: string,
+  label: string
+};
+/* Construct the styler */
+function constructStyles(
+  channelName: string, channelCount: number
+): { style: styleT, category: categoryT } {
+  return {
+    style: { key: channelName, color: getColor(channelCount), width: 2 },
+    category: { key: channelName, label: channelName }
+  };
+}
+/* Construct the legends */
+function constructLegend(legendSensors) {
+  const legendList = [];
+  for (let l = 0; l < legendSensors.length; l++) {
+    const { name, legend } = legendSensors[l];
+    legendList.push(
+      <Col md={4} key={l}>
+        <span>{name}</span>
+        <Legend
+          key={l}
+          type={'line'}
+          style={styler(legend.stylesList)}
+          categories={legend.categoriesList}
+        />
+      </Col>
+    );
+  }
+  return (
+    <Col md={12}>
+      {legendList}
+    </Col>
+  );
+}
+/* Build the line charts */
+function constructLineCharts(
+  deviceCount: number, deviceId: idType, sensorId: idType,
+  eventSeries: TimeSeries, channelNames: string[], style: styleT[]
+): * {
+  return (
+    <LineChart
+      key={deviceCount}
+      axis={`${deviceId}-${sensorId}`}
+      series={eventSeries}
+      columns={channelNames}
+      interpolation="curveLinear"
+      breakLine
+      style={styler(style)}
+    />
+  );
 }
 
 export default class GraphComponent extends Component {
@@ -188,118 +284,20 @@ export default class GraphComponent extends Component {
     /* return the range */
     return new TimeRange(startTime, endTime);
   }
-  /* Return an array of axes based on the devices and sensors */
-  getMultiDeviceYAxis() {
-    const leftAxesList = [];
-    const rightAxesList = [];
-    const deviceIdList = getActiveDeviceList(this.props.devices);
-    let axisKey = 0;
-    /* Iterate through each device */
-    for (let i = 0; i < deviceIdList.length; i++) {
-      const deviceId = deviceIdList[i];
-      const device = this.props.devices[deviceId];
-      const { sensors } = device.settings;
-      const sensorsIdList = getActiveSensorList(sensors);
-      /* Iterate through each sensor */
-      for (let j = 0; j < sensorsIdList.length; j++) {
-        const sensorId = sensorsIdList[j];
-        const sensor = sensors[parseInt(sensorId, 10)];
-        const { min, max } = getChartLimits(deviceId, sensorId);
-        const axis = (
-          <YAxis
-            id={`${deviceId}-${sensorId}`}
-            label={`${sensor.name} [${sensor.units}]`}
-            min={min}
-            max={max}
-            width="70"
-            type="linear"
-            key={axisKey}
-          />
-        );
-        /* Push even axes to the left, odd to right */
-        if (axisKey % 2 === 0) {
-          leftAxesList.push(axis);
-        } else {
-          rightAxesList.push(axis);
-        }
-        /* Inc the key */
-        axisKey += 1;
-      }
-    }
-    /* Always have an axis */
-    if (axisKey === 0) {
-      leftAxesList.push(defaultAxis);
-    }
-    return {
-      leftAxes: leftAxesList,
-      rightAxes: rightAxesList
-    };
-  }
-  /* Return the legend for the chart */
-  getMultiDeviceLegend() {
-    const legendSensors = [];
+
+  /* Optimization of multidevices */
+  getMultiDeviceChartObj() {
     let sensorCount = 0;
     let channelCount = 0;
-    const deviceIdList = getActiveDeviceList(this.props.devices);
-    /* Iterate through each device */
-    for (let i = 0; i < deviceIdList.length; i++) {
-      const deviceId = deviceIdList[i];
-      const device = this.props.devices[deviceId];
-      const { sensors } = device.settings;
-      const sensorsIdList = getActiveSensorList(sensors);
-      /* Iterate through each sensor */
-      for (let j = 0; j < sensorsIdList.length; j++) {
-        const sensorId = sensorsIdList[j];
-        const sensor = sensors[parseInt(sensorId, 10)];
-        /* Create a new legend and style for each sensor */
-        legendSensors.push({
-          name: `${device.name}: ${sensor.name}`,
-          legend: {}
-        });
-        const channelNameList = channelsToActiveNameList(sensor.channels);
-        /* iterate through each channel */
-        const categories = [];
-        const styles = [];
-        for (let k = 0; k < channelNameList.length; k++) {
-          const channelName = channelNameList[k];
-          categories.push({ key: channelName, label: channelName });
-          styles.push({ key: channelName, color: getColor(channelCount), width: 2 });
-          /* Increment the channel count */
-          channelCount += 1;
-        }
-        /* assign the categories and styles */
-        legendSensors[sensorCount].legend = { categories, styles };
-        /* Increment the sensor count */
-        sensorCount += 1;
-      }
-    }
-    /* Create the list of Legends */
-    const legendList = [];
-    for (let l = 0; l < legendSensors.length; l++) {
-      const { name, legend } = legendSensors[l];
-      legendList.push(
-        <Col md={4} key={l}>
-          <span>{name}</span>
-          <Legend
-            key={l}
-            type={'line'}
-            style={styler(legend.styles)}
-            categories={legend.categories}
-          />
-        </Col>
-      );
-    }
-    return (
-      <Col md={12}>
-        {legendList}
-      </Col>
-    );
-  }
-  /* Get the charts for multiple devices */
-  getMultiDeviceCharts() {
+    /* Store the charts */
     const chartList = [];
-    const deviceIdList = getActiveDeviceList(this.props.devices);
+    /* Store the YAxes */
+    const leftAxesList = [];
+    const rightAxesList = [];
+    /* Store the Legends */
+    const legendSensors = [];
     /* Iterate through each device */
+    const deviceIdList = getActiveDeviceList(this.props.devices);
     for (let i = 0; i < deviceIdList.length; i++) {
       const deviceId = deviceIdList[i];
       const device = this.props.devices[deviceId];
@@ -311,61 +309,92 @@ export default class GraphComponent extends Component {
         name: device.name,
         events: events.peekN(events.size())
       });
-      /* Iterate through the active sensors */
-      const sensorIdList = getActiveSensorList(sensors);
-      for (let j = 0; j < sensorIdList.length; j++) {
-        const sensorId = sensorIdList[j];
+      /* Iterate through each sensor */
+      const sensorsIdList = getActiveSensorList(sensors);
+      for (let j = 0; j < sensorsIdList.length; j++) {
+        const sensorId = sensorsIdList[j];
         const sensor = sensors[parseInt(sensorId, 10)];
-        const { channels } = sensor;
-        /* Multi channel */
-        const channelNames = channelsToActiveNameList(channels);
-        /* Push the line chart */
-        chartList.push(
-          <LineChart
-            key={i}
-            axis={`${deviceId}-${sensorId}`}
-            series={eventSeries}
-            columns={channelNames}
-            interpolation="curveLinear"
-            breakLine
-          />
+        /* construct the Y Axes */
+        const { leftAxis, rightAxis } = constructYAxis(
+          deviceId, device, sensorId, sensor, sensorCount
         );
+        /* Push to their lists */
+        leftAxesList.push(...leftAxis);
+        rightAxesList.push(...rightAxis);
+        /* Create a new legend and style for each sensor */
+        legendSensors.push({
+          name: `${device.name}: ${sensor.name}`,
+          legend: {}
+        });
+        const categoriesList = [];
+        const stylesList = [];
+        /* Iterate through the channels */
+        const channelNameList = channelsToActiveNameList(sensor.channels);
+        for (let k = 0; k < channelNameList.length; k++) {
+          const channelName = channelNameList[k];
+          /* Store the styles for the line and legend */
+          const { style, category } = constructStyles(channelName, channelCount);
+          categoriesList.push(category);
+          stylesList.push(style);
+          /* Increment the channel count */
+          channelCount += 1;
+        }
+        /* Construct and store the line chart */
+        chartList.push(constructLineCharts(
+          i, deviceId, sensorId, eventSeries, channelNameList, stylesList
+        ));
+        /* Simple default axis */
+        if (i === 0) {
+          chartList.push(<Baseline key={0} axis={`${deviceId}-${sensorId}`} value={0} />);
+        }
+        /* assign the categories and styles */
+        legendSensors[sensorCount].legend = { categoriesList, stylesList };
+        /* increment sensor count */
+        sensorCount += 1;
       }
     }
-    return (
-      <Charts>
-        {chartList}
-      </Charts>
-    );
-  }
-
-  /* Get the charts for multiple devices */
-  chartWrapper() {
-    /* Get the time range for the chart(s) */
-    const timeRange = this.getMultiDeviceTimeRange();
-    const { leftAxes, rightAxes } = this.getMultiDeviceYAxis();
-    return (
-      <ChartContainer timeRange={timeRange}>
-        <ChartRow height="385">
-          {leftAxes}
-          {this.getMultiDeviceCharts()}
-          {rightAxes}
-        </ChartRow>
-      </ChartContainer>
-    );
+    /* Ensure there is always an axis */
+    if (sensorCount === 0) {
+      leftAxesList.push(defaultAxis);
+      chartList.push(<Baseline key={0} axis="default" value={0} />);
+    }
+    /* Construct the legend */
+    const legend = constructLegend(legendSensors);
+    /* Return the object */
+    return {
+      leftAxesList,
+      rightAxesList,
+      legend,
+      chartList
+    };
   }
   /* Render function */
   render() {
+    const {
+      leftAxesList,
+      rightAxesList,
+      legend,
+      chartList
+    } = this.getMultiDeviceChartObj();
+    const timeRange = this.getMultiDeviceTimeRange();
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
         <Row>
-          {this.getMultiDeviceLegend()}
+          {legend}
         </Row>
         <hr />
         <div className="row">
           <div className="col-md-12">
             <Resizable>
-              {this.chartWrapper()}
+              <ChartContainer timeRange={timeRange}>
+                <ChartRow height="385">
+                  {leftAxesList}
+                  <Charts>
+                    {chartList}
+                  </Charts>
+                  {rightAxesList}
+                </ChartRow>
+              </ChartContainer>
             </Resizable>
           </div>
         </div>

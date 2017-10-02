@@ -7,6 +7,7 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.10.01 CC - Added multidevice support
 * 2017.09.28 CC - Document created
 *
 ********************************************************* */
@@ -16,6 +17,7 @@ import { getActiveSensorList, channelsToActiveNameList } from '../mica/parseData
 import type { multiDeviceDataObjT } from '../../types/graphBufferTypes';
 import type { idType } from '../../types/paramTypes';
 
+/* DEPRECATED */
 export function createCsv(series: TimeSeries): string {
   let csvString = '';
   const colDelimiter = ',';
