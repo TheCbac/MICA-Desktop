@@ -6,6 +6,8 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.10.01 CC - Add multi device support
+* 2017.09.27 CC - Add dynamic single device, single sensor chart
 * 2017.09.14 CC - Document created
 *
 ********************************************************* */
@@ -23,23 +25,35 @@ import {
   getActiveDeviceList,
   getActiveSensorList
 } from '../../utils/mica/parseDataPacket';
+import type { idType } from '../../types/paramTypes';
 import type { collectionStateType, devicesStateType } from '../../types/stateTypes';
 
-type propsType = {
+type propsT = {
   collectionSettings: collectionStateType,
   devices: devicesStateType
 
 };
-type stateType = {
-  startTime: Date,
-  time: Date,
-  events: *
+// type stateType = {
+//   startTime: Date,
+//   time: Date,
+//   events: *
+// };
+type deviceGraphStateT = {
+  startTime: number,
+  endTime: number,
+  events: RingBuffer
+};
+
+type stateT = {
+  [deviceId: idType]: deviceGraphStateT
 };
 
 const sec2ms = 1000;
 /* Number of data points to display on the screen */
 const eventsSize = 200;
 const sampleRate = 100; /* TODO: make dynamic */
+/* Length of the window in ms */
+const windowLength = 5000;
 
 /* Graph refresh rate in Hz */
 const refreshRate = 20;
@@ -62,35 +76,92 @@ function getColor(idx: number): string {
   const index = idx > (len - 1) ? Math.floor(Math.random() * (len - 1)) : idx;
   return colorArray[index];
 }
+/* Default axis for when there aren't any active devices */
+const defaultAxis = (
+  <YAxis
+    key={0}
+    id="default"
+    label={''}
+    min={-20}
+    max={20}
+    width="70"
+    type="linear"
+  />
+);
+
+type axisLimitT = {
+  min: number,
+  max: number
+};
+/* Returns the limits for a sensor */
+function getChartLimits(deviceId: idType, sensorId: idType): axisLimitT {
+  const min = -20;
+  const max = 20;
+  return {
+    min,
+    max
+  }
+}
 
 export default class GraphComponent extends Component {
   /* Type defs */
-  props: propsType;
-  state: stateType;
+  props: propsT;
+  state: stateT;
   interval: number;
   /* Initial state */
-  constructor(props: propsType) {
+  constructor(props: propsT) {
     super(props);
-    /* Get the last events */
-    const eventBuffer = new RingBuffer(eventsSize);
     /* TODO: make dynamic with sample rate */
-    const prevEvents = getLastDataPointsDecimated(eventsSize, sampleRate / refreshRate);
-    /* Populate the buffer */
-    for (let i = 0; i < prevEvents.length; i++) {
-      eventBuffer.enq(prevEvents[i]);
-    }
-    /* Get the start time */
-    let startTime = new Date();
+    const activeDeviceIds = getActiveDeviceList(props.devices);
+    const defaultStateObj = {};
+    /* Default times */
+    let startTime = new Date().getTime();
     let endTime = startTime;
-    if (prevEvents.length) {
-      startTime = new Date(prevEvents[0].timestamp());
-      endTime = new Date(prevEvents[prevEvents.length - 1].timestamp());
+    /* Iterate through each active device */
+    for (let i = 0; i < activeDeviceIds.length; i++) {
+      const deviceId = activeDeviceIds[i];
+      /* Get the last events */
+      const eventBuffer = new RingBuffer(eventsSize);
+      const prevEvents = getLastDataPointsDecimated(deviceId, eventsSize, sampleRate / refreshRate);
+      /* Populate the buffer */
+      for (let j = 0; j < prevEvents.length; j++) {
+        eventBuffer.enq(prevEvents[j]);
+      }
+      if (prevEvents.length) {
+        startTime = prevEvents[0].timestamp().getTime();
+        endTime = prevEvents[prevEvents.length - 1].timestamp().getTime();
+      }
+      defaultStateObj[deviceId] = {
+        startTime,
+        endTime,
+        events: eventBuffer
+      };
     }
-    this.state = {
-      startTime,
-      time: endTime,
-      events: eventBuffer,
-    };
+
+    // const deviceId = activeDeviceIds[0];
+    // /* Default state */
+    // let startTime = new Date();
+    // let endTime = startTime;
+
+    // if (deviceId) {
+    //   /* Single device for now */
+    //   const prevEvents = getLastDataPointsDecimated(activeDeviceIds[0], eventsSize, sampleRate / refreshRate);
+    //   /* Populate the buffer */
+    //   for (let i = 0; i < prevEvents.length; i++) {
+    //     eventBuffer.enq(prevEvents[i]);
+    //   }
+    //   if (prevEvents.length) {
+    //     startTime = new Date(prevEvents[0].timestamp());
+    //     endTime = new Date(prevEvents[prevEvents.length - 1].timestamp());
+    //   }
+    // }
+    /* Set the state */
+    // this.state = {
+    //   startTime,
+    //   time: endTime,
+    //   events: eventBuffer,
+    // };
+    this.state = defaultStateObj;
   }
   /* Setup once created */
   componentDidMount() {
@@ -118,19 +189,83 @@ export default class GraphComponent extends Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
   /* Get the charts */
   getCharts() {
     const activeDeviceIds = getActiveDeviceList(this.props.devices);
-    /* Single device for now */
-    const device = this.props.devices[activeDeviceIds[0]];
-    /* Time range */
-    const endTime = this.state.time.getTime();
-    const timeRange = new TimeRange(endTime - (5 * sec2ms), endTime);
-    /* Create the time series */
-    const eventSeries = new TimeSeries({
-      name: 'raw',
-      events: this.state.events.peekN(this.state.events.size())
-    });
+    /* Iterate through each device */
+    for (let i = 0; i < activeDeviceIds.length; i++) {
+      const deviceId = activeDeviceIds[i];
+      const device = this.props.devices[deviceId];
+      /* Time range */
+      const { endTime } = this.state[deviceId];
+      const timeRange = new TimeRange(endTime - (5 * sec2ms), endTime);
+      const { events } = this.state[deviceId];
+      /* Create the time series */
+      const eventSeries = new TimeSeries({
+        name: device.name,
+        events: events.peekN(events.size())
+      });
+      /* Chart defaults */
+      let chartMin = defaultMin;
+      let chartMax = defaultMax;
+      let lineChart = (<LineChart series={new TimeSeries()} axis="y" />);
+      let legendStyle = {};
+      const legendCategories = [];
+      let label = 'value';
+      let name = '';
+      /* Get the sensors */
+      const { sensors } = device.settings;
+      if (sensors) {
+      /* Iterate through each sensor */
+        const activeSensorsIds = getActiveSensorList(sensors);
+        for (let j = 0; j < activeSensorsIds.length; j++) {
+          const sensor = sensors[activeSensorsIds[j]];
+          const { channels } = sensor;
+          if (channels) {
+            /* Multi channel */
+            const channelNames = channelsToActiveNameList(channels);
+            /* Calculate the ranges */
+            const minVals = [defaultMin];
+            const maxVals = [defaultMax];
+            /* Styles */
+            const stylesArray = [];
+            label = sensor.units;
+            name = sensor.name;
+            /* Calculate range and styles */
+            for (let k = 0; k < channelNames.length; j++) {
+              const channelName = channelNames[k];
+              const eventMin = eventSeries.min(channelName);
+              const eventMax = eventSeries.max(channelName);
+              /* Ensure values exist */
+              if (eventMin && eventMax) {
+                minVals.push(eventMin);
+                maxVals.push(eventMax);
+              }
+              /* Create the styles */
+              stylesArray.push({
+                key: channelName, color: getColor(k), width: 2
+              });
+              /* Crete the legend style */
+              legendCategories.push({
+                key: channelName, label: channelName
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // /* Single device for now */
+    // const device = this.props.devices[activeDeviceIds[0]];
+    // /* Time range */
+    // const endTime = this.state.time.getTime();
+    // const timeRange = new TimeRange(endTime - (5 * sec2ms), endTime);
+    // /* Create the time series */
+    // const eventSeries = new TimeSeries({
+    //   name: 'raw',
+    //   events: this.state.events.peekN(this.state.events.size())
+    // });
     const defaultMin = -20;
     const defaultMax = 20;
     /* Get the range */
@@ -141,6 +276,7 @@ export default class GraphComponent extends Component {
     const legendCategories = [];
     let label = 'value';
     let name = '';
+
     /* Make sure a device is present */
     if (device) {
       /* Single sensor for now */
@@ -232,18 +368,208 @@ export default class GraphComponent extends Component {
       )
     };
   }
+  /* Return the time range for the chart - use the latest time */
+  getTimeRange(): TimeRange {
+    /* Find the latest time */
+    const stateIdsList = Object.keys(this.state);
+    const endTimesList = [];
+    /* Iterate through the devices */
+    for (let i = 0; i < stateIdsList.length; i++) {
+      const deviceId = stateIdsList[i];
+      const deviceState = this.state[deviceId];
+      endTimesList.push(deviceState.endTime);
+    }
+    /* Return the latest time */
+    let endTime = Math.max(...endTimesList);
+    endTime = endTime > 0 ? endTime : windowLength;
+    let startTime = (endTime - windowLength);
+    startTime = startTime > 0 ? startTime : 0;
+    console.log('getTimeRange', new TimeRange(startTime, endTime));
+    return new TimeRange(startTime, endTime);
+  }
+  /* Return an array of axes based on the devices and sensors */
+  getMultiDeviceYAxis() {
+    const leftAxesList = [];
+    const rightAxesList = [];
+    const deviceIdList = getActiveDeviceList(this.props.devices);
+    let axisKey = 0;
+    /* Iterate through each device */
+    for (let i = 0; i < deviceIdList.length; i++) {
+      const deviceId = deviceIdList[i];
+      const device = this.props.devices[deviceId];
+      const { sensors } = device.settings;
+      const sensorsIdList = getActiveSensorList(sensors);
+      /* Iterate through each sensor */
+      for (let j = 0; j < sensorsIdList.length; j++) {
+        const sensorId = sensorsIdList[j];
+        const sensor = sensors[parseInt(sensorId, 10)];
+        const { min, max } = getChartLimits(deviceId, sensorId);
+        const axis = (
+          <YAxis
+            id={`${deviceId}-${sensorId}`}
+            label={`${sensor.name} [${sensor.units}]`}
+            min={min}
+            max={max}
+            width="70"
+            type="linear"
+            key={axisKey}
+          />
+        );
+        /* Push even axes to the left, odd to right */
+        if (axisKey % 2 === 0) {
+          leftAxesList.push(axis);
+        } else {
+          rightAxesList.push(axis);
+        }
+        /* Inc the key */
+        axisKey += 1;
+      }
+    }
+    /* Always have an axis */
+    if (axisKey === 0) {
+      leftAxesList.push(defaultAxis);
+    }
+    return {
+      leftAxes: leftAxesList,
+      rightAxes: rightAxesList
+    };
+  }
+  /* Return the legend for the chart */
+  getMultiDeviceLegend() {
+    const legendSensors = [];
+    let sensorCount = 0;
+    let channelCount = 0;
+    const deviceIdList = getActiveDeviceList(this.props.devices);
+    /* Iterate through each device */
+    for (let i = 0; i < deviceIdList.length; i++) {
+      const deviceId = deviceIdList[i];
+      const device = this.props.devices[deviceId];
+      const { sensors } = device.settings;
+      const sensorsIdList = getActiveSensorList(sensors);
+      /* Iterate through each sensor */
+      for (let j = 0; j < sensorsIdList.length; j++) {
+        const sensorId = sensorsIdList[j];
+        const sensor = sensors[parseInt(sensorId, 10)];
+        /* Create a new legend and style for each sensor */
+        legendSensors.push({
+          name: `${device.name}: ${sensor.name}`,
+          legend: {}
+        });
+        const channelNameList = channelsToActiveNameList(sensor.channels);
+        /* iterate through each channel */
+        const categories = [];
+        const styles = [];
+        for (let k = 0; k < channelNameList.length; k++) {
+          const channelName = channelNameList[k];
+          categories.push({ key: channelName, label: channelName });
+          styles.push({ key: channelName, color: getColor(channelCount), width: 2 });
+          // /* Create the legend categories */
+          // legendSensors[j].legend = {
+          //   categories: {
+          //     key: channelName, label: channelName
+          //   },
+          //   style: {
+          //     key: channelName, color: getColor(channelCount), width: 2
+          //   }
+          // };
+          /* Increment the channel count */
+          channelCount += 1;
+        }
+        console.log('categories', sensorCount, categories, styles);
+        /* assign the categories and styles */
+        legendSensors[sensorCount].legend = { categories, styles };
+        /* Increment the sensor count */
+        sensorCount += 1;
+      }
+    }
+    console.log('legend: ', legendSensors);
+    /* Create the list of Legends */
+    const legendList = [];
+    for (let l = 0; l < legendSensors.length; l++) {
+      const { name, legend } = legendSensors[l];
+      legendList.push(
+        <Col md={4} key={l}>
+          <span>{name}</span>
+          <Legend
+            key={l}
+            type={'line'}
+            style={styler(legend.styles)}
+            categories={legend.categories}
+          />
+        </Col>
+      );
+    }
+    return (
+      <Col md={12}>
+        {legendList}
+      </Col>
+    );
+    // /* Create the style */
+    // const style = styler(styleArray);
+    // return (
+    //   <Col md={12}>
+    //     <Col md={4}>
+    //       <span>Accelerometer</span>
+    //       <Legend
+    //         type={'line'}
+    //         style={style}
+    //         categories={legendCategories}
+    //       />
+    //     </Col>
+    //     <Col md={4}>
+    //       <span>Coil1</span>
+    //       <Legend
+    //         type={'line'}
+    //         style={style}
+    //         categories={legendCategories}
+    //       />
+    //     </Col>
+    //   </Col>
+    // );
+  }
+
+  getLineChart() {
+
+  }
+  /* Get the charts for multiple devices */
+  getMultiDeviceCharts() {
+    return (
+      <Charts>
+
+      </Charts>
+    );
+  }
+
+  /* Get the charts for multiple devices */
+  getChartObj() {
+    /* Get the time range for the chart(s) */
+    const timeRange = this.getTimeRange();
+    const { leftAxes, rightAxes } = this.getMultiDeviceYAxis();
+    return (
+      <ChartContainer timeRange={timeRange}>
+        <ChartRow height="385">
+          {leftAxes}
+          {this.getMultiDeviceCharts()}
+          {rightAxes}
+        </ChartRow>
+      </ChartContainer>
+    );
+  }
   /* Render function */
   render() {
     /* Styler */
-    const { chart, legend } = this.getCharts();
+    const chart = this.getChartObj();
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
         <Row>
+          {this.getMultiDeviceLegend()}
+        {/*
           <Col md={12}>
-            <Col md={3} mdOffset={1}>
-              {legend}
+            <Col md={6} mdOffset={0}>
+              {this.getMultiDeviceLegend()}
             </Col>
           </Col>
+          */}
         </Row>
         <hr />
         <div className="row">

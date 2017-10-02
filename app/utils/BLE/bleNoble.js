@@ -232,6 +232,7 @@ function readMetadataCallback(
 }
 
 /* ############### Sensing Data Callback ############### */
+
 /* Receive data packets back from the sensing module. */
 function nobleSensingDataCallback(id: idType, data: Buffer): void {
   /* Get the settings */
@@ -242,12 +243,15 @@ function nobleSensingDataCallback(id: idType, data: Buffer): void {
   if (result.success) {
     const { channels, periodLength, scalingConstant, gain } = result.payload;
     const parsed = parseDataPacket2(
-      data, channels, periodLength, scalingConstant, gain, getLastTime()
+      data, channels, periodLength, scalingConstant, gain, getLastTime(id)
     );
     /* Store the data for retrieval by the graph component */
-    logDataPoints(parsed);
+    logDataPoints(id, parsed);
   }
 }
+
+/* ##################################################### */
+
 
 /* Call back function for subscriptions */
 function nobleSubscribeCallback(id: string, char: string, error: ?string): void {

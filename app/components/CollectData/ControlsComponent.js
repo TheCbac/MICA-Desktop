@@ -47,6 +47,7 @@ export default class ControlsComponent extends Component {
     const deviceKeys = Object.keys(devices);
     /* Return array */
     const componentArray = [];
+    let key = 0;
     /* Iterate through the devices */
     for (let i = 0; i < deviceKeys.length; i++) {
       const deviceId = deviceKeys[i];
@@ -60,7 +61,9 @@ export default class ControlsComponent extends Component {
           const generatorId = generatorKeys[j];
           /* Check to see if it is active */
           if (generators[parseInt(generatorId, 10)].active) {
-            componentArray.push(mapGeneratorIdToComponent(deviceId, generatorId, j));
+            componentArray.push(mapGeneratorIdToComponent(deviceId, generatorId, key));
+            /* Increment the key */
+            key += 1;
           }
         }
       }
