@@ -181,8 +181,10 @@ export default class GeneratorBlock extends Component {
             <div>
               <Well style={{ overflow: 'hidden' }}>
                 <div >
+                  {name} has no configuration settings at this time
                   {/* this.getChannels() */}
                   {/* this.getParams() */}
+                  {/*
                   <Col md={12} xs={12}>
                     <span style={keybindingStyle}>KEYBINDINGS</span>
                   </Col>
@@ -218,6 +220,7 @@ export default class GeneratorBlock extends Component {
                       Decrease Speed <span style={{ fontSize: '1.5em', marginBottom: '30px' }}><Label>C</Label></span>
                     </span>
                   </Col>
+                  */}
                 </div>
               </Well>
             </div>

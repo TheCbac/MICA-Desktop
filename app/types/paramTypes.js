@@ -171,4 +171,8 @@ export type periodCountType = {
   lsb: number
 };
 
+export type zeroT = {
+  [channelId: number]: number
+};
+
 /* [] - END OF FILE */

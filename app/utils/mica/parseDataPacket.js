@@ -192,7 +192,7 @@ export function parseDataPacket2(
       eventArray.push(event);
     }
   } catch (err) {
-    log.warn('ParseDataPacket corrupted packet', err);
+    log.warn('ParseDataPacket: corrupted packet', err);
   }
   /* Return the event array */
   return eventArray;
@@ -343,6 +343,7 @@ type settingsFailedT = {
 };
 type settingsResultT = settingsSuccessT | settingsFailedT;
 /* Extract sensor settings from the state */
+// @FIXME: change for multi sensors
 export function getSensorSettingsFromState(sensors: sensorListType): settingsResultT {
   /* Extract params - Currently only looking for the first sensor */
   const sampleRate = 100; /* TODO: dynamically select */

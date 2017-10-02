@@ -28,7 +28,8 @@ import type {
   updateSenGenParamActionType,
   setDeviceActiveActionType,
   setSensorChannelsActionT,
-  setSensorRangeActionT
+  setSensorRangeActionT,
+  updateZeroActionType
 } from '../types/actionTypes';
 
 
@@ -273,6 +274,36 @@ const deviceHandlers = {
         active: { $set: newState }
       }
     });
+  },
+  UPDATE_ZERO(
+    state: devicesStateType,
+    action: updateZeroActionType
+  ): devicesStateType {
+    /* Extract parameters */
+    const { deviceId, sensorId, newZero } = action.payload;
+    console.log('reduceUpdateZero', newZero);
+    let updatedState = update(state, {});
+    const channelIds = Object.keys(newZero);
+    for (let i = 0; i < channelIds.length; i++) {
+      const channelId = channelIds[i];
+      const val = newZero[parseInt(channelId, 10)];
+      updatedState = update(updatedState, {
+        [deviceId]: {
+          settings: {
+            sensors: {
+              [sensorId]: {
+                channels: {
+                  [channelId]: {
+                    offset: { $set: val }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    return updatedState;
   }
 };
 

@@ -16,7 +16,6 @@ import type { idType, channelsT } from '../../app/types/paramTypes';
 import type {
   moduleNameType,
 } from '../../app/types/metaDataTypes';
-import type { devicesStateType } from '../../app/types/stateTypes';
 
 /* Factory for creating an device id */
 export function deviceIdFactory(): idType {
