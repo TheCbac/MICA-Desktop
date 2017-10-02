@@ -13,24 +13,16 @@
 ********************************************************* */
 import { TimeEvent, TimeSeries } from 'pondjs';
 import jetpack from 'fs-jetpack';
-import { createCsv } from './data2csv';
+import { createCsv, dataObjToCsv } from './data2csv';
 import type { idType } from '../../types/paramTypes';
+import type {
+  multiDeviceDataObjT,
+  deviceObjT,
+  startTimeT,
+  lastTimeT,
+  dataIndexT
+} from '../../types/graphBufferTypes';
 
-/* Multi device Objects */
-type dataArrayT = TimeEvent[];
-type startTimeT = number;
-type lastTimeT = number;
-type dataIndexT = number;
-/* Data type for a single device */
-export type deviceObjT = {
-  data: dataArrayT,
-  dataIndex: dataIndexT,
-  startTime: startTimeT,
-  lastTime: lastTimeT
-};
-type multiDeviceDataObjT = {
-  [deviceId: idType]: deviceObjT
-};
 /* Data Object for multi devices */
 const dataObj: multiDeviceDataObjT = {};
 
@@ -171,17 +163,23 @@ export function getLastDataPointsDecimated(
   return returnArray;
 }
 
-// /* Saves the current list of events in the buffer to the specified location */
-// export function saveLastRun(path: string): void {
-//   /* Create a time series from the dataArray */
-//   const timeSeries = new TimeSeries({
-//     name: 'testData',
-//     events: dataArray
-//   });
-//   /* convert to a csv */
-//   const csvData = createCsv(timeSeries);
-//   /* Write the data */
-//   jetpack.write(path, csvData);
-// }
+/* Saves the current list of events in the buffer to the specified location */
+export function saveLastRun(path: string): void {
+  /* Create a time series from the dataArray */
+  const csvData = dataObjToCsv(dataObj);
+  console.log('saveLast run');
+  /* Write the data */
+  jetpack.write(path, csvData);
 
-/* [] - 'END' OF FILE */
+  // const timeSeries = new TimeSeries({
+  //   name: 'testData',
+  //   events: eventList
+  // });
+
+  /* convert to a csv */
+  // const csvData = createCsv(timeSeries);
+  // /* Write the data */
+  // jetpack.write(path, csvData);
+}
+
+/* [] - END OF FILE */
