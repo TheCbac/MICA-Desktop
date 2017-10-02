@@ -1,7 +1,7 @@
 {
   "name": "mica-desktop",
   "productName": "mica-desktop",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Desktop version of MICA",
   "main": "./main.js",
   "author": {
