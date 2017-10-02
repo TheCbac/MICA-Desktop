@@ -20,6 +20,7 @@ import {
   setSensorParams,
   setDeviceActive
 } from '../actions/devicesActions';
+import { zeroSensor } from '../actions/collectionActions';
 
 
 function mapStateToProps(state) {
@@ -35,7 +36,8 @@ const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
   setSensorActive,
   setGeneratorActive,
   setSensorChannels,
-  setSensorParams
+  setSensorParams,
+  zeroSensor
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);

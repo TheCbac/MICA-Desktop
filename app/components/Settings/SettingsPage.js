@@ -52,6 +52,10 @@ type propsType = {
     sensorId: idType,
     paramName: string,
     paramValue: number
+  ) => thunkType,
+  zeroSensor: (
+    deviceId: idType,
+    sensorId: idType
   ) => thunkType
 };
 
@@ -86,6 +90,7 @@ export default class sensorSettings extends Component {
           setSensorChannels={this.props.setSensorChannels}
           setSensorParams={this.props.setSensorParams}
           setGeneratorActive={this.props.setGeneratorActive}
+          zeroSensor={this.props.zeroSensor}
         />
       );
     }
