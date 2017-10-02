@@ -17,7 +17,7 @@ import type {
 import { bleWriteCharacteristic } from '../utils/BLE/bleFunctions';
 // import { writeCharacteristic } from '../utils/mica/micaNobleDevices';
 import { micaCharUuids } from '../utils/mica/micaConstants';
-import { resetBuffer, resetStartTime } from '../utils/dataStreams/graphBuffer';
+import { resetDataBuffer, resetStartTime } from '../utils/dataStreams/graphBuffer';
 import log from '../utils/loggingUtils';
 import { encodeStartPacket, encodeStopPacket } from '../utils/mica/parseDataPacket';
 import type { stateType, graphSettingsType } from '../types/stateTypes';
@@ -73,6 +73,10 @@ export function startCollecting(): thunkType {
             true
           );
           console.log('startCollecting: writeResult', result);
+          /* Reset the data buffer */
+          resetDataBuffer(deviceId);
+          /* Reset the start time of the data collection */
+          resetStartTime(deviceId);
         }
       }
     }
@@ -80,10 +84,6 @@ export function startCollecting(): thunkType {
     if (sensorStarted) {
       /* Indicate that the device is being collected */
       dispatch(toggleCollectionState(true));
-      /* Reset the data buffer */
-      resetBuffer();
-      /* Reset the start time of the data collection */
-      resetStartTime();
     }
   };
 }

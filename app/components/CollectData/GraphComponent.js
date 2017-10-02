@@ -169,21 +169,49 @@ export default class GraphComponent extends Component {
     this.interval = setInterval(
       () => {
         if (this.props.collectionSettings.collecting) {
-          const t = new Date();
-          /* Get the sample rate */
-          const datum = getDataPointDecimated(sampleRate / refreshRate);
-          if (datum) {
-            /* Enqueue the event */
-            const newEvent = this.state.events;
-            newEvent.enq(datum);
-            /* Update the state */
-            this.setState({ time: t, events: newEvent });
+          const deviceIdList = getActiveDeviceList(this.props.devices);
+          /* Iterate through each device */
+          for (let i = 0; i < deviceIdList.length; i++) {
+            const deviceId = deviceIdList[i];
+            // const device = this.props.devices[deviceId];
+            /* Get the latest point */
+            const datum = getDataPointDecimated(deviceId, sampleRate / refreshRate);
+            if (datum) {
+              /* Get the time */
+              const t = datum.timestamp().getTime();
+              /* Enqueue the event */
+              const newEvent = this.state[deviceId].events;
+              newEvent.enq(datum);
+              /* Update the state */
+              this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+            }
           }
         }
       },
       /* Call function every refresh period */
       refreshPeriod
     );
+  // /* Setup once created */
+  // componentDidMount() {
+  //   /* Simulate events */
+  //   this.interval = setInterval(
+  //     () => {
+  //       if (this.props.collectionSettings.collecting) {
+  //         const t = new Date();
+  //         /* Get the sample rate */
+  //         const datum = getDataPointDecimated(sampleRate / refreshRate);
+  //         if (datum) {
+  //           /* Enqueue the event */
+  //           const newEvent = this.state.events;
+  //           newEvent.enq(datum);
+  //           /* Update the state */
+  //           this.setState({ time: t, events: newEvent });
+  //         }
+  //       }
+  //     },
+  //     /* Call function every refresh period */
+  //     refreshPeriod
+  //   );
   }
   /* Clear Interval on unmount */
   componentWillUnmount() {
@@ -369,7 +397,7 @@ export default class GraphComponent extends Component {
     };
   }
   /* Return the time range for the chart - use the latest time */
-  getTimeRange(): TimeRange {
+  getMultiDeviceTimeRange(): TimeRange {
     /* Find the latest time */
     const stateIdsList = Object.keys(this.state);
     const endTimesList = [];
@@ -379,12 +407,13 @@ export default class GraphComponent extends Component {
       const deviceState = this.state[deviceId];
       endTimesList.push(deviceState.endTime);
     }
-    /* Return the latest time */
+    /* Get the latest time & assign defaults */
     let endTime = Math.max(...endTimesList);
     endTime = endTime > 0 ? endTime : windowLength;
+    /* Get the start time and assign defaults */
     let startTime = (endTime - windowLength);
     startTime = startTime > 0 ? startTime : 0;
-    console.log('getTimeRange', new TimeRange(startTime, endTime));
+    /* return the range */
     return new TimeRange(startTime, endTime);
   }
   /* Return an array of axes based on the devices and sensors */
@@ -463,26 +492,15 @@ export default class GraphComponent extends Component {
           const channelName = channelNameList[k];
           categories.push({ key: channelName, label: channelName });
           styles.push({ key: channelName, color: getColor(channelCount), width: 2 });
-          // /* Create the legend categories */
-          // legendSensors[j].legend = {
-          //   categories: {
-          //     key: channelName, label: channelName
-          //   },
-          //   style: {
-          //     key: channelName, color: getColor(channelCount), width: 2
-          //   }
-          // };
           /* Increment the channel count */
           channelCount += 1;
         }
-        console.log('categories', sensorCount, categories, styles);
         /* assign the categories and styles */
         legendSensors[sensorCount].legend = { categories, styles };
         /* Increment the sensor count */
         sensorCount += 1;
       }
     }
-    console.log('legend: ', legendSensors);
     /* Create the list of Legends */
     const legendList = [];
     for (let l = 0; l < legendSensors.length; l++) {
@@ -504,46 +522,55 @@ export default class GraphComponent extends Component {
         {legendList}
       </Col>
     );
-    // /* Create the style */
-    // const style = styler(styleArray);
-    // return (
-    //   <Col md={12}>
-    //     <Col md={4}>
-    //       <span>Accelerometer</span>
-    //       <Legend
-    //         type={'line'}
-    //         style={style}
-    //         categories={legendCategories}
-    //       />
-    //     </Col>
-    //     <Col md={4}>
-    //       <span>Coil1</span>
-    //       <Legend
-    //         type={'line'}
-    //         style={style}
-    //         categories={legendCategories}
-    //       />
-    //     </Col>
-    //   </Col>
-    // );
-  }
-
-  getLineChart() {
-
   }
   /* Get the charts for multiple devices */
   getMultiDeviceCharts() {
+    const chartList = [];
+    const deviceIdList = getActiveDeviceList(this.props.devices);
+    /* Iterate through each device */
+    for (let i = 0; i < deviceIdList.length; i++) {
+      const deviceId = deviceIdList[i];
+      const device = this.props.devices[deviceId];
+      const { sensors } = device.settings;
+      /* Retrieve the events */
+      const { events } = this.state[deviceId];
+      /* Construct the time series */
+      const eventSeries = new TimeSeries({
+        name: device.name,
+        events: events.peekN(events.size())
+      });
+      /* Iterate through the active sensors */
+      const sensorIdList = getActiveSensorList(sensors);
+      for (let j = 0; j < sensorIdList.length; j++) {
+        const sensorId = sensorIdList[j];
+        const sensor = sensors[parseInt(sensorId, 10)];
+        const { channels } = sensor;
+        /* Multi channel */
+        const channelNames = channelsToActiveNameList(channels);
+        /* Push the line chart */
+        chartList.push(
+          <LineChart
+            key={i}
+            axis={`${deviceId}-${sensorId}`}
+            series={eventSeries}
+            columns={channelNames}
+            interpolation="curveLinear"
+            breakLine
+          />
+        );
+      }
+    }
     return (
       <Charts>
-
+        {chartList}
       </Charts>
     );
   }
 
   /* Get the charts for multiple devices */
-  getChartObj() {
+  chartWrapper() {
     /* Get the time range for the chart(s) */
-    const timeRange = this.getTimeRange();
+    const timeRange = this.getMultiDeviceTimeRange();
     const { leftAxes, rightAxes } = this.getMultiDeviceYAxis();
     return (
       <ChartContainer timeRange={timeRange}>
@@ -557,25 +584,16 @@ export default class GraphComponent extends Component {
   }
   /* Render function */
   render() {
-    /* Styler */
-    const chart = this.getChartObj();
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
         <Row>
           {this.getMultiDeviceLegend()}
-        {/*
-          <Col md={12}>
-            <Col md={6} mdOffset={0}>
-              {this.getMultiDeviceLegend()}
-            </Col>
-          </Col>
-          */}
         </Row>
         <hr />
         <div className="row">
           <div className="col-md-12">
             <Resizable>
-              {chart}
+              {this.chartWrapper()}
             </Resizable>
           </div>
         </div>
