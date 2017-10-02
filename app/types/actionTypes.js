@@ -12,7 +12,8 @@ import type {
   scanTypes,
   idType,
   deviceSettingsObjType,
-  channelsT
+  channelsT,
+  zeroT
 } from './paramTypes';
 import type { metaDataObjType, moduleNameType } from './metaDataTypes';
 import type { selectType } from './stateTypes';
@@ -155,4 +156,15 @@ export type setDeviceActiveActionType = {
     newState: boolean
   }
 };
+
+/* Set the zeros for a sensor */
+export type updateZeroActionType = {
+  type: 'UPDATE_ZERO',
+  payload: {
+    deviceId: idType,
+    sensorId: idType,
+    newZero: zeroT
+  }
+};
+
 /* [] - END OF FILE */

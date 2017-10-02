@@ -18,6 +18,7 @@ import { Col, Row, Collapse, Well } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ChannelSelector from './ChannelSelector';
 import ParamSelector from './ParamSelector';
+import ZeroBtn from './ZeroBtn';
 import type { idType, sensorParamType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
 import type { setSensorChannelsActionT } from '../../types/actionTypes';
@@ -47,6 +48,10 @@ type PropsType = {
     sensorId: idType,
     paramName: string,
     paramValue: number
+  ) => thunkType,
+  zeroSensor: (
+    deviceId: idType,
+    sensorId: idType
   ) => thunkType
 };
 
@@ -160,6 +165,16 @@ export default class SensorBlock extends Component {
     /* Toggle the state of the component and open/close the settings list */
     this.setState({ active: newActive, open: newActive });
   }
+  zero() {
+    const { deviceId, sensorId, zeroSensor } = this.props;
+    return (
+      <ZeroBtn
+        deviceId={deviceId}
+        sensorId={sensorId}
+        zeroSensor={zeroSensor}
+      />
+    );
+  }
   /* Render function */
   render() {
     const sensorStyle = {
@@ -194,6 +209,7 @@ export default class SensorBlock extends Component {
                 <div>
                   { this.getChannels() }
                   { this.getParams() }
+                  { this.zero() }
                 </div>
               </Well>
             </div>
