@@ -92,26 +92,60 @@ type axisLimitT = {
   min: number,
   max: number
 };
-/* Returns the limits for a sensor */
-function getChartLimits(deviceId: idType, sensorId: idType): axisLimitT {
-  const min = -20;
-  const max = 20;
+
+type styleT = {
+  key: string,
+  color: string,
+  width: number
+};
+type categoryT = {
+  key: string,
+  label: string
+};
+/* Construct the styler */
+function constructStyles(
+  channelName: string, channelCount: number
+): { style: styleT, category: categoryT } {
   return {
-    min,
-    max
+    style: { key: channelName, color: getColor(channelCount), width: 2 },
+    category: { key: channelName, label: channelName }
+  };
+}
+/* Returns the limits for a sensor */
+function getChartLimits(channelNames: string[], eventSeries: TimeSeries): axisLimitT {
+  const min = -15;
+  const max = 15;
+  const minVals = [min];
+  const maxVals = [max];
+  /* Calculate range and styles */
+  for (let i = 0; i < channelNames.length; i++) {
+    const channelName = channelNames[i];
+    const eventMin = eventSeries.min(channelName);
+    const eventMax = eventSeries.max(channelName);
+    /* Ensure values exist */
+    if (eventMin && eventMax) {
+      minVals.push(eventMin);
+      maxVals.push(eventMax);
+    }
+  }
+
+  return {
+    min: Math.min(...minVals),
+    max: Math.max(...maxVals)
   };
 }
 /* Return the Y axes */
 function constructYAxis(
   deviceId: idType, device: devicesStateObjType,
   sensorId: idType, sensor: sensorParamType,
-  sensorCount: number
+  sensorCount: number, channelNames: string[],
+  eventSeries: TimeSeries
 ): { leftAxis: *, rightAxis: * } {
   /* Push to left or right */
   const leftAxis = [];
   const rightAxis = [];
   /* Get the bounds */
-  const { min, max } = getChartLimits(deviceId, sensorId);
+  const { min, max } = getChartLimits(channelNames, eventSeries);
   /* Create the component */
   const axis = (
     <YAxis
@@ -133,24 +167,6 @@ function constructYAxis(
   return {
     leftAxis,
     rightAxis
-  };
-}
-type styleT = {
-  key: string,
-  color: string,
-  width: number
-};
-type categoryT = {
-  key: string,
-  label: string
-};
-/* Construct the styler */
-function constructStyles(
-  channelName: string, channelCount: number
-): { style: styleT, category: categoryT } {
-  return {
-    style: { key: channelName, color: getColor(channelCount), width: 2 },
-    category: { key: channelName, label: channelName }
   };
 }
 /* Construct the legends */
@@ -263,7 +279,6 @@ export default class GraphComponent extends Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
-
   /* Return the time range for the chart - use the latest time */
   getMultiDeviceTimeRange(): TimeRange {
     /* Find the latest time */
@@ -314,13 +329,6 @@ export default class GraphComponent extends Component {
       for (let j = 0; j < sensorsIdList.length; j++) {
         const sensorId = sensorsIdList[j];
         const sensor = sensors[parseInt(sensorId, 10)];
-        /* construct the Y Axes */
-        const { leftAxis, rightAxis } = constructYAxis(
-          deviceId, device, sensorId, sensor, sensorCount
-        );
-        /* Push to their lists */
-        leftAxesList.push(...leftAxis);
-        rightAxesList.push(...rightAxis);
         /* Create a new legend and style for each sensor */
         legendSensors.push({
           name: `${device.name}: ${sensor.name}`,
@@ -339,6 +347,13 @@ export default class GraphComponent extends Component {
           /* Increment the channel count */
           channelCount += 1;
         }
+        /* construct the Y Axes */
+        const { leftAxis, rightAxis } = constructYAxis(
+          deviceId, device, sensorId, sensor, sensorCount, channelNameList, eventSeries
+        );
+        /* Push to their lists */
+        leftAxesList.push(...leftAxis);
+        rightAxesList.push(...rightAxis);
         /* Construct and store the line chart */
         chartList.push(constructLineCharts(
           i, deviceId, sensorId, eventSeries, channelNameList, stylesList
