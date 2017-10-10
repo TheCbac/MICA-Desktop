@@ -36,8 +36,8 @@ const installExtensions = async () => {
 
 
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
+  /* Respect the OSX convention of having the application in memory even
+   * after all windows have been closed */
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -86,14 +86,7 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
-
-  /* Set the devTools in development mode */
-  let tools = false;
-  // let tools = true;
-  if (process.env.NODE_ENV === 'development') {
-    tools = true;
-  }
-  // Electron does not recognize when variable is set to development mode. It stays in production
+  /* Create the main window */
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
@@ -101,14 +94,16 @@ app.on('ready', async () => {
     minWidth: 1000,
     minHeight: 475,
     webPreferences: {
-      devTools: tools
+      devTools: true /* Enables, but does not show */
     }
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-  mainWindow.webContents.openDevTools('detach');
-
+  /* Show the dev tools in development.  */
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools('detach');
+  }
 
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
