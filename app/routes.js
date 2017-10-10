@@ -1,9 +1,9 @@
 /* **********************************************************
-* File: index.js
+* File: routes.js
 *
-* Brief: Top level file for the application
+* Brief: Maps file location to screen react component
 *
-* Authors: George Whitfield, Craig Cheney
+* Authors: Craig Cheney, George Whitfield
 *
 * 2017.06.08 CC - Document created
 *
@@ -11,12 +11,13 @@
 import React from 'react';
 import { HashRouter as Router } from 'react-router-dom';
 import { Switch, Route, hashHistory } from 'react-router';
-import App from './containers/App';
+import App from './containers/AppContainer';
 import DevicesContainer from './containers/DevicesContainer';
 import CollectDataContainer from './containers/CollectDataContainer';
 import AnalysisContainer from './containers/AnalysisContainer';
 import SettingsContainer from './containers/SettingsContainer';
 import AppModalContainer from './containers/AppModalContainer';
+import DeveloperContainer from './containers/DeveloperContainer';
 
 export default () => (
   <Router history={hashHistory}>
@@ -26,13 +27,11 @@ export default () => (
         <Route path="/collectData" component={CollectDataContainer} />
         <Route path="/settings" component={SettingsContainer} />
         <Route path="/analyze" component={AnalysisContainer} />
+        <Route path="/developer" component={DeveloperContainer} />
         <Route path="/" component={DevicesContainer} />
       </Switch>
     </App>
   </Router>
 );
-
-/* GW - <Route path="/" component={DevicesPage} must be last in the Route order
- or else the tabs will not work correctly. */
 
 /* [] - END OF FILE */
