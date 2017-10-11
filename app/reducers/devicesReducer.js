@@ -29,7 +29,8 @@ import type {
   setDeviceActiveActionType,
   setSensorChannelsActionT,
   setSensorRangeActionT,
-  updateZeroActionType
+  updateZeroActionType,
+  updateDeviceNameT
 } from '../types/actionTypes';
 
 
@@ -304,6 +305,21 @@ const deviceHandlers = {
       });
     }
     return updatedState;
+  },
+  /* Update the local name of the device */
+  UPDATE_DEVICE_NAME(
+    state: devicesStateType,
+    action: updateDeviceNameT
+  ): devicesStateType {
+    /* Extract parameters */
+    const { deviceId, name } = action.payload;
+    return update(state, {
+      [deviceId]: {
+        name: {
+          $set: name
+        }
+      }
+    });
   }
 };
 

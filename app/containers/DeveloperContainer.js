@@ -12,15 +12,17 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DeveloperPage from '../components/Developer/DeveloperPage';
+import { setDeviceName } from '../actions/developerActions';
 
 function mapStateToProps(state) {
   return {
+    devices: state.devices
   };
 }
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-
+  setDeviceName
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeveloperPage);

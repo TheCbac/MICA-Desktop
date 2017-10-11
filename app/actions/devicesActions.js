@@ -30,7 +30,8 @@ import type {
   updateSenGenParamActionType,
   setDeviceActiveActionType,
   setSensorChannelsActionT,
-  setSensorRangeActionT
+  setSensorRangeActionT,
+  updateDeviceNameT
 } from '../types/actionTypes';
 import type { stateType } from '../types/stateTypes';
 import type {
@@ -53,6 +54,8 @@ export const UPDATE_SEN_GEN_PARAMS = 'UPDATE_SEN_GEN_PARAMS';
 export const SET_DEVICE_ACTIVE = 'SET_DEVICE_ACTIVE';
 export const SET_SENSOR_CHANNELS = 'SET_SENSOR_CHANNELS';
 export const SET_SENSOR_RANGE = 'SET_SENSOR_RANGE';
+export const UPDATE_DEVICE_NAME = 'UPDATE_DEVICE_NAME';
+
 
 /* Action creator for when an advertising MICA device is discovered */
 export function foundAdvertisingDevice(deviceObj: newDeviceObjType): foundDeviceActionType {
@@ -375,6 +378,17 @@ export function updateSenGenParams(
     payload: {
       deviceId,
       deviceSettings
+    }
+  };
+}
+
+/* Set the local name of the device */
+export function updateDeviceName(deviceId: idType, name: string): updateDeviceNameT {
+  return {
+    type: UPDATE_DEVICE_NAME,
+    payload: {
+      deviceId,
+      name
     }
   };
 }

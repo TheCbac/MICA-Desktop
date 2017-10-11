@@ -167,4 +167,14 @@ export type updateZeroActionType = {
   }
 };
 
+/* Update the name of a device */
+export type updateDeviceNameT = {
+  type: 'UPDATE_DEVICE_NAME',
+  payload: {
+    deviceId: idType,
+    name: string
+  }
+};
+
+
 /* [] - END OF FILE */
