@@ -16,4 +16,18 @@ export type updatePendingActionType = {
     version: string
   }
 };
+
+export type showUserSettingsActionT = {
+  type: 'SHOW_USER_SETTINGS',
+  payload: {
+    show: boolean
+  }
+};
+
+export type enableDeveloperActionT = {
+  type: 'ENABLE_DEVELOPER',
+  payload: {
+    developer: boolean
+  }
+};
 /* [] - END OF FILE */

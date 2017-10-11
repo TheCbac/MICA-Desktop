@@ -11,23 +11,30 @@
 ********************************************************* */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import UpdateModal from '../components/UpdateModal';
-
+import Modals from '../components/modals/Modals';
+import { showUserSettings, enableDeveloper } from '../actions/appWideActions';
 
 function mapStateToProps(state) {
   return {
-    pending: state.appWide.update.pending,
-    version: state.appWide.update.version
+    update: {
+      pending: state.appWide.update.pending,
+      version: state.appWide.update.version
+    },
+    userSettings: {
+      show: state.appWide.userSettings.show,
+      developer: state.appWide.userSettings.developer,
+    }
   };
 }
 
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-
+  showUserSettings,
+  enableDeveloper
 }, dispatcher);
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateModal);
+export default connect(mapStateToProps, mapDispatchToProps)(Modals);
 
 /* [] - END OF FILE */
 
