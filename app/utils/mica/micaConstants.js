@@ -87,7 +87,8 @@ export const micaIDs: bleIdObjType = {
 export const DATA_CLOCK_FREQ: constantType = 100000;
 export const CMD_STOP: constantType = 0x00;
 export const CMD_START: constantType = 0x01;
-
+/* Command to set the name */
+export const CMD_SET_NAME: constantType = 0x05;
 
 /* Wrapper function for mapping IDs to names  */
 export function moduleToName(module: moduleNameType, id: number): string {

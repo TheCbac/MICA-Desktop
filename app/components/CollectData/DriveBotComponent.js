@@ -12,7 +12,7 @@
 import React, { Component } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import FA from 'react-fontawesome';
-import { bleWriteCharacteristic, bleReadCharacteristic
+import { bleWriteCharacteristic
  } from '../../utils/BLE/bleFunctions';
 import { micaCharUuids } from '../../utils/mica/micaConstants';
 
@@ -79,7 +79,7 @@ export default class DriveBot extends Component {
   onMouseDown(direction: directionType): void {
     const { deviceId } = this.props;
     /* Get the characteristic UUID */
-    const { communicationCommands, energyMetadata } = micaCharUuids;
+    const { communicationCommands } = micaCharUuids;
     let directionWord;
     switch (direction) {
       case 'forward':
@@ -121,19 +121,19 @@ export default class DriveBot extends Component {
     const { deviceId } = this.props;
     /* Get the characteristic UUID */
     const { communicationCommands } = micaCharUuids;
-    /* Needs to be refactored to be dynamic */
+    /* @TODO Needs to be refactored to be dynamic */
     const data = [0x05, 0x01, 0x01, 0x00, 0xff, 0xff, 0x00, 0x00];
 
-    // const result = bleWriteCharacteristic(
-    //   'ble',
-    //   deviceId,
-    //   communicationCommands,
-    //   data,
-    //   (dId, charUuid, err) => {
-    //     console.log('writeCharCallback:', dId, charUuid, err);
-    //   },
-    //   true
-    // );
+    const result = bleWriteCharacteristic(
+      'ble',
+      deviceId,
+      communicationCommands,
+      data,
+      (dId, charUuid, err) => {
+        console.log('writeCharCallback:', dId, charUuid, err);
+      },
+      true
+    );
   }
 
   render() {

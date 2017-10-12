@@ -12,8 +12,26 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { IndexLinkContainer, LinkContainer } from 'react-router-bootstrap';
+import FontAwesome from 'react-fontawesome';
+import { showUserSettings } from '../actions/appWideActions';
+import store from '../index';
+
+type propsT = {
+  developer: boolean
+};
 
 export default class Header extends Component {
+  props: propsT;
+
+  developerState() {
+    if (this.props.developer) {
+      return (
+        <LinkContainer to="/developer" activeClassName="active">
+          <NavItem>DEVELOPER</NavItem>
+        </LinkContainer>
+      );
+    }
+  }
   render() {
     return (
       <Navbar inverse collapseOnSelect>
@@ -34,9 +52,13 @@ export default class Header extends Component {
             <LinkContainer to="/collectData" activeClassName="active">
               <NavItem>COLLECT</NavItem>
             </LinkContainer>
-            <LinkContainer to="/analyze" activeClassName="active">
+            {this.developerState()}
+            {/* <LinkContainer to="/analyze" activeClassName="active">
               <NavItem>ANALYZE</NavItem>
-            </LinkContainer>
+            </LinkContainer> */}
+          </Nav>
+          <Nav pullRight>
+            <NavItem onClick={() => { store.dispatch(showUserSettings(true)); }}><FontAwesome name="bars" size="lg" /></NavItem>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

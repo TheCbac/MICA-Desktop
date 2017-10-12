@@ -45,22 +45,15 @@ export type devicesStateType = {
   [deviceId: string]: devicesStateObjType
 };
 
-// export type devicesStateType = {
-//   advertising: noblePeripheralType[],
-//   connecting: noblePeripheralType[],
-//   connected: noblePeripheralType[],
-//   disconnecting: noblePeripheralType[],
-//   metadata: metaDataType,
-//   selected: { sensor: selectType, generator: selectType},
-//   unselected: { sensors: selectType[], generators: selectType[]},
-//   deviceSettings: deviceSettingsType
-// };
-
 /* For app wide actions */
 export type appWideStateType = {
   update: {
     pending: boolean,
     version: string
+  },
+  userSettings: {
+    show: boolean,
+    developer: boolean
   }
 };
 
