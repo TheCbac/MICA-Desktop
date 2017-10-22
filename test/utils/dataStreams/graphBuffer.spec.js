@@ -20,7 +20,8 @@ import {
   logDataPoints,
   resetDataBuffer,
   getDataLength,
-  getLastDataPointsDecimated
+  getLastDataPointsDecimated,
+  getDataSeries
 } from '../../../app/utils/dataStreams/graphBuffer';
 import { deviceIdFactory } from '../../factories/factories';
 import { accDataFactory } from '../../factories/dataFactories';
@@ -222,7 +223,25 @@ describe('graphBuffer.spec.js', () => {
         expect(getDataPointDecimated(deviceId2, decimation)).toEqual(data2[10]);
       });
     });
+    describe('getDataSeries', () => {
+      it('should return the full data series', () => {
+        /* Create the dummy data */
+        const data = [];
+        const startTime = getStartTime(deviceId1);
+        for (let i = 0; i < 11; i++) {
+          data.push(accDataFactory(['x'], startTime + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId1, data)).toEqual(11);
+        /* Retrieve the data points */
+        const dataReturned = getDataSeries(deviceId1);
+        expect(dataReturned.length).toBe(data.length);
+        /* Check that all of the points match */
+        for (let j = 0; j < data.length; j++) {
+          expect(dataReturned[j]).toEqual(data[j]);
+        }
+      });
+    });
   });
 });
-
 /* [] - END OF FILE */
