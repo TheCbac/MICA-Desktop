@@ -6,6 +6,7 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.10.10 CC - High resolution recall support
 * 2017.10.01 CC - Add multi device support
 * 2017.09.27 CC - Add dynamic single device, single sensor chart
 * 2017.09.14 CC - Document created
@@ -15,11 +16,13 @@ import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
-  styler, Resizable, Legend
+  styler, Resizable, Legend, EventMarker
  } from 'react-timeseries-charts';
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
-import { getDataPointDecimated, getLastDataPointsDecimated } from '../../utils/dataStreams/graphBuffer';
+import {
+  getDataPointDecimated, getLastDataPointsDecimated, getDataSeries
+} from '../../utils/dataStreams/graphBuffer';
 import {
   channelsToActiveNameList,
   getActiveDeviceList,
@@ -40,7 +43,8 @@ type propsT = {
 type deviceGraphStateT = {
   startTime: number,
   endTime: number,
-  events: RingBuffer
+  events: RingBuffer,
+  highRes: TimeSeries
 };
 
 type stateT = {
@@ -230,6 +234,13 @@ export default class GraphComponent extends Component {
       /* Get the last events */
       const eventBuffer = new RingBuffer(eventsSize);
       const prevEvents = getLastDataPointsDecimated(deviceId, eventsSize, sampleRate / refreshRate);
+
+      const allEvents = getDataSeries(deviceId);
+      const highRes = new TimeSeries({
+        name: deviceId,
+        events: allEvents
+      });
+
       /* Populate the buffer */
       for (let j = 0; j < prevEvents.length; j++) {
         eventBuffer.enq(prevEvents[j]);
@@ -241,7 +252,8 @@ export default class GraphComponent extends Component {
       defaultStateObj[deviceId] = {
         startTime,
         endTime,
-        events: eventBuffer
+        events: eventBuffer,
+        highRes
       };
     }
     this.state = defaultStateObj;
@@ -320,10 +332,19 @@ export default class GraphComponent extends Component {
       /* Retrieve the events */
       const { events } = this.state[deviceId];
       /* Construct the time series */
-      const eventSeries = new TimeSeries({
-        name: device.name,
-        events: events.peekN(events.size())
-      });
+      let eventSeries;
+      if (!this.props.collectionSettings.collecting) {
+        eventSeries = this.state[deviceId].highRes;
+      } else {
+        eventSeries = new TimeSeries({
+          name: device.name,
+          events: events.peekN(events.size())
+        });
+      }
+      // const eventSeries = new TimeSeries({
+      //   name: device.name,
+      //   events: events.peekN(events.size())
+      // });
       /* Iterate through each sensor */
       const sensorsIdList = getActiveSensorList(sensors);
       for (let j = 0; j < sensorsIdList.length; j++) {
@@ -401,7 +422,10 @@ export default class GraphComponent extends Component {
         <div className="row">
           <div className="col-md-12">
             <Resizable>
-              <ChartContainer timeRange={timeRange}>
+              <ChartContainer
+                timeRange={timeRange}
+                enablePanZoom
+              >
                 <ChartRow height="385">
                   {leftAxesList}
                   <Charts>

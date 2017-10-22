@@ -11,9 +11,9 @@
 * 2017.09.27 CC - Document created
 *
 ********************************************************* */
-import { TimeEvent, TimeSeries } from 'pondjs';
+import { TimeEvent } from 'pondjs';
 import jetpack from 'fs-jetpack';
-import { createCsv, dataObjToCsv } from './data2csv';
+import { dataObjToCsv } from './data2csv';
 import type { idType } from '../../types/paramTypes';
 import type {
   multiDeviceDataObjT,
@@ -163,6 +163,14 @@ export function getLastDataPointsDecimated(
   return returnArray;
 }
 
+/* Return all of the data points in a series */
+export function getDataSeries(id: idType): TimeEvent[] {
+  /* Get the device Obj */
+  const deviceObj = getDeviceObj(id);
+  /* Return the full series */
+  return deviceObj.data;
+}
+
 /* Saves the current list of events in the buffer to the specified location */
 export function saveLastRun(path: string): void {
   /* Create a time series from the dataArray */
@@ -170,16 +178,6 @@ export function saveLastRun(path: string): void {
   console.log('saveLast run');
   /* Write the data */
   jetpack.write(path, csvData);
-
-  // const timeSeries = new TimeSeries({
-  //   name: 'testData',
-  //   events: eventList
-  // });
-
-  /* convert to a csv */
-  // const csvData = createCsv(timeSeries);
-  // /* Write the data */
-  // jetpack.write(path, csvData);
 }
 
 /* [] - END OF FILE */

@@ -1,16 +1,18 @@
 /* **********************************************************
-* File: App.spec.js
+* File: test/components/App.spec.js
 *
 * Brief: Test for the app component
 *
-* Author: George Whitfield
-* Date: 2017.07.28
+* Authors: George Whitfield, Craig Cheney
 *
-**********************************************************/
+* 2017.10.12 CC - Refactored for App container
+* 2017.07.28 GW - Document Created
+*
+********************************************************* */
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import App from '../../app/containers/App';
+import App from '../../app/components/App';
 
 // Begin test
 describe('App', () => {
@@ -20,8 +22,8 @@ describe('App', () => {
   });
   it('Contains a header and a footer', () => {
     const header = app.find('Header');
-    const footer = app.find('Footer');
     expect(header).toBeDefined();
-    expect(footer).toBeDefined();
   });
 });
+
+/* [] - END OF FILE */
