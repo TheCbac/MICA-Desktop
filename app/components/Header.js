@@ -8,7 +8,7 @@
 * Author: Craig Cheney
 * Date: 2017.04.27
 *
-**********************************************************/
+********************************************************* */
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { IndexLinkContainer, LinkContainer } from 'react-router-bootstrap';
