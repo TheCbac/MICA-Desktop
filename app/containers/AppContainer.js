@@ -12,6 +12,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import App from '../components/App';
+import { showUserSettings } from '../actions/appWideActions';
 
 function mapStateToProps(state) {
   return {
@@ -21,7 +22,7 @@ function mapStateToProps(state) {
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-
+  showUserSettings
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

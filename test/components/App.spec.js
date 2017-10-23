@@ -14,16 +14,17 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import App from '../../app/components/App';
 
-// Begin test
+const app = shallow(<App />);
+
+/* Test suite */
 describe('App', () => {
-  // const app = shallow(<App />);
-  // it('Renders one App', () => {
-  //   expect(app).toHaveLength(1);
-  // });
-  // it('Contains a header and a footer', () => {
-  //   const header = app.find('Header');
-  //   expect(header).toBeDefined();
-  // });
+  it('Renders one App', () => {
+    expect(app).toHaveLength(1);
+  });
+  it('Contains a header', () => {
+    const header = app.find('Header');
+    expect(header).toBeDefined();
+  });
 });
 
 /* [] - END OF FILE */
