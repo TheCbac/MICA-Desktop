@@ -7,75 +7,39 @@
 *
 * Authors: Craig Cheney
 *
+* 2017,10,22 CC - Removed store from module
 * 2017.10.01 CC - Added multidevice support
 * 2017.09.28 CC - Document created
 *
 ********************************************************* */
-import { TimeSeries } from 'pondjs';
-import store from '../../index';
+import jetpack from 'fs-jetpack';
 import { getActiveSensorList, channelsToActiveNameList } from '../mica/parseDataPacket';
-import type { multiDeviceDataObjT } from '../../types/graphBufferTypes';
-import type { idType } from '../../types/paramTypes';
+import type { multiDeviceDataObjT, startTimeT, dataArrayT } from '../../types/graphBufferTypes';
+import type { devicesStateType } from '../../types/stateTypes';
 
-/* DEPRECATED */
-export function createCsv(series: TimeSeries): string {
-  let csvString = '';
-  const colDelimiter = ',';
-  const rowDelimiter = '\n';
-  /* Get the start time of the series */
-  const startTime = series.begin().getTime();
-  /* Convert the timeseries to a json */
-  const dataJson = series.toJSON();
-  const { points, columns } = dataJson;
-  const numRows = points.length;
-  const numChannels = columns.length;
-  /* Iterate through each row of data */
-  for (let row = 0; row < numRows; row++) {
-    /* iterate through each channel */
-    for (let chan = 0; chan < numChannels; chan++) {
-      const entry = points[row][chan];
-      /* Time stamp channel */
-      if (chan === 0) {
-        /* Convert time relative to start and into seconds */
-        const deltaTime = (entry - startTime) / 1000;
-        csvString += deltaTime.toFixed(3);
-      } else {
-        /* Data row */
-        /* append to the string */
-        csvString += entry.toFixed(5);
-      }
-
-      /* append the col delimiter */
-      csvString += colDelimiter;
-    }
-    /* Start a new row */
-    csvString += rowDelimiter;
+/* Save a data run */
+export function saveCsv(
+  path: string, devices: devicesStateType, dataObj: multiDeviceDataObjT
+): void {
+  /* ensure path ends in .csv */
+  let filePath = path;
+  if (!filePath.endsWith('.csv')) {
+    filePath += '.csv';
   }
-  return csvString;
+  /* create the CSV data object */
+  const csvHeader = getCsvHeader(devices);
+  const csvData = dataObjToCsv(dataObj);
+
+  jetpack.write(filePath, csvHeader + csvData);
 }
+
 /* Convert a multi device dataObj to a csv string */
 export function dataObjToCsv(dataObj: multiDeviceDataObjT): string {
   let csvString = '';
   const colDelimiter = ',';
   const rowDelimiter = '\n';
-  /* Find all of the active devices */
-  const deviceIdList = Object.keys(dataObj);
-  const dataList = [];
-  const startTimes = [];
-  let maxRows = 0;
-  /* Iterate through each device */
-  for (let i = 0; i < deviceIdList.length; i++) {
-    const deviceId = deviceIdList[i];
-    const { data, startTime } = dataObj[deviceId];
-    /* push the data to the list */
-    dataList.push(data);
-    /* Cache the start times */
-    startTimes.push(startTime);
-    /* Store the longest of all the data sets */
-    maxRows = Math.max(maxRows, data.length);
-  }
-  /* Get names and such */
-  const csvHeader = getCsvHeader(deviceIdList);
+  /* Extract the usable data */
+  const { dataList, startTimes, maxRows } = getCsvConstructionData(dataObj);
   /* Iterate over each row  */
   for (let rowIdx = 0; rowIdx < maxRows; rowIdx++) {
     for (let deviceIdx = 0; deviceIdx < dataList.length; deviceIdx++) {
@@ -107,14 +71,42 @@ export function dataObjToCsv(dataObj: multiDeviceDataObjT): string {
     csvString += rowDelimiter;
   }
   /* Return the full string */
-  return csvHeader + csvString;
+  return csvString;
+  // return csvHeader + csvString;
 }
+
+/* Extract the usable data, start times, and max number of rows for each device */
+type constructDataT = {
+  maxRows: number,
+  startTimes: startTimeT[],
+  dataList: dataArrayT[]
+};
+
+function getCsvConstructionData(dataObj: multiDeviceDataObjT): constructDataT {
+  const deviceIdList = Object.keys(dataObj);
+  const dataList = [];
+  const startTimes = [];
+  let maxRows = 0;
+  /* Iterate through each device */
+  for (let i = 0; i < deviceIdList.length; i++) {
+    const deviceId = deviceIdList[i];
+    const { data, startTime } = dataObj[deviceId];
+    /* push the data to the list */
+    dataList.push(data);
+    /* Cache the start times */
+    startTimes.push(startTime);
+    /* Store the longest of all the data sets */
+    maxRows = Math.max(maxRows, data.length);
+  }
+  return { dataList, startTimes, maxRows };
+}
+
 /* Returns the CSV header for a device */
-function getCsvHeader(deviceIdList: idType[]): string {
+function getCsvHeader(devices: devicesStateType): string {
   let csvHeader = '';
   const colDelimiter = ',';
   const rowDelimiter = '\n';
-  const { devices } = store.getState();
+  const deviceIdList = Object.keys(devices);
   /* Iterate over each device */
   for (let i = 0; i < deviceIdList.length; i++) {
     const deviceId = deviceIdList[i];
@@ -126,7 +118,7 @@ function getCsvHeader(deviceIdList: idType[]): string {
     /* Iterate over the active sensors */
     for (let j = 0; j < activeSensorIds.length; j++) {
       const sensorId = activeSensorIds[j];
-      const sensor = sensors[sensorId];
+      const sensor = sensors[parseInt(sensorId, 10)];
       console.log('getCsvHeader', sensor);
       const { name: sensorName, channels, units } = sensor;
       const activeChannelNames = channelsToActiveNameList(channels);
