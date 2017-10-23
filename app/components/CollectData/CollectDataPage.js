@@ -41,6 +41,7 @@ export default class CollectDataPage extends Component {
           <ControlComponent devices={this.props.devices} />
           <Row />
           <GraphSettings
+            devices={this.props.devices}
             collectionSettings={this.props.collectionSettings}
             startCollecting={this.props.startCollecting}
             stopCollecting={this.props.stopCollecting}

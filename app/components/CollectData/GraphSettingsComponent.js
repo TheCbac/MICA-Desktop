@@ -17,16 +17,19 @@ import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import { remote } from 'electron';
-import { saveLastRun } from '../../utils/dataStreams/graphBuffer';
+import { getFullDataObj } from '../../utils/dataStreams/graphBuffer';
+import { saveCsv } from '../../utils/dataStreams/data2csv';
 import type { thunkType } from '../../types/functionTypes';
 import type {
   collectionStateType,
   graphSettingsType,
-  horizontalScaleType
+  horizontalScaleType,
+  devicesStateType
 } from '../../types/stateTypes';
 import type { updateGraphSettingsActionType } from '../../types/collectionActionTypes';
 
 type propsType = {
+  devices: devicesStateType,
   collectionSettings: collectionStateType,
   startCollecting: () => thunkType,
   stopCollecting: () => thunkType,
@@ -36,18 +39,6 @@ type propsType = {
 type stateType = {
   value: number
 };
-
-/* Save the latest run */
-function saveDialog(): void {
-  const options = {
-    defaultPath: 'data.csv'
-  };
-  remote.dialog.showSaveDialog(options, (filePath?: string) => {
-    if (filePath) {
-      saveLastRun(filePath);
-    }
-  });
-}
 
 export default class GraphSettings extends Component {
   /* Type Def the props */
@@ -59,6 +50,17 @@ export default class GraphSettings extends Component {
     this.state = {
       value: props.collectionSettings.graphSettings.horizontalScale
     };
+  }
+  /* Save the latest run */
+  saveDialog(): void {
+    const options = {
+      defaultPath: 'data.csv'
+    };
+    remote.dialog.showSaveDialog(options, (filePath?: string) => {
+      if (filePath) {
+        saveCsv(filePath, this.props.devices, getFullDataObj());
+      }
+    });
   }
   /* Button for the next state */
   startStopGraphButton() {
@@ -138,7 +140,7 @@ export default class GraphSettings extends Component {
           <Button block bsStyle="warning">PAUSE DISPLAY</Button>
         </Col>
         <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
-          <Button block bsStyle="primary" onClick={() => saveDialog()}>SAVE RUN</Button>
+          <Button block bsStyle="primary" onClick={() => this.saveDialog()}>SAVE RUN</Button>
         </Col>
         <Row />
         <Col xs={12} style={{ position: 'absolute', bottom: '25px' }}>
