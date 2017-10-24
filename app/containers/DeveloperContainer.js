@@ -12,7 +12,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DeveloperPage from '../components/Developer/DeveloperPage';
-import { setDeviceName } from '../actions/developerActions';
+import { setDeviceName, initiateOtaUpdate } from '../actions/developerActions';
 
 function mapStateToProps(state) {
   return {
@@ -22,7 +22,8 @@ function mapStateToProps(state) {
 
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-  setDeviceName
+  setDeviceName,
+  initiateOtaUpdate
 }, dispatcher);
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeveloperPage);

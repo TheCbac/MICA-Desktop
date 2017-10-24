@@ -14,13 +14,15 @@ import {
   Col
 } from 'react-bootstrap';
 import ChangeDeviceName from './ChangeDeviceName';
+import OtaUpdate from './OtaUpdate';
 import type { devicesStateType } from '../../types/stateTypes';
 import type { idType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
 
 type propsT = {
   devices: devicesStateType,
-  setDeviceName: (deviceId: idType, name: string) => thunkType
+  setDeviceName: (deviceId: idType, name: string) => thunkType,
+  initiateOtaUpdate: (deviceId: idType, hexPath: string) => thunkType
 };
 type stateT = {
   name: string,
@@ -32,11 +34,12 @@ export default class DeveloperPage extends Component {
   state: stateT;
   /* Render the Developer Page */
   render() {
-    const { devices, setDeviceName } = this.props;
+    const { devices, setDeviceName, initiateOtaUpdate } = this.props;
     return (
       <div>
         <Col md={12}>
           <ChangeDeviceName devices={devices} setDeviceName={setDeviceName} />
+          <OtaUpdate devices={devices} initiateOtaUpdate={initiateOtaUpdate} />
         </Col>
       </div>
     );
