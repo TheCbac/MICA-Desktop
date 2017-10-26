@@ -7491,6 +7491,10 @@ react-addons-test-utils@^15.5.1:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react-addons-update/-/react-addons-update-15.3.2.tgz#b6385c4db1e5df371825e0615b04360ed94430fe"
 
+react-bash@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/react-bash/-/react-bash-1.5.3.tgz#a205c8c58e54101648facc49f8c7cf39928a9c0e"
+
 react-bootstrap-table@^3.4.2:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/react-bootstrap-table/-/react-bootstrap-table-3.5.1.tgz#c2428a5fece9823f0b6bdedf7f198630ac55a164"

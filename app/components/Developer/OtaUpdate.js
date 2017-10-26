@@ -85,7 +85,7 @@ export default class OtaUpdate extends Component {
         if (shortName.length + token.length > maxLen) {
           return `...${shortName}`;
         }
-        /* Length name */
+        /* Lengthen name */
         shortName = `/${token}${shortName}`;
       }
       return shortName;
@@ -163,7 +163,5 @@ export default class OtaUpdate extends Component {
   }
 
 }
-
-
 
 /* [] - END OF FILE */
