@@ -10,7 +10,7 @@
 *
 ********************************************************* */
 import React, { Component } from 'react';
-// import type { SyntheticMouseEvent } from 'react-dom';
+import { clipboard } from 'electron';
 import update from 'immutability-helper';
 import { FormControl, FormGroup, Form } from 'react-bootstrap';
 import serialPort from 'serialport';
@@ -107,7 +107,8 @@ type stateT = {
   cursorPosition: number,
   currentLine: string,
   history: historyT[],
-  commandLineNumber: ?number
+  commandLineNumber: ?number,
+  metaKeys: string[]
 };
 
 /* Calculate the current cursor position from the state */
@@ -176,6 +177,206 @@ function parseLine(currentLine: string): cmdObjT {
   }
 }
 
+const delimiters = /\s|\.|\(|\)|"|'|;|:|!/;
+/* Jump to the end of the word */
+function nextWordPosition(cursorPosition: number, currentLine: string): number {
+  /* split the string */
+  const wordArray = currentLine.substr(cursorPosition).split(delimiters);
+  if (wordArray) {
+    let accumulator = 0;
+    for (let i = 0; i < wordArray.length; i++) {
+      const word = wordArray[i];
+      if (word.length) {
+        return cursorPosition + word.length + accumulator;
+      }
+      /* Skip the delimiter */
+      accumulator += 1;
+    }
+  }
+  const maxLen = currentLine.length;
+  return cursorPosition < maxLen ? cursorPosition : maxLen;
+}
+
+/* Jump to start of the previous word */
+function prevWordPosition(cursorPosition: number, currentLine: string): number {
+  const wordArray = currentLine.substr(0, cursorPosition).split(delimiters);
+  if (wordArray) {
+    let accumulator = 0;
+    for (let i = wordArray.length - 1; i >= 0; i--) {
+      const word = wordArray[i];
+      if (word.length) {
+        return cursorPosition - word.length - accumulator;
+      }
+      /* Skip the delimiter */
+      accumulator += 1;
+    }
+  }
+  const minLen = 0;
+  return cursorPosition > minLen ? cursorPosition : minLen;
+}
+
+/* Handle all of the hotkeys */
+function handleHotKeys(event: SyntheticKeyboardEvent, state: stateT): stateT {
+  const { key } = event;
+  let { cursorPosition, currentLine, commandLineNumber } = state;
+  const { metaKeys } = state;
+  /* Push any new keys */
+  if (key === 'Meta' || key === 'Alt' || key === 'Control') {
+    /* Store the meta key if not already stored */
+    if (metaKeys.indexOf(key) === -1) {
+      metaKeys.push(key);
+    }
+  }
+  /* find presence of keys */
+  const meta: boolean = metaKeys.indexOf('Meta') >= 0;
+  const alt: boolean = metaKeys.indexOf('Alt') >= 0;
+  const control: boolean = metaKeys.indexOf('Control') >= 0;
+  /* There's got to be a more compact form */
+  if (meta && !alt && !control) {
+    /* META */
+    switch (key) {
+      /* Beginning of line */
+      case 'ArrowLeft':
+        cursorPosition = 0;
+        break;
+      /* End of line */
+      case 'ArrowRight':
+        cursorPosition = currentLine.length;
+        break;
+      /* Delete line */
+      case 'Backspace':
+        currentLine = '';
+        cursorPosition = 0;
+        commandLineNumber = undefined;
+        break;
+      /* Paste */
+      case 'v':
+        /* Insert the key at the cursor position */
+        currentLine = currentLine.substr(0, cursorPosition)
+          + clipboard.readText() + currentLine.substr(cursorPosition);
+        cursorPosition += clipboard.readText().length;
+        commandLineNumber = undefined;
+        break;
+      default:
+        break;
+    }
+  } else if (!meta && alt && !control) {
+    /* ALT */
+    switch (key) {
+      case 'Backspace': {
+        const wordStart = prevWordPosition(cursorPosition, currentLine);
+        /* delete the word in question */
+        currentLine = currentLine.slice(0, wordStart) +
+          currentLine.slice(cursorPosition, currentLine.length);
+        cursorPosition = wordStart;
+        commandLineNumber = undefined;
+        break;
+      }
+      case 'ArrowLeft':
+        cursorPosition = prevWordPosition(cursorPosition, currentLine);
+        break;
+      /* End of the next word */
+      case 'ArrowRight':
+        cursorPosition = nextWordPosition(cursorPosition, currentLine);
+        break;
+      default:
+        break;
+    }
+  }
+  return { ...state, cursorPosition, currentLine, commandLineNumber };
+}
+
+/* Handle a regular terminal input */
+function handleTerminalInput(event: SyntheticKeyboardEvent, state: stateT): stateT {
+  const { metaKeys } = state;
+  let { cursorPosition, currentLine, history, commandLineNumber } = state;
+  let command;
+  const { key } = event;
+  /* Parse the command */
+  switch (key) {
+    /* Enter a command */
+    case 'Enter':
+      /* Parse the command */
+      command = parseLine(currentLine);
+      /* Store the line */
+      history = update(history, {
+        $push: [{
+          value: currentLine,
+          isCmd: true
+        }]
+      });
+      currentLine = '';
+      cursorPosition = 0;
+      commandLineNumber = undefined;
+      /* */
+      break;
+    /* Delete a character */
+    case 'Backspace':
+      /* Don't delete past start of line */
+      if (cursorPosition > 0) {
+        /* Delete at the cursor position */
+        currentLine = currentLine.slice(0, cursorPosition - 1) +
+          currentLine.slice(cursorPosition, currentLine.length);
+        cursorPosition -= 1;
+        /* typing means that the line should be reset */
+        commandLineNumber = undefined;
+      }
+      break;
+    /* Navigate left */
+    case 'ArrowLeft':
+      if (cursorPosition > 0) {
+        cursorPosition -= 1;
+      }
+      break;
+    /* Navigate right */
+    case 'ArrowRight':
+      if (cursorPosition < currentLine.length) {
+        cursorPosition += 1;
+      }
+      break;
+    /* Recall previous line */
+    case 'ArrowUp': {
+      const recall = recallPrevCommand(state);
+      if (recall) {
+        currentLine = recall.cmd;
+        commandLineNumber = recall.index;
+        cursorPosition = currentLine.length;
+      }
+      break;
+    }
+    /* Move to next line */
+    case 'ArrowDown': {
+      const recall = recallNextCommand(state);
+      if (recall) {
+        currentLine = recall.cmd;
+        commandLineNumber = recall.index;
+        cursorPosition = currentLine.length;
+      }
+      break;
+    }
+    /* All other keys */
+    default:
+      /* Normal character */
+      if (typeof key === 'string' && key.length === 1) {
+        /* Insert the key at the cursor position */
+        currentLine = currentLine.substr(0, cursorPosition)
+          + key + currentLine.substr(cursorPosition);
+        cursorPosition += 1;
+        /* typing means that the line should be reset */
+        commandLineNumber = undefined;
+      } else {
+        /* Store the meta key if not already stored */
+        if (metaKeys.indexOf(key) === -1) {
+          metaKeys.push(key);
+        }
+        /* Other meta characters */
+        console.log('metaKey:', key);
+      }
+      break;
+  } /* End Switch */
+  return { ...state, cursorPosition, currentLine, history, commandLineNumber, metaKeys };
+}
+
 /* Begin Component */
 export default class MicaTerminal extends Component {
   props: propsT;
@@ -190,89 +391,33 @@ export default class MicaTerminal extends Component {
       cursorPosition: 0,
       currentLine: '',
       history: [],
-      commandLineNumber: undefined
+      commandLineNumber: undefined,
+      metaKeys: []
     };
   }
-  /* Handle all of the key presses */
-  handleKeyPress = (event: SyntheticKeyboardEvent): void => {
-    event.preventDefault();
-    let { cursorPosition, currentLine, history, commandLineNumber } = this.state;
+  handleKeyUp = (event: SyntheticKeyboardEvent): void => {
     const { key } = event;
-    let command;
-    /* Parse the command */
-    switch (key) {
-      /* Enter a command */
-      case 'Enter':
-        /* Parse the command */
-        command = parseLine(currentLine);
-        /* Store the line */
-        history = update(history, {
-          $push: [{
-            value: currentLine,
-            isCmd: true
-          }]
-        });
-        currentLine = '';
-        cursorPosition = 0;
-        commandLineNumber = undefined;
-        /* */
-        break;
-      /* Delete a character */
-      case 'Backspace':
-        /* Don't delete past start of line */
-        if (cursorPosition > 0) {
-          currentLine = currentLine.slice(0, cursorPosition - 1) +
-            currentLine.slice(cursorPosition, currentLine.length);
-          cursorPosition -= 1;
-        }
-        break;
-      /* Navigate left */
-      case 'ArrowLeft':
-        if (cursorPosition > 0) {
-          cursorPosition -= 1;
-        }
-        break;
-      /* Navigate right */
-      case 'ArrowRight':
-        if (cursorPosition < currentLine.length) {
-          cursorPosition += 1;
-        }
-        break;
-      /* Recall previous line */
-      case 'ArrowUp': {
-        const recall = recallPrevCommand(this.state);
-        if (recall) {
-          currentLine = recall.cmd;
-          commandLineNumber = recall.index;
-          cursorPosition = currentLine.length;
-        }
-        break;
-      }
-      /* Move to next line */
-      case 'ArrowDown': {
-        const recall = recallNextCommand(this.state);
-        console.log('arrowdown', recall);
-        if (recall) {
-          currentLine = recall.cmd;
-          commandLineNumber = recall.index;
-          cursorPosition = currentLine.length;
-        }
-        break;
-      }
-      /* All other keys */
-      default:
-        /* Normal character */
-        if (typeof key === 'string' && key.length === 1) {
-          currentLine += key;
-          cursorPosition += 1;
-        } else {
-          /* Other meta characters */
-          console.log('metaKey:', key);
-        }
-        break;
+    const { metaKeys } = this.state;
+    /* remove each key */
+    const index = metaKeys.indexOf(key);
+    if (index >= 0) {
+      metaKeys.splice(index, 1);
+    }
+    this.setState({ metaKeys });
+  }
+  /* Handle all of the key presses */
+  handleKeyDown = (event: SyntheticKeyboardEvent): void => {
+    event.preventDefault();
+    const { metaKeys } = this.state;
+    let newState;
+    /* Handle a hotkey unless the only metakey is Shift */
+    if (metaKeys.length && !(metaKeys.length === 1 && metaKeys[0] === 'Shift')) {
+      newState = handleHotKeys(event, this.state);
+    } else {
+      newState = handleTerminalInput(event, this.state);
     }
     /* Update the state and cursor position */
-    this.setState({ cursorPosition, currentLine, history, commandLineNumber }, () => {
+    this.setState({ ...newState }, () => {
       const pos = calculateCursorPosition(this.state);
       this.textInput.setSelectionRange(pos, pos);
     });
@@ -281,6 +426,10 @@ export default class MicaTerminal extends Component {
   handleClick = (event: SyntheticMouseEvent): void => {
     event.preventDefault();
     this.textInput.focus();
+  }
+  /* Remove any meta keys */
+  handleBlur = (): void => {
+    this.setState({ metaKeys: [] });
   }
   /* Dummy function to suppress React warning */
   handleChange = () => {
@@ -313,11 +462,6 @@ export default class MicaTerminal extends Component {
       height: '300px',
       width: '400px'
     };
-
-    const commands = {
-      clearCmd,
-      serialports
-    };
     return (
       <div id="micaTerminal" style={terminalDivStyle}>
         <textarea
@@ -325,9 +469,11 @@ export default class MicaTerminal extends Component {
           ref={(input) => { this.textInput = input; }}
           onMouseDown={this.handleClick}
           style={terminalStyle}
-          onKeyDown={this.handleKeyPress}
+          onKeyDown={this.handleKeyDown}
+          onKeyUp={this.handleKeyUp}
           value={this.terminalValue()}
           onChange={this.handleChange}
+          onBlur={this.handleBlur}
         />
       </div>
     );
