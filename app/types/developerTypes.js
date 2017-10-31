@@ -19,6 +19,7 @@ export type terminalFlagsT = {
 };
 
 export type terminalParsedObjT = {
+  name: string,
   input: terminalInputT,
   args: terminalArgsT,
   flags: terminalFlagsT
@@ -26,11 +27,6 @@ export type terminalParsedObjT = {
 /* Command Object passed to commands  */
 export type terminalCmdObjT = {
   name: string,
-  // exec: (
-  //   input: terminalInputT,
-  //   args: terminalArgsT,
-  //   flags: terminalFlagsT
-  // ) => Promise<*>,
   exec: Promise<string>,
   cmdObj: terminalParsedObjT
 };
@@ -48,5 +44,8 @@ export type terminalStateT = {
   commandLineNumber: ?number,
   metaKeys: string[]
 };
+
+/* Terminal command */
+export type terminalCmdFunctionT = (terminalParsedObjT) => Promise<string[]>;
 
 /* [] - END OF FILE */

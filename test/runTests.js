@@ -1,5 +1,9 @@
 const spawn = require('cross-spawn');
 const path = require('path');
+// const enzyme = require('enzyme');
+// const Adapter = require('enzyme-adapter-react-16');
+
+// enzyme.configure({ adapter: new Adapter() });
 
 const s = `\\${path.sep}`;
 const pattern = process.argv[2] === 'e2e'

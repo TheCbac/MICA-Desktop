@@ -1,4 +1,5 @@
 /* @flow */
+/* eslint no-plusplus: 0 */
 /* **********************************************************
 * File: utils/Developer/TerminalUtils.js
 *
@@ -12,25 +13,48 @@
 import { clipboard } from 'electron';
 import update from 'immutability-helper';
 import terminalCommands from './TerminalCommand';
-import type { terminalStateT, terminalCmdObjT } from '../../types/developerTypes';
+import type {
+  terminalParsedObjT, terminalStateT
+} from '../../types/developerTypes';
 
-const delimiters = /\s|\.|\(|\)|"|'|;|:|!/;
+export const delimiters = /\s|\.|\(|\)|"|'|;|:|!/;
+export const cmdLineStart = '> ';
+export const valueLineStart = '    ';
+export const lineEnd = '\n';
+/* All of the values displayed in the terminal */
+export function getTerminalDisplayValue(state: terminalStateT): string {
+  let stringVal = '';
+  /* Add the past history */
+  const { history, currentLine } = state;
+  for (let i = 0; i < history.length; i++) {
+    const entry = history[i];
+    if (entry.isCmd) {
+      stringVal += cmdLineStart;
+    } else {
+      stringVal += valueLineStart;
+    }
+    stringVal = `${stringVal}${entry.value}${lineEnd}`;
+  }
+  /* Add the current line */
+  stringVal += `${cmdLineStart}${currentLine}`;
+  return stringVal;
+}
 /* Calculate the current cursor position from the state */
 export function calculateCursorPosition(state: terminalStateT): number {
   const { cursorPosition, history } = state;
-  const startOffset = 2; // '> '
-  const newLineOffset = 1; // '\n'
   let pastLen = 0;
   /* Add all of the previous commands */
   for (let i = 0; i < history.length; i++) {
     const entry = history[i];
     if (entry.isCmd) {
-      pastLen += startOffset;
+      pastLen += cmdLineStart.length;
+    } else {
+      pastLen += valueLineStart.length;
     }
-    pastLen = pastLen + entry.value.length + newLineOffset;
+    pastLen = pastLen + entry.value.length + lineEnd.length;
   }
   /* Add the start of line offset */
-  pastLen += startOffset;
+  pastLen += cmdLineStart.length;
   return pastLen + cursorPosition;
 }
 type recallT = {
@@ -72,33 +96,51 @@ export function recallNextCommand(state: terminalStateT): ?recallT {
   return { cmd: '', index: undefined };
 }
 
-/* Parse the current entry */
-export function parseLine(currentLine: string): terminalCmdObjT {
-  /* Tokenize */
-  const tokens = currentLine.split(' ');
-  const commandName = tokens[0];
+/*
+ * This method parses a single command + args. It handles
+ * the tokenization and processing of flags, anonymous args,
+ * and named args.
+ *
+ * @param {string} input - the user input to parse
+ * @returns {Object} the parsed command/arg
+ */
+export function parseInput(input: string): terminalParsedObjT {
+  const tokens = input.split(/ +/);
+  const name = tokens.shift();
+  const flags = {};
+  const args = {};
+  let anonArgPos = 0;
+
+  while (tokens.length > 0) {
+    const token = tokens.shift();
+    if (token[0] === '-') {
+      if (token[1] === '-') {
+        const next = tokens.shift();
+        args[token.slice(2)] = next;
+      } else {
+        token.slice(1).split('').forEach(flag => {
+          flags[flag] = true;
+        });
+      }
+    } else {
+      args[anonArgPos++] = token;
+    }
+  }
+  return { name, flags, input, args };
+}
+
+/* Execute the command */
+export async function executeCommand(currentLine: string): Promise<string[]> {
+  /* Parse command */
+  const parseObj: terminalParsedObjT = parseInput(currentLine);
+  const { name: commandName } = parseObj;
   const commandExec = terminalCommands[commandName];
   if (!commandExec) {
-    console.log('unknown command ', commandName);
-    return ({
-      name: 'unknown command',
-      exec: terminalCommands.echo(),
-      cmdObj: {
-        input: `Unknown Command ${commandName}`,
-        args: {},
-        flags: {}
-      }
-    });
+    return [`${commandName}: command not found`];
   }
-  return ({
-    name: commandName,
-    exec: commandExec(),
-    cmdObj: {
-      input: '',
-      args: {},
-      flags: {}
-    }
-  });
+
+  const cmdReturn = await commandExec(parseObj);
+  return cmdReturn;
 }
 /* Jump to the end of the word */
 export function nextWordPosition(cursorPosition: number, currentLine: string): number {
@@ -138,9 +180,10 @@ export function prevWordPosition(cursorPosition: number, currentLine: string): n
 }
 
 /* Handle all of the hotkeys */
-export function handleHotKeys(
-  event: SyntheticKeyboardEvent<>, state: terminalStateT
-): terminalStateT {
+export async function handleHotKeys(
+  event: SyntheticKeyboardEvent<>,
+  state: terminalStateT
+): Promise<terminalStateT> {
   const { key } = event;
   let { cursorPosition, currentLine, commandLineNumber } = state;
   const { metaKeys } = state;
@@ -207,31 +250,23 @@ export function handleHotKeys(
         break;
     }
   }
-  return { ...state, cursorPosition, currentLine, commandLineNumber };
+  return {
+    ...state, cursorPosition, currentLine, commandLineNumber
+  };
 }
 
 /* Handle a regular terminal input */
-export function handleTerminalInput(
-  event: SyntheticKeyboardEvent<>, state: terminalStateT
-): terminalStateT {
+export async function handleTerminalInput(
+  event: SyntheticKeyboardEvent<>,
+  state: terminalStateT
+): Promise<terminalStateT> {
   const { metaKeys } = state;
   let { cursorPosition, currentLine, history, commandLineNumber } = state;
-  let command;
   const { key } = event;
-  /* Parse the command */
+  /* Parse the key */
   switch (key) {
     /* Enter a command */
-    case 'Enter':
-      /* Parse the command */
-      command = parseLine(currentLine);
-      command.exec
-        .then((val) => {
-          console.log(val);
-          return val;
-        })
-        .catch((err) => {
-          console.log('error', err);
-        });
+    case 'Enter': {
       /* Store the line */
       history = update(history, {
         $push: [{
@@ -239,11 +274,42 @@ export function handleTerminalInput(
           isCmd: true
         }]
       });
+      /* Execute the command */
+      try {
+        const cmdReturn = await executeCommand(currentLine);
+        /* Update the object */
+        for (let i = 0; i < cmdReturn.length; i++) {
+          const cmdLine = cmdReturn[i];
+          history = update(history, {
+            $push: [{
+              value: cmdLine,
+              isCmd: false
+            }]
+          });
+        }
+      } catch (err) {
+        /* Display error in the mica terminal */
+        history = update(history, {
+          $push: [
+            {
+              value: `Error: ${err}`,
+              isCmd: false
+            },
+            {
+              value: 'See console for more details',
+              isCmd: false
+            }
+          ]
+        });
+        /* Log the error */
+        console.log(`Error in terminal command: '${currentLine}'`, err);
+      }
       currentLine = '';
       cursorPosition = 0;
       commandLineNumber = undefined;
       /* */
       break;
+    }
     /* Delete a character */
     case 'Backspace':
       /* Don't delete past start of line */
@@ -305,22 +371,5 @@ export function handleTerminalInput(
       break;
   } /* End Switch */
   return { ...state, cursorPosition, currentLine, history, commandLineNumber, metaKeys };
-}
-
-/* All of the values displayed in the terminal */
-export function getTerminalDisplayValue(state: terminalStateT): string {
-  let stringVal = '';
-  /* Add the past history */
-  const { history, currentLine } = state;
-  for (let i = 0; i < history.length; i++) {
-    const entry = history[i];
-    if (entry.isCmd) {
-      stringVal += '> ';
-    }
-    stringVal = `${stringVal}${entry.value}\n`;
-  }
-  /* Add the current line */
-  stringVal += `> ${currentLine}`;
-  return stringVal;
 }
 /* [] - END OF FILE */

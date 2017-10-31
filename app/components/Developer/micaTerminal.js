@@ -130,21 +130,28 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
   handleKeyDown = (event: SyntheticKeyboardEvent<>): void => {
     event.preventDefault();
     const { metaKeys } = this.state;
-    let newState;
-    /* Handle a hotkey unless the only metakey is Shift */
+    let statePromise;
+    /* Handle a hotkey unless the only metaKey is Shift */
     if (metaKeys.length && !(metaKeys.length === 1 && metaKeys[0] === 'Shift')) {
-      newState = handleHotKeys(event, this.state);
+      statePromise = handleHotKeys(event, this.state);
     } else {
-      newState = handleTerminalInput(event, this.state);
+      statePromise = handleTerminalInput(event, this.state);
     }
-    /* Update the state and cursor position */
-    this.setState({ ...newState }, () => {
-      const pos = calculateCursorPosition(this.state);
-      const { textInput } = this;
-      if (textInput) {
-        textInput.setSelectionRange(pos, pos);
-        textInput.scrollTop = textInput.scrollHeight;
-      }
+    /* Update the state once the promise has resolved */
+    statePromise.then((state: terminalStateT) => {
+      this.setState({ ...state }, () => {
+        const pos = calculateCursorPosition(this.state);
+        const { textInput } = this;
+        /* Scroll to bottom of page */
+        if (textInput) {
+          textInput.setSelectionRange(pos, pos);
+          textInput.scrollTop = textInput.scrollHeight;
+        }
+      });
+      return state;
+    }).catch((error) => {
+      /* This should be unreachable */
+      console.log('Terminal error:', error);
     });
   }
   /* Handle click events - Bring focus, but don't move cursor */
@@ -172,7 +179,7 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
     };
     const terminalStyle = {
       height: '300px',
-      width: '400px'
+      width: '100%'
     };
     return (
       <div id="micaTerminal" style={terminalDivStyle}>

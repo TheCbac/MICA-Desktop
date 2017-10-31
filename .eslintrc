@@ -26,6 +26,7 @@
       "allowForLoopAfterthoughts": true
     }],
     "no-multi-assign": "off",
+    "object-curly-newline": "off",
     "promise/param-names": "error",
     "promise/always-return": "error",
     "promise/catch-or-return": "error",
