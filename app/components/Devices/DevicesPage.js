@@ -36,10 +36,7 @@ type propsType = {
     disconnectFromDevice: (deviceId: idType) => thunkType
 };
 
-export default class DevicesPage extends Component {
-  /* Properties, checked with flow */
-  props: propsType;
-
+export default class DevicesPage extends Component<propsType> {
   /* Render function */
   render() {
     const {

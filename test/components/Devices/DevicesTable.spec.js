@@ -11,7 +11,7 @@
 *
 ********************************************************* */
 import { spy } from 'sinon';
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import ScanBtn, { __Rewire__ as Rewire } from '../../../app/components/Devices/DevicesTable';
 

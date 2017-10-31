@@ -30,9 +30,7 @@ type stateT = {
   deviceId: string
 };
 
-export default class DeveloperPage extends Component {
-  props: propsT;
-  state: stateT;
+export default class DeveloperPage extends Component<propsT, stateT> {
   /* Render the Developer Page */
   render() {
     const { devices, setDeviceName, initiateOtaUpdate } = this.props;

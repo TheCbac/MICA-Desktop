@@ -37,8 +37,7 @@ type propsType = {
   devices: devicesStateType
 };
 
-export default class ControlsComponent extends Component {
-  props: propsType
+export default class ControlsComponent extends Component<propsType> {
   /* Return all of the components for controlling the
    * active generators */
   getGeneratorControls(): * {

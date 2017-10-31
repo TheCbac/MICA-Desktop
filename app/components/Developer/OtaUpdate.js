@@ -32,10 +32,7 @@ type stateT = {
   fileNameFocus: boolean
 };
 
-export default class OtaUpdate extends Component {
-  state: stateT;
-  props: propsT;
-
+export default class OtaUpdate extends Component<propsT, stateT> {
   constructor(props: propsT) {
     super(props);
     /* Set the default state */
@@ -65,7 +62,7 @@ export default class OtaUpdate extends Component {
     });
   }
   /* Manually type into the name field */
-  handleNameInput = ({ target }: SyntheticInputEvent): void => {
+  handleNameInput = ({ target }: SyntheticInputEvent<>): void => {
     this.setState({ fileName: target.value });
   }
   /* Name to display in the dialog box */
@@ -161,7 +158,6 @@ export default class OtaUpdate extends Component {
       </Col>
     );
   }
-
 }
 
 /* [] - END OF FILE */

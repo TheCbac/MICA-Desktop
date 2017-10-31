@@ -1,4 +1,5 @@
 /* @flow */
+/* eslint react/no-unused-state: 0 */
 /* **********************************************************
 * File: components/Developer/micaTerminal.js
 *
@@ -100,9 +101,7 @@ import {
 
 type propsT = {};
 /* Begin Component */
-export default class MicaTerminal extends Component {
-  props: propsT;
-  state: terminalStateT;
+export default class MicaTerminal extends Component<propsT, terminalStateT> {
   textInput: *;
 
   constructor(props: propsT) {
@@ -117,7 +116,7 @@ export default class MicaTerminal extends Component {
       metaKeys: []
     };
   }
-  handleKeyUp = (event: SyntheticKeyboardEvent): void => {
+  handleKeyUp = (event: SyntheticKeyboardEvent<>): void => {
     const { key } = event;
     const { metaKeys } = this.state;
     /* remove each key */
@@ -128,7 +127,7 @@ export default class MicaTerminal extends Component {
     this.setState({ metaKeys });
   }
   /* Handle all of the key presses */
-  handleKeyDown = (event: SyntheticKeyboardEvent): void => {
+  handleKeyDown = (event: SyntheticKeyboardEvent<>): void => {
     event.preventDefault();
     const { metaKeys } = this.state;
     let newState;
@@ -141,21 +140,29 @@ export default class MicaTerminal extends Component {
     /* Update the state and cursor position */
     this.setState({ ...newState }, () => {
       const pos = calculateCursorPosition(this.state);
-      this.textInput.setSelectionRange(pos, pos);
+      const { textInput } = this;
+      if (textInput) {
+        textInput.setSelectionRange(pos, pos);
+        textInput.scrollTop = textInput.scrollHeight;
+      }
     });
   }
   /* Handle click events - Bring focus, but don't move cursor */
-  handleClick = (event: SyntheticMouseEvent): void => {
+  handleClick = (event: SyntheticMouseEvent<>): void => {
     event.preventDefault();
-    this.textInput.focus();
+    if (this.textInput) {
+      this.textInput.focus();
+    }
   }
   /* Remove any meta keys */
   handleBlur = (): void => {
     this.setState({ metaKeys: [] });
   }
   /* Dummy function to suppress React warning */
-  handleChange = () => {
+  handleChange = () => { /* @FIXME - why doesn't this trigger? */
     /* No-op */
+    console.log('handleChange');
+    // this.textInput.scrollTop = this.textInput.scrollHeight;
   }
   render() {
     const terminalDivStyle = {

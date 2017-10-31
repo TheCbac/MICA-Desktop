@@ -55,10 +55,7 @@ type PropsType = {
   ) => thunkType
 };
 
-export default class SensorBlock extends Component {
-  /* type defs */
-  state: StateType;
-  props: PropsType;
+export default class SensorBlock extends Component<PropsType, StateType> {
   /* Constructor function  */
   constructor(props: PropsType) {
     super(props);

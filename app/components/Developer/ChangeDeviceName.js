@@ -32,9 +32,7 @@ type stateT = {
 const nameMinLen = 4;
 const nameMaxLen = 25;
 
-export default class ChangeDeviceName extends Component {
-  props: propsT;
-  state: stateT;
+export default class ChangeDeviceName extends Component<propsT, stateT> {
   /* Constructor function */
   constructor(props: propsT) {
     super(props);
@@ -46,7 +44,7 @@ export default class ChangeDeviceName extends Component {
   }
 
   /* Handle name and validate state */
-  handleName = ({ target }: SyntheticInputEvent): void => {
+  handleName = ({ target }: SyntheticInputEvent<>): void => {
     this.setState({ name: target.value });
   }
   nameValidation(): ?'error' {

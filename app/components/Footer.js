@@ -37,7 +37,7 @@ const mitLogoStyle = {
 const bilabLogoStyle = {
   height: '20px'
 };
-export default class Footer extends Component {
+export default class Footer extends Component<{}> {
   render() {
     return (
       <Grid className="Footer" style={footerStyle} fluid>

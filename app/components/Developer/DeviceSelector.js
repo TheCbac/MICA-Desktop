@@ -20,8 +20,7 @@ type propsT = {
   deviceSelected: (deviceId: string) => void
 };
 
-export default class DeviceSelector extends Component {
-  props: propsT;
+export default class DeviceSelector extends Component<propsT> {
   componentWillMount() {
     /* Set the default device */
     const deviceIdList = Object.keys(this.props.devices);
@@ -60,7 +59,7 @@ export default class DeviceSelector extends Component {
     return selectionArray;
   }
   /* Handle the device selection */
-  handleSelection = ({ target }: SyntheticInputEvent): void => {
+  handleSelection = ({ target }: SyntheticInputEvent<>): void => {
     this.props.deviceSelected(target.value);
     // this.setState({ deviceId: target.value });
   }

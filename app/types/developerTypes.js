@@ -9,15 +9,30 @@
 * 2017.10.27 CC - Document created
 *
 ********************************************************* */
+/* Full input of a line */
+export type terminalInputT = string;
+/* Arguments */
+export type terminalArgsT = {};
+/* Flags */
+export type terminalFlagsT = {
+  [flagName: string]: boolean
+};
 
+export type terminalParsedObjT = {
+  input: terminalInputT,
+  args: terminalArgsT,
+  flags: terminalFlagsT
+};
 /* Command Object passed to commands  */
 export type terminalCmdObjT = {
   name: string,
-  input: string,
-  args: {},
-  flags: {
-    [flagName: string]: boolean
-  }
+  // exec: (
+  //   input: terminalInputT,
+  //   args: terminalArgsT,
+  //   flags: terminalFlagsT
+  // ) => Promise<*>,
+  exec: Promise<string>,
+  cmdObj: terminalParsedObjT
 };
 /* History Object for the terminal */
 export type terminalHistoryObjT = {

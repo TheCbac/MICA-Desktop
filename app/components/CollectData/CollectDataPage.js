@@ -31,9 +31,7 @@ type propsType = {
   updateGraphSettings: (graphSettings: graphSettingsType) => updateGraphSettingsActionType
 };
 
-export default class CollectDataPage extends Component {
-  props: propsType;
-
+export default class CollectDataPage extends Component<propsType> {
   render() {
     return (
       <div>

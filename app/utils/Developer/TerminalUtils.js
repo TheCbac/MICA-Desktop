@@ -11,6 +11,7 @@
 ********************************************************* */
 import { clipboard } from 'electron';
 import update from 'immutability-helper';
+import terminalCommands from './TerminalCommand';
 import type { terminalStateT, terminalCmdObjT } from '../../types/developerTypes';
 
 const delimiters = /\s|\.|\(|\)|"|'|;|:|!/;
@@ -71,16 +72,34 @@ export function recallNextCommand(state: terminalStateT): ?recallT {
   return { cmd: '', index: undefined };
 }
 
-// /* Parse the current entry */
-// export function parseLine(currentLine: string): terminalCmdObjT {
-//   /* Tokenize */
-//   const tokens = currentLine.split(' ');
-//   const commandName = tokens[0];
-//   const command = commandsList[commandName];
-//   if (!command) {
-//     console.log('unknown command ', commandName);
-//   }
-// }
+/* Parse the current entry */
+export function parseLine(currentLine: string): terminalCmdObjT {
+  /* Tokenize */
+  const tokens = currentLine.split(' ');
+  const commandName = tokens[0];
+  const commandExec = terminalCommands[commandName];
+  if (!commandExec) {
+    console.log('unknown command ', commandName);
+    return ({
+      name: 'unknown command',
+      exec: terminalCommands.echo(),
+      cmdObj: {
+        input: `Unknown Command ${commandName}`,
+        args: {},
+        flags: {}
+      }
+    });
+  }
+  return ({
+    name: commandName,
+    exec: commandExec(),
+    cmdObj: {
+      input: '',
+      args: {},
+      flags: {}
+    }
+  });
+}
 /* Jump to the end of the word */
 export function nextWordPosition(cursorPosition: number, currentLine: string): number {
   /* split the string */
@@ -120,7 +139,7 @@ export function prevWordPosition(cursorPosition: number, currentLine: string): n
 
 /* Handle all of the hotkeys */
 export function handleHotKeys(
-  event: SyntheticKeyboardEvent, state: terminalStateT
+  event: SyntheticKeyboardEvent<>, state: terminalStateT
 ): terminalStateT {
   const { key } = event;
   let { cursorPosition, currentLine, commandLineNumber } = state;
@@ -193,7 +212,7 @@ export function handleHotKeys(
 
 /* Handle a regular terminal input */
 export function handleTerminalInput(
-  event: SyntheticKeyboardEvent, state: terminalStateT
+  event: SyntheticKeyboardEvent<>, state: terminalStateT
 ): terminalStateT {
   const { metaKeys } = state;
   let { cursorPosition, currentLine, history, commandLineNumber } = state;
@@ -204,7 +223,15 @@ export function handleTerminalInput(
     /* Enter a command */
     case 'Enter':
       /* Parse the command */
-      // command = parseLine(currentLine);
+      command = parseLine(currentLine);
+      command.exec
+        .then((val) => {
+          console.log(val);
+          return val;
+        })
+        .catch((err) => {
+          console.log('error', err);
+        });
       /* Store the line */
       history = update(history, {
         $push: [{
@@ -271,13 +298,9 @@ export function handleTerminalInput(
         cursorPosition += 1;
         /* typing means that the line should be reset */
         commandLineNumber = undefined;
-      } else {
+      } else if (metaKeys.indexOf(key) === -1) {
         /* Store the meta key if not already stored */
-        if (metaKeys.indexOf(key) === -1) {
-          metaKeys.push(key);
-        }
-        /* Other meta characters */
-        console.log('metaKey:', key);
+        metaKeys.push(key);
       }
       break;
   } /* End Switch */

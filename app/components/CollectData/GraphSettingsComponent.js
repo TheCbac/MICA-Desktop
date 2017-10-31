@@ -1,4 +1,3 @@
-
 /* @flow */
 /* **********************************************************
 * File: components/CollectData/GraphSettingsComponent.js
@@ -40,10 +39,7 @@ type stateType = {
   value: number
 };
 
-export default class GraphSettings extends Component {
-  /* Type Def the props */
-  props: propsType;
-  state: stateType;
+export default class GraphSettings extends Component<propsType, stateType> {
   constructor(props: propsType) {
     super(props);
     /* Set the default */
@@ -77,7 +73,7 @@ export default class GraphSettings extends Component {
     }
     /* Return the button */
     return (
-      <Col xs={12} className={'text-center'} style={{ marginTop: '10px' }}>
+      <Col xs={12} className="text-center" style={{ marginTop: '10px' }}>
         <Button
           block
           bsStyle={btnStyle}
@@ -110,7 +106,7 @@ export default class GraphSettings extends Component {
 
     return (
       <div style={boxStyle}>
-        <div className={'text-center'} style={{ fontSize: '1.5em' }}>Graphs</div>
+        <div className="text-center" style={{ fontSize: '1.5em' }}>Graphs</div>
         <Row style={{ marginTop: '10px' }} />
         <Col md={6}>
           <span style={{ fontSize: '1.25em' }}>Horizontal Scale</span>
@@ -119,8 +115,8 @@ export default class GraphSettings extends Component {
           <ButtonToolbar>
             <ToggleButtonGroup
               bsSize="xsmall"
-              type={'radio'}
-              name={'graphScale'}
+              type="radio"
+              name="graphScale"
               value={this.state.value}
               onChange={this.onScaleChange}
             >
@@ -136,10 +132,10 @@ export default class GraphSettings extends Component {
         <Row />
         {this.startStopGraphButton()}
         <Row />
-        <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
+        <Col xs={6} className="text-center" style={{ marginTop: '10px' }}>
           <Button block bsStyle="warning">PAUSE DISPLAY</Button>
         </Col>
-        <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
+        <Col xs={6} className="text-center" style={{ marginTop: '10px' }}>
           <Button block bsStyle="primary" onClick={() => this.saveDialog()}>SAVE RUN</Button>
         </Col>
         <Row />
