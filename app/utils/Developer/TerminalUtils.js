@@ -372,4 +372,15 @@ export async function handleTerminalInput(
   } /* End Switch */
   return { ...state, cursorPosition, currentLine, history, commandLineNumber, metaKeys };
 }
+
+let terminalCallback;
+export function registerCallback(callback: (string) => void): void {
+  terminalCallback = callback;
+}
+
+export function logAsyncData(data: string): void {
+  if (terminalCallback) {
+    terminalCallback(data);
+  }
+}
 /* [] - END OF FILE */
