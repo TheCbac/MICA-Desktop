@@ -10,8 +10,8 @@
 *
 ********************************************************* */
 import Serialport from 'serialport';
-import { logAsyncData, terminalString, hexToString } from './TerminalUtils';
-import { calcChecksum16 } from '../dataStreams/packets';
+import { logAsyncData, hexToString } from './TerminalUtils';
+import { enterBootloaderCmd, dummyCmd, randomLed } from '../dataStreams/controlCommands';
 import type {
   terminalParsedObjT
 } from '../../types/developerTypes';
@@ -49,7 +49,7 @@ const ports = {};
 async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
   const { input, args, flags } = cmdObj;
   const serialList = await Serialport.list();
-  let cmdReturn = [];
+  const cmdReturn = [];
   /* List all devices */
   if (flags.l || flags.a) {
     /* iterate through each */
@@ -98,19 +98,42 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
       port.write(echoString);
     }
   } else if (args[0] === 'boot') {
+    /* Put the device into bootload mode */
     const port = ports[Object.keys(ports)[0]];
     if (port) {
-      const validData = [0x01, 0x00, 0x00, 0x00, 0x02, 0x01, 0x02];
-      /* Add the checksum */
-      const { msb, lsb } = calcChecksum16(validData);
-      validData.push(msb, lsb, 0xAA);
+      const cmd = enterBootloaderCmd();
       /* verbose */
       if (flags.v) {
-        // cmdReturn.push(validData.toString());
-        cmdReturn.push(hexToString(validData));
+        cmdReturn.push(hexToString(cmd));
       }
       /* Write the command */
-      port.write(validData);
+      port.write(cmd);
+    }
+  } else if (args[0] === 'dummy') {
+    /* Put the device into bootload mode */
+    const port = ports[Object.keys(ports)[0]];
+    if (port) {
+      /* Send dummy data */
+      const dummy = dummyCmd();
+      /* verbose */
+      if (flags.v) {
+        cmdReturn.push(hexToString(dummy));
+      }
+      /* Write the command */
+      port.write(dummy);
+    }
+  } else if (args[0] === 'leds') {
+    /* Put the device into bootload mode */
+    const port = ports[Object.keys(ports)[0]];
+    if (port) {
+      /* Send dummy data */
+      const leds = randomLed();
+      /* verbose */
+      if (flags.v) {
+        cmdReturn.push(hexToString(leds));
+      }
+      /* Write the command */
+      port.write(leds);
     }
   } else {
     /* not enough args */
