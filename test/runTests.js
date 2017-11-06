@@ -25,11 +25,17 @@ const setupArg = `--setupTestFrameworkScriptFile=${setupFile}`;
 
 /* Create the arguments for the command */
 const jestPath = path.normalize('./node_modules/.bin/jest');
-const jestArgs = [pattern, setupArg];
+let jestArgs = [pattern, setupArg];
 
 /* Update Snapshot */
 if (process.argv[2] === 'update') {
   jestArgs.push('-u');
+}
+/* Look for files that have changed - this is very fragile */
+if (process.argv[2] === 'changed') {
+  jestArgs.push('--onlyChanged');
+  /* remove the pattern */
+  jestArgs = jestArgs.slice(1);
 }
 
 /* Echo the argument executed */

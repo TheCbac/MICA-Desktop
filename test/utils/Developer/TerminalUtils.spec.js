@@ -37,6 +37,12 @@ describe('TerminalUtils', () => {
       expect(hexToString([0x00, 0x01, 0x03, 0x04])).toBe('00:01:03:04');
       expect(hexToString([0x00, 0x01, 0xFF, 0xAA])).toBe('00:01:FF:AA');
     });
+    it('Should convert buffers', () => {
+      let data = Buffer.from([0x00, 0x01, 0xFF, 0xAA]);
+      expect(hexToString(data)).toBe('00:01:FF:AA');
+      data = Buffer.from([0x00]);
+      expect(hexToString(data)).toBe('00');
+    });
   });
 });
 /* [] - END OF FILE */

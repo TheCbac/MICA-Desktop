@@ -10,7 +10,7 @@
 *
 ********************************************************* */
 import Serialport from 'serialport';
-import { logAsyncData, terminalString } from './TerminalUtils';
+import { logAsyncData, terminalString, hexToString } from './TerminalUtils';
 import { calcChecksum16 } from '../dataStreams/packets';
 import type {
   terminalParsedObjT
@@ -33,19 +33,7 @@ async function openPort(portName: string, baudRate: number): Promise<string> {
         /* Store the reference */
         ports[portName] = port;
         port.on('data', (chunk) => {
-          let result = '';
-          for (let i = 0; i < chunk.length; i++) {
-            // result += String.fromCharCode(chunk[i]);
-            let asciiHex = chunk[i].toString(16);
-            if (asciiHex.length === 1) {
-              asciiHex = `0${asciiHex}`;
-            }
-            result += asciiHex.toUpperCase();
-            if (i !== chunk.length - 1) {
-              result += ':';
-            }
-          }
-          console.log(result);
+          const result = hexToString(chunk);
           logAsyncData(result);
         });
         port.on('close', () => {
@@ -71,7 +59,7 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
       const { comName } = port;
       /* IF a usb modem, or the a flag is passed */
       if (comName.search('usbmodem') >= 0 || flags.a) {
-        cmdReturn = terminalString(cmdReturn, comName);
+        cmdReturn.push(comName);
       }
     }
   /* Open a serial port */
@@ -98,9 +86,9 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
     /* open port */
     if (nameNum) {
       const portStatus = await openPort(nameNum, baudRate);
-      cmdReturn = terminalString(cmdReturn, portStatus);
+      cmdReturn.push(portStatus);
     } else {
-      cmdReturn = terminalString(cmdReturn, 'No ports found');
+      cmdReturn.push('No ports found');
     }
   } else if (args[0] === 'echo') {
     /* Find a device */
@@ -119,7 +107,7 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
       /* verbose */
       if (flags.v) {
         // cmdReturn.push(validData.toString());
-        cmdReturn = terminalString(cmdReturn, validData);
+        cmdReturn.push(hexToString(validData));
       }
       /* Write the command */
       port.write(validData);
