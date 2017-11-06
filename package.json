@@ -1,7 +1,7 @@
 {
   "name": "mica-desktop",
   "productName": "MICA Desktop",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "MICA Desktop is used to interact with MICA devices",
   "main": "main.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "test-all": "npm run lint && npm run flow && npm run test && npm run build && npm run test-e2e",
     "test-watch": "npm test -- --watch",
     "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js e2e",
+    "test-update": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js update",
     "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty .",
     "lint-fix": "npm run lint -- --fix",
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",

@@ -1,13 +1,49 @@
+/* @flow */
+/* **********************************************************
+* File: test/jestSetup.js
+*
+* Brief: Sets up the Jest environment. Runs before each test
+* suite. Passed as argument to runTest.js
+*
+* Authors: Craig Cheney
+*
+* 2017.11.06 CC - Document updated from boilerplate, adding
+*   a test setup file and snapshot update support
+*
+********************************************************* */
 const spawn = require('cross-spawn');
 const path = require('path');
-// const enzyme = require('enzyme');
-// const Adapter = require('enzyme-adapter-react-16');
 
-// enzyme.configure({ adapter: new Adapter() });
-
+/* Chose end-to-end test or not */
 const s = `\\${path.sep}`;
 const pattern = process.argv[2] === 'e2e'
   ? `test${s}e2e${s}.+\\.spec\\.js`
   : `test${s}(?!e2e${s})[^${s}]+${s}.+\\.spec\\.js$`;
+/* Jest config file */
+const setupFile = path.resolve('test/jestSetup.js');
+const setupArg = `--setupTestFrameworkScriptFile=${setupFile}`;
 
-spawn.sync(path.normalize('./node_modules/.bin/jest'), [pattern], { stdio: 'inherit' });
+/* Create the arguments for the command */
+const jestPath = path.normalize('./node_modules/.bin/jest');
+const jestArgs = [pattern, setupArg];
+
+/* Update Snapshot */
+if (process.argv[2] === 'update') {
+  jestArgs.push('-u');
+}
+
+/* Echo the argument executed */
+let jestCommand = `> ${jestPath}`;
+jestArgs.forEach(val => {
+  jestCommand += ` ${val}`;
+});
+console.log(jestCommand);
+
+/* Run the command in a new process */
+spawn.sync(
+  jestPath,
+  jestArgs,
+  { stdio: 'inherit' }
+);
+
+/* [] - END OF FILE */

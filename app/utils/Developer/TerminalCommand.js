@@ -10,7 +10,8 @@
 *
 ********************************************************* */
 import Serialport from 'serialport';
-import { logAsyncData } from './TerminalUtils';
+import { logAsyncData, terminalString } from './TerminalUtils';
+import { calcChecksum16 } from '../dataStreams/packets';
 import type {
   terminalParsedObjT
 } from '../../types/developerTypes';
@@ -60,19 +61,17 @@ const ports = {};
 async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
   const { input, args, flags } = cmdObj;
   const serialList = await Serialport.list();
-  const cmdReturn = [];
+  let cmdReturn = [];
   /* List all devices */
   if (flags.l || flags.a) {
     /* iterate through each */
     for (let i = 0; i < serialList.length; i++) {
-      /* More specific */
-      // vendorId: '04b4'
-      // productId: '0002'
+      /* More specific: vendorId: '04b4', productId: '0002' */
       const port = serialList[i];
       const { comName } = port;
       /* IF a usb modem, or the a flag is passed */
       if (comName.search('usbmodem') >= 0 || flags.a) {
-        cmdReturn.push(comName);
+        cmdReturn = terminalString(cmdReturn, comName);
       }
     }
   /* Open a serial port */
@@ -99,9 +98,9 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
     /* open port */
     if (nameNum) {
       const portStatus = await openPort(nameNum, baudRate);
-      cmdReturn.push(portStatus);
+      cmdReturn = terminalString(cmdReturn, portStatus);
     } else {
-      cmdReturn.push('No ports found');
+      cmdReturn = terminalString(cmdReturn, 'No ports found');
     }
   } else if (args[0] === 'echo') {
     /* Find a device */
@@ -113,7 +112,17 @@ async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
   } else if (args[0] === 'boot') {
     const port = ports[Object.keys(ports)[0]];
     if (port) {
-      port.write([0x01, 0x38, 0x00, 0x00, 0xC7, 0xFF, 0x17]);
+      const validData = [0x01, 0x00, 0x00, 0x00, 0x02, 0x01, 0x02];
+      /* Add the checksum */
+      const { msb, lsb } = calcChecksum16(validData);
+      validData.push(msb, lsb, 0xAA);
+      /* verbose */
+      if (flags.v) {
+        // cmdReturn.push(validData.toString());
+        cmdReturn = terminalString(cmdReturn, validData);
+      }
+      /* Write the command */
+      port.write(validData);
     }
   } else {
     /* not enough args */

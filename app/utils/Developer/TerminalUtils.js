@@ -378,9 +378,61 @@ export function registerCallback(callback: (string) => void): void {
   terminalCallback = callback;
 }
 
+/* Logs terminal data asynchronously */
 export function logAsyncData(data: string): void {
   if (terminalCallback) {
     terminalCallback(data);
   }
+}
+
+/* To string */
+export function terminalString(
+  cmdReturn: string[],
+  data: number | string | Array<string | number>,
+  base?: number = 16
+): string[] {
+  const dataArray = [];
+  if (typeof data === 'number') {
+    dataArray.push(data.toString(base).toUpperCase());
+  } else if (typeof data === 'string') {
+    dataArray.push(data);
+  } else if (data.constructor === Array) {
+    data.forEach(val => {
+      if (typeof val === 'number') {
+        dataArray.push(val.toString(base).toUpperCase());
+      } else if (typeof val === 'string') {
+        dataArray.push(val);
+      }
+    });
+  }
+  /* Return new copy */
+  return update(cmdReturn, {
+    $push: dataArray
+  });
+}
+
+export function hexToString(data: number[] | number): string {
+  /* Handle a single number */
+  const singleToString = (val: number) => {
+    let asciiHex = val.toString(16);
+    if (asciiHex.length === 1) {
+      asciiHex = `0${asciiHex}`;
+    }
+    return asciiHex.toUpperCase();
+  };
+  /* Single number */
+  if (typeof data === 'number') {
+    return singleToString(data);
+  }
+  /* If array */
+  let result = '';
+  for (let i = 0; i < data.length; i++) {
+    const val = data[i];
+    result += singleToString(val);
+    if (i !== data.length - 1) {
+      result += ':';
+    }
+  }
+  return result;
 }
 /* [] - END OF FILE */
