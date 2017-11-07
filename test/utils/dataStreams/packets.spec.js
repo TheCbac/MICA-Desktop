@@ -10,7 +10,7 @@
 *
 ********************************************************* */
 import {
-  createMicaPacket, parseMicaResponse, calcChecksum16,
+  createMicaPacketBinary, parseMicaResponse, calcChecksum16,
   validateResponseHeader, validateResponseFooter,
   validateResponseChecksum, validateResponsePayload,
   MICA_PACKET_ID_MODULE_CONTROL,
@@ -23,12 +23,13 @@ import {
 
 
 describe('Packets', () => {
-  describe('createMicaPackets', () => {
+  describe('createMicaPacketBinary', () => {
     it('Should construct a packet with no payload', () => {
-      const packet = createMicaPacket(
-        MICA_PACKET_ID_MODULE_CONTROL,
-        MICA_PACKET_CTRL_CMD_BOOT
-      );
+      const packetObj = {
+        moduleId: MICA_PACKET_ID_MODULE_CONTROL,
+        command: MICA_PACKET_CTRL_CMD_BOOT
+      };
+      const packet = createMicaPacketBinary(packetObj);
       expect(packet[0]).toBe(MICA_PACKET_SYM_START);
       expect(packet[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
       expect(packet[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
@@ -38,11 +39,12 @@ describe('Packets', () => {
     });
     it('Should create a packet with a payload', () => {
       const payload = [0x01, 0x02, 0x03, 0xFF];
-      const packet = createMicaPacket(
-        MICA_PACKET_ID_MODULE_CONTROL,
-        MICA_PACKET_CTRL_CMD_BOOT,
+      const packetObj = {
+        moduleId: MICA_PACKET_ID_MODULE_CONTROL,
+        command: MICA_PACKET_CTRL_CMD_BOOT,
         payload
-      );
+      };
+      const packet = createMicaPacketBinary(packetObj);
       expect(packet[0]).toBe(MICA_PACKET_SYM_START);
       expect(packet[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
       expect(packet[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);

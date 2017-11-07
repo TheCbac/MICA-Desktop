@@ -26,12 +26,27 @@ export const MICA_PACKET_ID_MODULE_MAX = 0x05;
 export const MICA_PACKET_RESP_LEN_HEADER = 0x05;
 export const MICA_PACKET_RESP_LEN_FOOTER = 0x03;
 
-/* Construct a MICA packet from inputs */
-export function createMicaPacket(
+export const PACKET_SUCCESS = 0x00;
+export const PACKET_ERR_FORMAT = 0x01;
+export const PACKET_ERR_MODULE = 0x02;
+export const PACKET_ERR_LENGTH = 0x03;
+export const PACKET_ERR_DATA = 0x04;
+export const PACKET_ERR_CMD = 0x05;
+export const PACKET_ERR_CHECKSUM = 0x06;
+export const PACKET_ERR_UNKNOWN = 0x07;
+
+export type micaPacketT = {
   moduleId: number,
   command: number,
-  payload?: number[] = []
-): number[] {
+  payload?: number[]
+};
+export type micaPacketObjT = {
+  binary: number[],
+  packetObj: micaPacketT
+};
+/* Construct a MICA packet from inputs */
+export function createMicaPacketBinary(packetObj: micaPacketT): number[] {
+  const { moduleId, command, payload = [] } = packetObj;
   /* Calculate 8 bit payload length */
   const payLenMsb = (payload.length >>> SHIFT_BYTE_ONE) & MASK_BYTE_ONE;
   const payLenLsb = payload.length & MASK_BYTE_ONE;
@@ -161,6 +176,41 @@ export function validateResponsePayload(
   }
   /* Return success */
   result.success = true;
+  return result;
+}
+
+/* Get the Error associated with a code */
+export function getResponseStatus(status: number): validationObjT {
+  const result = { success: false, error: '' };
+  switch (status) {
+    case PACKET_SUCCESS:
+      result.success = true;
+      break;
+    case PACKET_ERR_FORMAT:
+      result.error = 'Packet in the incorrect format';
+      break;
+    case PACKET_ERR_MODULE:
+      result.error = 'Command addressed invalid Module id';
+      break;
+    case PACKET_ERR_LENGTH:
+      result.error = 'Payload was an invalid length';
+      break;
+    case PACKET_ERR_DATA:
+      result.error = 'Payload data was in an incorrect format';
+      break;
+    case PACKET_ERR_CMD:
+      result.error = 'Command was invalid';
+      break;
+    case PACKET_ERR_CHECKSUM:
+      result.error = 'Packet Checksum did not match calculated checksum';
+      break;
+    case PACKET_ERR_UNKNOWN:
+      result.error = 'Packet failed with an unknown error';
+      break;
+    default:
+      result.error = `An unknown error code "${status}" was received`;
+      break;
+  }
   return result;
 }
 
