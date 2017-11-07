@@ -373,6 +373,7 @@ export async function handleTerminalInput(
   return { ...state, cursorPosition, currentLine, history, commandLineNumber, metaKeys };
 }
 
+/* Store a reference to a callback function */
 let terminalCallback;
 export function registerCallback(callback: (string) => void): void {
   terminalCallback = callback;
@@ -385,31 +386,6 @@ export function logAsyncData(data: string): void {
   }
 }
 
-/* To string */
-// export function terminalString(
-//   cmdReturn: string[],
-//   data: number | string | Array<string | number>,
-//   base?: number = 16
-// ): string[] {
-//   const dataArray = [];
-//   if (typeof data === 'number') {
-//     dataArray.push(data.toString(base).toUpperCase());
-//   } else if (typeof data === 'string') {
-//     dataArray.push(data);
-//   } else if (data.constructor === Array) {
-//     data.forEach(val => {
-//       if (typeof val === 'number') {
-//         dataArray.push(val.toString(base).toUpperCase());
-//       } else if (typeof val === 'string') {
-//         dataArray.push(val);
-//       }
-//     });
-//   }
-//   /* Return new copy */
-//   return update(cmdReturn, {
-//     $push: dataArray
-//   });
-// }
 /* Converts a Hex value or array of values to an ASCII string */
 export function hexToString(data: number[] | number | Buffer): string {
   /* Handle a single number */

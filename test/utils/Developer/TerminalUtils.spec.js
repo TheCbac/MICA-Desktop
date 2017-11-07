@@ -1,12 +1,12 @@
 /* @flow */
 /* **********************************************************
-* File: utils/Developer/TerminalUtils.js
+* File: test/utils/Developer/TerminalUtils.spec.js
 *
-* Brief: Utilities for the mica Terminal
+* Brief: Tests for TerminalUtils.js
 *
 * Authors: Craig Cheney
 *
-* 2017.10.27 CC - Document created
+* 2017.11.06 CC - Document created
 *
 ********************************************************* */
 import {

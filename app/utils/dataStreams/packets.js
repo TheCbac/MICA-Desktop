@@ -23,7 +23,7 @@ export const MICA_PACKET_ID_MODULE_COMM = 0x04;
 export const MICA_PACKET_ID_MODULE_CONTROL = 0x05;
 
 
-/* Construct a MICA packet */
+/* Construct a MICA packet from inputs */
 export function createMicaPacket(
   moduleId: number,
   command: number,
@@ -41,14 +41,8 @@ export function createMicaPacket(
   return cmd;
 }
 
-/* Calculate the 8 bit checksum */
-export function calcChecksum8(dataArray: number[]): number {
-  let checkSum = 0;
-  for (let i = 0; i < dataArray.length; i++) {
-    checkSum += dataArray[i];
-  }
-  return checkSum % ((2 ** 8) - 1);
-}
+/* Parse a MICA packet */
+
 /* Calculate the 16 bit checksum */
 export function calcChecksum16(dataArray: number[]): {
   msb: number,

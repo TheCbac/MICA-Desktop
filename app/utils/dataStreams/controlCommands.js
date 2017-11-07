@@ -38,7 +38,8 @@ export function randomLed(): number[] {
   const R = randomInt();
   const G = randomInt();
   const B = randomInt();
-  const payload = [enabled, R, G, B];
+  const payload = [enabled, R, G];
+  // const payload = [enabled, R, G, B];
   return createMicaPacket(
     MICA_PACKET_ID_MODULE_CONTROL,
     MICA_PACKET_CTRL_CMD_LED,
