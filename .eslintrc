@@ -26,6 +26,7 @@
       "allowForLoopAfterthoughts": true
     }],
     "no-multi-assign": "off",
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
     "object-curly-newline": "off",
     "promise/param-names": "error",
     "promise/always-return": "error",

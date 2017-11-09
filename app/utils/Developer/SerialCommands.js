@@ -11,17 +11,19 @@
 *
 ********************************************************* */
 import Serialport from 'serialport';
-import { logAsyncData } from './TerminalUtils';
+import { logAsyncData, hexToString } from './TerminalUtils';
 import {
-  enterBootloaderCmd, dummyCmd, ledCmd
+  ledCmd, bootloaderCmd
 } from '../dataStreams/controlCommands';
 import { parseMicaResponse } from '../dataStreams/packets';
 import type { subCommandT, subCommandObjT } from '../dataStreams/controlCommands';
 import type { terminalParsedObjT } from '../../types/developerTypes';
 
 const ports = {};
+/* Serial subcommands - name is the name that gets called */
 const subCommands: subCommandObjT = {
-  leds: ledCmd
+  leds: ledCmd,
+  boot: bootloaderCmd
 };
 /* callback for when the command returns */
 let cmdCallback;
@@ -31,7 +33,6 @@ let lastPacketObj;
 /* Get the serial ports currently connected */
 export default async function serial(cmdObj: terminalParsedObjT): Promise<string[]> {
   const { args, flags } = cmdObj;
-  const serialList = await Serialport.list();
   const cmdReturn = [];
   /* Set the last command */
   lastCmdObj = cmdObj;
@@ -41,16 +42,26 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
   if (args[0] && port) {
     const subcommand = getSubCommand(args[0]);
     if (subcommand) {
+      /* Extract the subcmd function and callback */
       const { generatePacketObj, callback } = subcommand;
-      const { packetObj, binary } = generatePacketObj(cmdObj);
+      const { packetObj, binary, output } = generatePacketObj(cmdObj);
       /* Register the callback function */
       cmdCallback = callback;
       lastPacketObj = packetObj;
+      /* Print the output if relevent */
+      if (output) {
+        cmdReturn.push(output);
+      }
+      /* Verbose flag */
+      if (flags.v && binary) {
+        cmdReturn.push(hexToString(binary));
+      }
       /* Write the command */
       port.write(binary);
     }
   } else if (flags.l || flags.a) {
     /* List all devices */
+    const serialList = await Serialport.list();
     /* iterate through each */
     for (let i = 0; i < serialList.length; i++) {
       /* More specific: vendorId: '04b4', productId: '0002' */
@@ -63,6 +74,7 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
     }
   /* Open a serial port */
   } else if (flags.c) {
+    const serialList = await Serialport.list();
     /* Defaults */
     let nameNum = args[0];
     let baudRate = 115200;
@@ -119,8 +131,9 @@ async function openPort(portName: string, baudRate: number): Promise<string> {
         ports[portName] = port;
         port.on('data', (chunk) => {
           const response = parseMicaResponse(chunk);
+          /* Packet was valid, send data to callback */
           if (cmdCallback && response.success && response.data) {
-            cmdCallback(response.data, lastCmdObj, lastPacketObj);
+            cmdCallback(response.data, lastCmdObj, lastPacketObj, chunk);
           }
         });
         port.on('close', () => {

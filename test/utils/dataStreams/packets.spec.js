@@ -13,9 +13,11 @@ import {
   createMicaPacketBinary, parseMicaResponse, calcChecksum16,
   validateResponseHeader, validateResponseFooter,
   validateResponseChecksum, validateResponsePayload,
+  validatePayload,
   MICA_PACKET_ID_MODULE_CONTROL,
   MICA_PACKET_SYM_START,
-  MICA_PACKET_SYM_END
+  MICA_PACKET_SYM_END,
+  MICA_PACKET_LEN_MAX_PAYLOAD
 } from '../../../app/utils/dataStreams/packets';
 import {
   MICA_PACKET_CTRL_CMD_BOOT
@@ -23,19 +25,81 @@ import {
 
 
 describe('Packets', () => {
+  describe('validatePayload', () => {
+    it('should accept valid payloads', () => {
+      let payload = [0x01, 0x02, 0x03, 0xFF];
+      let { success, error } = validatePayload(payload);
+      expect(success).toBeTruthy();
+      expect(error).toBe('');
+
+      payload = [0x00, 0x00];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeTruthy();
+      expect(error).toBe('');
+
+      payload = [];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeTruthy();
+      expect(error).toBe('');
+    });
+    it('should reject payloads that are too long', () => {
+      const payload = [];
+      for (let i = 0; i <= MICA_PACKET_LEN_MAX_PAYLOAD; i++) {
+        payload.push(0x00);
+      }
+      const { success, error } = validatePayload(payload);
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload exceeds maximum length');
+    });
+    it('should reject negative values', () => {
+      let payload = [0x01, -45, 0x03, 0xFF];
+      let { success, error } = validatePayload(payload);
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload contains negative value');
+
+      payload = [0x00, 0xEE, -25];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload contains negative value');
+
+      payload = [-1, 0xEE, 0x25];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload contains negative value');
+    });
+    it('should reject non 8-bit values', () => {
+      let payload = [0x01, 0x300, 0xFF];
+      let { success, error } = validatePayload(payload);
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload value exceeds 8-bits');
+
+      payload = [0xF01, 0xEE, 0x25];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload value exceeds 8-bits');
+
+      payload = [0xF0, 0xEE, 256];
+      ({ success, error } = validatePayload(payload));
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload value exceeds 8-bits');
+    });
+  });
   describe('createMicaPacketBinary', () => {
     it('Should construct a packet with no payload', () => {
       const packetObj = {
         moduleId: MICA_PACKET_ID_MODULE_CONTROL,
         command: MICA_PACKET_CTRL_CMD_BOOT
       };
-      const packet = createMicaPacketBinary(packetObj);
-      expect(packet[0]).toBe(MICA_PACKET_SYM_START);
-      expect(packet[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
-      expect(packet[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
-      expect(packet[3]).toBe(0);
-      expect(packet[4]).toBe(0);
-      expect(packet[packet.length - 1]).toBe(MICA_PACKET_SYM_END);
+      const { success, error, binary } = createMicaPacketBinary(packetObj);
+      expect(success).toBeTruthy();
+      expect(error).toBe('');
+      expect(binary).toBeDefined();
+      expect(binary[0]).toBe(MICA_PACKET_SYM_START);
+      expect(binary[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
+      expect(binary[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
+      expect(binary[3]).toBe(0);
+      expect(binary[4]).toBe(0);
+      expect(binary[binary.length - 1]).toBe(MICA_PACKET_SYM_END);
     });
     it('Should create a packet with a payload', () => {
       const payload = [0x01, 0x02, 0x03, 0xFF];
@@ -44,17 +108,31 @@ describe('Packets', () => {
         command: MICA_PACKET_CTRL_CMD_BOOT,
         payload
       };
-      const packet = createMicaPacketBinary(packetObj);
-      expect(packet[0]).toBe(MICA_PACKET_SYM_START);
-      expect(packet[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
-      expect(packet[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
-      expect(packet[3]).toBe(0);
-      expect(packet[4]).toBe(payload.length);
-      expect(packet[5]).toBe(payload[0]);
-      expect(packet[6]).toBe(payload[1]);
-      expect(packet[7]).toBe(payload[2]);
-      expect(packet[8]).toBe(payload[3]);
-      expect(packet[packet.length - 1]).toBe(MICA_PACKET_SYM_END);
+      const { success, error, binary } = createMicaPacketBinary(packetObj);
+      expect(success).toBeTruthy();
+      expect(error).toBe('');
+      expect(binary[0]).toBe(MICA_PACKET_SYM_START);
+      expect(binary[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
+      expect(binary[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
+      expect(binary[3]).toBe(0);
+      expect(binary[4]).toBe(payload.length);
+      expect(binary[5]).toBe(payload[0]);
+      expect(binary[6]).toBe(payload[1]);
+      expect(binary[7]).toBe(payload[2]);
+      expect(binary[8]).toBe(payload[3]);
+      expect(binary[binary.length - 1]).toBe(MICA_PACKET_SYM_END);
+    });
+    it('Should only return 8 bit values', () => {
+      const payload = [0xFF, 0xFFFF, 0xA456, 0x45];
+      const packetObj = {
+        moduleId: MICA_PACKET_ID_MODULE_CONTROL,
+        command: MICA_PACKET_CTRL_CMD_BOOT,
+        payload
+      };
+      const { success, error, binary } = createMicaPacketBinary(packetObj);
+      expect(success).toBeFalsy();
+      expect(error).toBe('Payload value exceeds 8-bits');
+      expect(binary).toEqual([]);
     });
   });
   describe('parseMicaResponse', () => {
@@ -109,7 +187,9 @@ describe('Packets', () => {
     it('should validate the payload', () => {
       const statusOk = 0x00;
       /* Remove Packet id */
-      let header = [MICA_PACKET_SYM_START, /* MICA_PACKET_ID_MODULE_CONTROL, */ statusOk, 0x00, 0x01];
+      let header = [
+        MICA_PACKET_SYM_START, /* MICA_PACKET_ID_MODULE_CONTROL, */ statusOk, 0x00, 0x01
+      ];
       let payload = [0xFD];
       let { msb, lsb } = calcChecksum16([...header, ...payload]);
       let footer = [msb, lsb, MICA_PACKET_SYM_END];

@@ -26,6 +26,8 @@ export const MICA_PACKET_ID_MODULE_MAX = 0x05;
 export const MICA_PACKET_RESP_LEN_HEADER = 0x05;
 export const MICA_PACKET_RESP_LEN_FOOTER = 0x03;
 
+export const MICA_PACKET_LEN_MAX_PAYLOAD = 1000;
+
 export const PACKET_SUCCESS = 0x00;
 export const PACKET_ERR_FORMAT = 0x01;
 export const PACKET_ERR_MODULE = 0x02;
@@ -44,19 +46,62 @@ export type micaPacketObjT = {
   binary: number[],
   packetObj: micaPacketT
 };
+export type packetBinaryT = {
+  success: boolean,
+  error: string,
+  binary: number[]
+};
 /* Construct a MICA packet from inputs */
-export function createMicaPacketBinary(packetObj: micaPacketT): number[] {
+export function createMicaPacketBinary(packetObj: micaPacketT): packetBinaryT {
+  const result = { success: false, error: '', binary: [] };
   const { moduleId, command, payload = [] } = packetObj;
   /* Calculate 8 bit payload length */
   const payLenMsb = (payload.length >>> SHIFT_BYTE_ONE) & MASK_BYTE_ONE;
   const payLenLsb = payload.length & MASK_BYTE_ONE;
+  /* Validate payload */
+  const { success: validPayload, error } = validatePayload(payload);
+  if (!validPayload) {
+    result.error = error;
+    return result;
+  }
   /* Construct the command */
   const cmd = [MICA_PACKET_SYM_START, moduleId, command, payLenMsb, payLenLsb, ...payload];
   /* Add the footer */
   const { msb, lsb } = calcChecksum16(cmd);
   cmd.push(msb, lsb, MICA_PACKET_SYM_END);
+  /* Update the return */
+  result.success = true;
+  result.binary = cmd;
   /* Return the command */
-  return cmd;
+  return result;
+}
+
+export type payloadValidationT = {
+  success: boolean,
+  error: string
+};
+/* Ensure valid payload data */
+export function validatePayload(data: packetDataT): payloadValidationT {
+  const result = { success: false, error: '' };
+  const len = data.length;
+  if (len > MICA_PACKET_LEN_MAX_PAYLOAD) {
+    result.error = 'Payload exceeds maximum length';
+    return result;
+  }
+  /* Verify each element */
+  for (let i = 0; i < len; i++) {
+    const val = data[i];
+    if (val < 0) {
+      result.error = 'Payload contains negative value';
+      return result;
+    }
+    if (val > 255) {
+      result.error = 'Payload value exceeds 8-bits';
+      return result;
+    }
+  }
+  result.success = true;
+  return result;
 }
 
 export type packetDataT = number[] | Buffer;
