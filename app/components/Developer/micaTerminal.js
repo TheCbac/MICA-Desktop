@@ -33,7 +33,7 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
       currentLine: '',
       history: [],
       commandLineNumber: undefined,
-      metaKeys: []
+      metaKeys: [],
     };
   }
   componentDidMount() {
@@ -99,6 +99,16 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
   handleBlur = (): void => {
     this.setState({ metaKeys: [] });
   }
+  /* Handle dropping of files */
+  handleDrop = (event: SyntheticDragEvent<>): void => {
+    const filePath = event.dataTransfer.files[0].path;
+    if (filePath) {
+      let { currentLine, cursorPosition } = this.state;
+      currentLine += filePath;
+      cursorPosition += filePath.length;
+      this.setState({ currentLine, cursorPosition });
+    }
+  }
   /* Dummy function to suppress React warning */
   handleChange = () => { /* @FIXME - why doesn't this trigger? */
     /* No-op */
@@ -113,7 +123,7 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
     };
     const terminalStyle = {
       height: '300px',
-      width: '100%'
+      width: '100%',
     };
     return (
       <div id="micaTerminal" style={terminalDivStyle}>
@@ -127,6 +137,7 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
           value={getTerminalDisplayValue(this.state)}
           onChange={this.handleChange}
           onBlur={this.handleBlur}
+          onDrop={this.handleDrop}
         />
       </div>
     );

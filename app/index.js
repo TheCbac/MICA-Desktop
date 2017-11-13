@@ -6,7 +6,7 @@
 * Author: Craig Cheney
 *
 * 2017.09.18 CC - Added IPC events
-* 2017.06.08 CC - Document created
+* 2017.06.08 CC - Document modified from boilerplate
 *
 ********************************************************* */
 import React from 'react';
@@ -31,6 +31,14 @@ ipcRenderer.on('updateAvailable', (event, version: string): void => {
   store.dispatch(updatePending(version));
 });
 
+document.ondrop = (event) => {
+  event.preventDefault();
+};
+
+document.ondragover = (event) => {
+  event.preventDefault();
+};
+
 render(
   <AppContainer>
     <Root store={store} history={history} />
@@ -45,7 +53,7 @@ if (module.hot) {
       <AppContainer>
         <NextRoot store={store} history={history} />
       </AppContainer>,
-    document.getElementById('root') || document.createElement('div')
+      document.getElementById('root') || document.createElement('div')
     );
   });
 }

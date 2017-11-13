@@ -48,7 +48,7 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
       /* Register the callback function */
       cmdCallback = callback;
       lastPacketObj = packetObj;
-      /* Print the output if relevent */
+      /* Print the output if relevant */
       if (output) {
         cmdReturn.push(output);
       }

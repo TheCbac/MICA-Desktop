@@ -35,6 +35,7 @@ describe('controlCommands.spec.js', () => {
       expect(moduleId).toBe(MICA_PACKET_ID_MODULE_CONTROL);
       expect(command).toBe(MICA_PACKET_CTRL_CMD_LED);
 
+
       expect(output).toBe('07:FF:FF:FF');
       expect(payload).toEqual([0x07, 0xFF, 0xFF, 0xFF]);
     });

@@ -60,6 +60,7 @@ const enterBootloaderCmd = (terminalObj: terminalParsedObjT): subCommandFuncT =>
     output
   };
 };
+/* Begin the bootloader chain */
 
 export const bootloaderCmd: subCommandT = {
   generatePacketObj: enterBootloaderCmd,
@@ -99,6 +100,7 @@ const randomLed = (terminalObj: terminalParsedObjT): subCommandFuncT => {
   };
 };
 
+/* Generic function callback for control subcommands */
 function logControlError(
   response: responsePacketT,
   cmdObj: terminalParsedObjT,
