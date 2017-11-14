@@ -13,14 +13,14 @@ import {
   createMicaPacketBinary, parseMicaResponse, calcChecksum16,
   validateResponseHeader, validateResponseFooter,
   validateResponseChecksum, validateResponsePayload,
-  validatePayload,
+  validatePayload, processMicaPacketByte, resetByteParse,
   MICA_PACKET_ID_MODULE_CONTROL,
   MICA_PACKET_SYM_START,
   MICA_PACKET_SYM_END,
   MICA_PACKET_LEN_MAX_PAYLOAD
 } from '../../../app/utils/dataStreams/packets';
 import {
-  MICA_PACKET_CTRL_CMD_BOOT
+  MICA_PACKET_CMD_CTRL_BOOT
 } from '../../../app/utils/dataStreams/controlCommands';
 
 
@@ -88,7 +88,7 @@ describe('Packets', () => {
     it('Should construct a packet with no payload', () => {
       const packetObj = {
         moduleId: MICA_PACKET_ID_MODULE_CONTROL,
-        command: MICA_PACKET_CTRL_CMD_BOOT
+        command: MICA_PACKET_CMD_CTRL_BOOT
       };
       const { success, error, binary } = createMicaPacketBinary(packetObj);
       expect(success).toBeTruthy();
@@ -96,7 +96,7 @@ describe('Packets', () => {
       expect(binary).toBeDefined();
       expect(binary[0]).toBe(MICA_PACKET_SYM_START);
       expect(binary[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
-      expect(binary[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
+      expect(binary[2]).toBe(MICA_PACKET_CMD_CTRL_BOOT);
       expect(binary[3]).toBe(0);
       expect(binary[4]).toBe(0);
       expect(binary[binary.length - 1]).toBe(MICA_PACKET_SYM_END);
@@ -105,7 +105,7 @@ describe('Packets', () => {
       const payload = [0x01, 0x02, 0x03, 0xFF];
       const packetObj = {
         moduleId: MICA_PACKET_ID_MODULE_CONTROL,
-        command: MICA_PACKET_CTRL_CMD_BOOT,
+        command: MICA_PACKET_CMD_CTRL_BOOT,
         payload
       };
       const { success, error, binary } = createMicaPacketBinary(packetObj);
@@ -113,7 +113,7 @@ describe('Packets', () => {
       expect(error).toBe('');
       expect(binary[0]).toBe(MICA_PACKET_SYM_START);
       expect(binary[1]).toBe(MICA_PACKET_ID_MODULE_CONTROL);
-      expect(binary[2]).toBe(MICA_PACKET_CTRL_CMD_BOOT);
+      expect(binary[2]).toBe(MICA_PACKET_CMD_CTRL_BOOT);
       expect(binary[3]).toBe(0);
       expect(binary[4]).toBe(payload.length);
       expect(binary[5]).toBe(payload[0]);
@@ -126,7 +126,7 @@ describe('Packets', () => {
       const payload = [0xFF, 0xFFFF, 0xA456, 0x45];
       const packetObj = {
         moduleId: MICA_PACKET_ID_MODULE_CONTROL,
-        command: MICA_PACKET_CTRL_CMD_BOOT,
+        command: MICA_PACKET_CMD_CTRL_BOOT,
         payload
       };
       const { success, error, binary } = createMicaPacketBinary(packetObj);
@@ -421,6 +421,52 @@ describe('Packets', () => {
       ({ msb, lsb } = calcChecksum16(data));
       expect(msb).toBe(0xFE);
       expect(lsb).toBe(0xEC);
+    });
+  });
+  describe('processMicaPacketByte', () => {
+    it('should accept packets with no payload', () => {
+      const data = [0x01, 0x04, 0x00, 0x00, 0x00, 0xFF, 0xFB, 0xAA];
+      let { complete, packet } = processMicaPacketByte(data);
+      expect(complete).toBeTruthy();
+      expect(packet).toEqual(data);
+      /* Pass data in one at a time */
+      for (let i = 0; i < data.length; i++) {
+        ({ complete, packet } = processMicaPacketByte([data[i]]));
+        if (i < data.length - 1) {
+          expect(complete).toBeFalsy();
+          expect(packet).toBeUndefined();
+        }
+      }
+      expect(complete).toBeTruthy();
+      expect(packet).toEqual(data);
+    });
+    it('should accept packets with a payload', () => {
+      const data = [0x01, 0x02, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0xB0, 0xB0, 0xAA];
+      let { complete, packet } = processMicaPacketByte(data);
+      expect(complete).toBeTruthy();
+      expect(packet).toEqual(data);
+      /* Pass data in one at a time */
+      for (let i = 0; i < data.length; i++) {
+        ({ complete, packet } = processMicaPacketByte([data[i]]));
+        if (i < data.length - 1) {
+          expect(complete).toBeFalsy();
+          expect(packet).toBeUndefined();
+        }
+      }
+      expect(complete).toBeTruthy();
+      expect(packet).toEqual(data);
+    });
+    it('should reject packets with an invalid start byte', () => {
+      const data = [0x00, 0x02, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0xB0, 0xB0, 0xAA];
+      const { complete, packet } = processMicaPacketByte(data);
+      expect(complete).toBeFalsy();
+      expect(packet).toBeUndefined();
+    });
+    it('should reject packets with an invalid end byte', () => {
+      const data = [0x01, 0x02, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0xB0, 0xB0, 0xAB];
+      const { complete, packet } = processMicaPacketByte(data);
+      expect(complete).toBeFalsy();
+      expect(packet).toBeUndefined();
     });
   });
 });

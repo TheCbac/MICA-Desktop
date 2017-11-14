@@ -11,7 +11,7 @@
 ********************************************************* */
 import {
   ledCmd,
-  MICA_PACKET_CTRL_CMD_LED,
+  MICA_PACKET_CMD_CTRL_LED,
 } from '../../../app/utils/dataStreams/controlCommands';
 import {
   MICA_PACKET_ID_MODULE_CONTROL,
@@ -33,7 +33,7 @@ describe('controlCommands.spec.js', () => {
       /* Unpack the output */
       const { output, packetObj: { payload, moduleId, command } } = packet;
       expect(moduleId).toBe(MICA_PACKET_ID_MODULE_CONTROL);
-      expect(command).toBe(MICA_PACKET_CTRL_CMD_LED);
+      expect(command).toBe(MICA_PACKET_CMD_CTRL_LED);
 
 
       expect(output).toBe('07:FF:FF:FF');

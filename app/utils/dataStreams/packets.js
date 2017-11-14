@@ -26,6 +26,9 @@ export const MICA_PACKET_ID_MODULE_MAX = 0x05;
 export const MICA_PACKET_RESP_LEN_HEADER = 0x05;
 export const MICA_PACKET_RESP_LEN_FOOTER = 0x03;
 
+export const MICA_PACKET_RESP_INDEX_LEN_MSB = 0x03;
+export const MICA_PACKET_RESP_INDEX_LEN_LSB = 0x04;
+
 export const MICA_PACKET_LEN_MAX_PAYLOAD = 1000;
 
 export const PACKET_SUCCESS = 0x00;
@@ -35,7 +38,8 @@ export const PACKET_ERR_LENGTH = 0x03;
 export const PACKET_ERR_DATA = 0x04;
 export const PACKET_ERR_CMD = 0x05;
 export const PACKET_ERR_CHECKSUM = 0x06;
-export const PACKET_ERR_UNKNOWN = 0x07;
+export const PACKET_ERR_STATE = 0x07;
+export const PACKET_ERR_UNKNOWN = 0x08;
 
 export type micaPacketT = {
   moduleId: number,
@@ -249,6 +253,9 @@ export function getResponseStatus(status: number): validationObjT {
     case PACKET_ERR_CHECKSUM:
       result.error = 'Packet Checksum did not match calculated checksum';
       break;
+    case PACKET_ERR_STATE:
+      result.error = 'Device is in incorrect state to execute command';
+      break;
     case PACKET_ERR_UNKNOWN:
       result.error = 'Packet failed with an unknown error';
       break;
@@ -278,5 +285,124 @@ export function calcChecksum16(dataArray: packetDataT): {
   return { msb, lsb };
 }
 
+export type byteParserT = {
+  complete: boolean,
+  packet?: packetDataT
+};
 
+export const STATE_WAIT_FOR_START = 'STATE_WAIT_FOR_START';
+export const STATE_RECEIVE_HEADER = 'STATE_RECEIVE_HEADER';
+export const STATE_RECEIVE_PAYLOAD = 'STATE_RECEIVE_PAYLOAD';
+export const STATE_RECEIVE_FOOTER = 'STATE_RECEIVE_FOOTER';
+
+export type byteParserObjT = {
+  state: 'STATE_WAIT_FOR_START' | 'STATE_RECEIVE_HEADER' | 'STATE_RECEIVE_PAYLOAD' | 'STATE_RECEIVE_FOOTER',
+  byteBuffer: number[],
+  payloadLen: number
+};
+
+
+/* Object to store the current packet */
+const byteParserObj: byteParserObjT = {
+  state: STATE_WAIT_FOR_START,
+  byteBuffer: [],
+  payloadLen: 0
+};
+
+/* parse a byte of data from the serial port - this is not a pure function */
+export function processMicaPacketByte(data: packetDataT): byteParserT {
+  /* Return value */
+  let packetStateComplete = false;
+  /* Iterate over all of the data */
+  for (let i = 0; i < data.length; i++) {
+    const byte = data[i];
+    /* Act according to state */
+    /* eslint default-case: 0 */
+    switch (byteParserObj.state) {
+      /* ### Waiting for start symbol ### */
+      case STATE_WAIT_FOR_START:
+        if (byte === MICA_PACKET_SYM_START) {
+          /* Reset the buffer */
+          byteParserObj.byteBuffer = [MICA_PACKET_SYM_START];
+          byteParserObj.payloadLen = 0;
+          /* Advance to next state */
+          byteParserObj.state = STATE_RECEIVE_HEADER;
+        }
+        break;
+      /* ### Waiting for the header ### */
+      case STATE_RECEIVE_HEADER:
+        /* Store the data */
+        byteParserObj.byteBuffer.push(byte);
+        /* If the header is complete */
+        if (byteParserObj.byteBuffer.length === MICA_PACKET_RESP_LEN_HEADER) {
+          const { byteBuffer } = byteParserObj;
+          /* Extract the payload */
+          const payloadLen =
+            (byteBuffer[MICA_PACKET_RESP_INDEX_LEN_MSB] << SHIFT_BYTE_ONE) |
+            byteBuffer[MICA_PACKET_RESP_INDEX_LEN_LSB];
+          /* Store the length */
+          byteParserObj.payloadLen = payloadLen;
+          /* validate length */
+          if (payloadLen > MICA_PACKET_LEN_MAX_PAYLOAD) {
+            /* error - move back to start state */
+            byteParserObj.state = STATE_WAIT_FOR_START;
+          } else if (payloadLen === 0) {
+            /* skip payload collection */
+            byteParserObj.state = STATE_RECEIVE_FOOTER;
+          } else {
+            /* Advance to next state */
+            byteParserObj.state = STATE_RECEIVE_PAYLOAD;
+          }
+        }
+        break;
+      /* ### Waiting for the payload ### */
+      case STATE_RECEIVE_PAYLOAD: {
+        /* Store the data */
+        byteParserObj.byteBuffer.push(byte);
+        const { byteBuffer, payloadLen } = byteParserObj;
+        /* See if all payload data has been captured */
+        if (byteBuffer.length === (MICA_PACKET_RESP_LEN_HEADER + payloadLen)) {
+          byteParserObj.state = STATE_RECEIVE_FOOTER;
+        }
+        break;
+      }
+      /* ### Waiting for the footer ### */
+      case STATE_RECEIVE_FOOTER: {
+        /* Store the data */
+        byteParserObj.byteBuffer.push(byte);
+        const { byteBuffer, payloadLen } = byteParserObj;
+        /* See if all data has been captured */
+        if (byteBuffer.length === (
+          MICA_PACKET_RESP_LEN_HEADER + payloadLen + MICA_PACKET_RESP_LEN_FOOTER
+        )) {
+          /* Ensure stop symbol */
+          if (byte === MICA_PACKET_SYM_END) {
+            packetStateComplete = true;
+          }
+          /* Return to original state */
+          byteParserObj.state = STATE_WAIT_FOR_START;
+        }
+        break;
+      }
+    }
+  }
+  /* Return full object if complete */
+  if (packetStateComplete) {
+    return {
+      complete: packetStateComplete,
+      packet: byteParserObj.byteBuffer
+    };
+  }
+  /* No data to return */
+  return {
+    complete: packetStateComplete
+  };
+}
+
+/* Reset the state of the byte parser */
+export function resetByteParse(): void {
+  byteParserObj.byteBuffer = [];
+  byteParserObj.payloadLen = 0;
+  byteParserObj.state = STATE_WAIT_FOR_START;
+}
 /* [] - END OF FILE */

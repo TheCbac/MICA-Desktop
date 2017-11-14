@@ -16,39 +16,23 @@ import {
 } from './packets';
 import { logAsyncData, hexToString } from '../Developer/TerminalUtils';
 import { randomInt } from '../deviceUtils';
-import type { responsePacketT, micaPacketObjT, micaPacketT, packetDataT } from './packets';
+import type { responsePacketT, micaPacketT, packetDataT } from './packets';
+import type { subCommandFuncT, subCommandT } from './commandTypes';
 import type {
   terminalParsedObjT
 } from '../../types/developerTypes';
 
-export const MICA_PACKET_CTRL_CMD_LED = 0x01;
-export const MICA_PACKET_CTRL_CMD_DIO = 0x02;
-export const MICA_PACKET_CTRL_CMD_AIO = 0x03;
-export const MICA_PACKET_CTRL_CMD_BOOT = 0x04;
-export const MICA_PACKET_CTRL_CMD_NAME = 0x05;
-
-
-export type subCommandFuncT = {
-  // ...micaPacketObjT,
-  binary: number[],
-  packetObj: micaPacketT,
-  output: string
-};
-
-export type subCommandT = {
-  generatePacketObj: (terminalParsedObjT) => subCommandFuncT,
-  callback: (responsePacketT, terminalParsedObjT, micaPacketT, packetDataT) => void
-};
-
-export type subCommandObjT = {
-  [commandName: string]: subCommandT
-};
+export const MICA_PACKET_CMD_CTRL_LED = 0x01;
+export const MICA_PACKET_CMD_CTRL_DIO = 0x02;
+export const MICA_PACKET_CMD_CTRL_AIO = 0x03;
+export const MICA_PACKET_CMD_CTRL_BOOT = 0x04;
+export const MICA_PACKET_CMD_CTRL_NAME = 0x05;
 
 /* Enter bootloader */
 const enterBootloaderCmd = (terminalObj: terminalParsedObjT): subCommandFuncT => {
   const packetObj = {
     moduleId: MICA_PACKET_ID_MODULE_CONTROL,
-    command: MICA_PACKET_CTRL_CMD_BOOT
+    command: MICA_PACKET_CMD_CTRL_BOOT
   };
   /* Create the binary */
   const { success, error, binary } = createMicaPacketBinary(packetObj);
@@ -86,7 +70,7 @@ const randomLed = (terminalObj: terminalParsedObjT): subCommandFuncT => {
   const payload = [enabled, R, G, B];
   const packetObj = {
     moduleId: MICA_PACKET_ID_MODULE_CONTROL,
-    command: MICA_PACKET_CTRL_CMD_LED,
+    command: MICA_PACKET_CMD_CTRL_LED,
     payload
   };
   /* Create the binary */

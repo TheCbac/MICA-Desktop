@@ -104,6 +104,7 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
     const filePath = event.dataTransfer.files[0].path;
     if (filePath) {
       let { currentLine, cursorPosition } = this.state;
+      /* Add the file path to the input */
       currentLine += filePath;
       cursorPosition += filePath.length;
       this.setState({ currentLine, cursorPosition });

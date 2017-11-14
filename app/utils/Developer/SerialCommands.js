@@ -15,15 +15,17 @@ import { logAsyncData, hexToString } from './TerminalUtils';
 import {
   ledCmd, bootloaderCmd
 } from '../dataStreams/controlCommands';
-import { parseMicaResponse } from '../dataStreams/packets';
-import type { subCommandT, subCommandObjT } from '../dataStreams/controlCommands';
+import { scanCmd } from '../dataStreams/commCommands';
+import { parseMicaResponse, processMicaPacketByte } from '../dataStreams/packets';
+import type { subCommandT, subCommandObjT } from '../dataStreams/commandTypes';
 import type { terminalParsedObjT } from '../../types/developerTypes';
 
 const ports = {};
 /* Serial subcommands - name is the name that gets called */
 const subCommands: subCommandObjT = {
   leds: ledCmd,
-  boot: bootloaderCmd
+  boot: bootloaderCmd,
+  scan: scanCmd
 };
 /* callback for when the command returns */
 let cmdCallback;
@@ -112,7 +114,8 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
       '   port: Port number (e.g. usbmodem1441 => 1441)',
       '   --baud   Sets the baud rate for the connection (default 115200)',
       'boot - Enter bootload mode',
-      'echo - Writes the string following the command'
+      'echo - Writes the string following the command',
+      'scan [state] - start or stop the scan'
     ];
     cmdReturn.push(...usage);
   }
@@ -129,11 +132,20 @@ async function openPort(portName: string, baudRate: number): Promise<string> {
         resolve(`Successfully opened ${portName}`);
         /* Store the reference */
         ports[portName] = port;
-        port.on('data', (chunk) => {
-          const response = parseMicaResponse(chunk);
-          /* Packet was valid, send data to callback */
-          if (cmdCallback && response.success && response.data) {
-            cmdCallback(response.data, lastCmdObj, lastPacketObj, chunk);
+        const { ByteLength } = Serialport.parsers;
+        const parser = port.pipe(new ByteLength({ length: 1 }));
+        parser.on('data', (chunk) => {
+          const { complete, packet } = processMicaPacketByte(chunk);
+          if (complete && packet) {
+            /* log on verbose */
+            if (lastCmdObj.flags.v) {
+              logAsyncData(hexToString(packet));
+            }
+            const response = parseMicaResponse(packet);
+            /* Packet was valid, send data to callback */
+            if (cmdCallback && response.success && response.data) {
+              cmdCallback(response.data, lastCmdObj, lastPacketObj, packet);
+            }
           }
         });
         port.on('close', () => {
