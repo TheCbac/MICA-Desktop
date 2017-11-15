@@ -40,6 +40,7 @@ export const PACKET_ERR_CMD = 0x05;
 export const PACKET_ERR_CHECKSUM = 0x06;
 export const PACKET_ERR_STATE = 0x07;
 export const PACKET_ERR_UNKNOWN = 0x08;
+export const PACKET_REPORT_ADV = 0xF0;
 
 export type micaPacketT = {
   moduleId: number,
