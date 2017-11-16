@@ -64,13 +64,14 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
   } else if (flags.l || flags.a) {
     /* List all devices */
     const serialList = await Serialport.list();
+    console.log(serialList);
     /* iterate through each */
     for (let i = 0; i < serialList.length; i++) {
       /* More specific: vendorId: '04b4', productId: '0002' */
       const portInstance = serialList[i];
-      const { comName } = portInstance;
+      const { comName, productId, vendorId } = portInstance;
       /* IF a usb modem, or the a flag is passed */
-      if (comName.search('usbmodem') >= 0 || flags.a) {
+      if ( (productId === '0002' && vendorId ==='04B4' )|| flags.a) {
         cmdReturn.push(comName);
       }
     }
@@ -85,13 +86,13 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
     }
     for (let i = 0; i < serialList.length; i++) {
       const portInstance = serialList[i];
-      const { comName } = portInstance;
+      const { comName, productId, vendorId } = portInstance;
       /* find the first matching string */
       if (nameNum && comName.search(nameNum) >= 0) {
         nameNum = comName;
         break;
       /* Find the first usbmodem */
-      } else if (comName.search('usbmodem') >= 0) {
+      } else if (productId === '0002' && vendorId ==='04B4' ) {
         nameNum = comName;
         break;
       }
@@ -125,6 +126,7 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
 /* Open a serial port */
 async function openPort(portName: string, baudRate: number): Promise<string> {
   return new Promise((resolve, reject) => {
+        // resolve(`Successfully opened ${portName}`);
     const port = new Serialport(portName, { baudRate }, (err) => {
       if (err) {
         reject(err);
