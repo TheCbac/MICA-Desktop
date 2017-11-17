@@ -10,13 +10,16 @@
 * 2017.11.07 CC - Document created
 *
 ********************************************************* */
-import Serialport from '../nativeModules';
+import { Serialport } from '../nativeModules';
 import { logAsyncData, hexToString } from './TerminalUtils';
 import {
   ledCmd, bootloaderCmd
 } from '../dataStreams/controlCommands';
 import { scanCmd } from '../dataStreams/commCommands';
-import { parseMicaResponse, processMicaPacketByte } from '../dataStreams/packets';
+import {
+  parseMicaResponse, processMicaPacketByte, MICA_CYPRESS_PID, MICA_CYPRESS_VID
+} from '../dataStreams/packets';
+import { handleAsyncData, MICA_PACKET_ASYNC_RESP } from '../dataStreams/asyncResponses';
 import type { subCommandT, subCommandObjT } from '../dataStreams/commandTypes';
 import type { terminalParsedObjT } from '../../types/developerTypes';
 
@@ -64,12 +67,13 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
   } else if (flags.l || flags.a) {
     /* List all devices */
     const serialList = await Serialport.list();
+    console.log(serialList);
     /* iterate through each */
     for (let i = 0; i < serialList.length; i++) {
       const portInstance = serialList[i];
       const { comName, productId, vendorId } = portInstance;
       /* IF a usb modem, or the a flag is passed */
-      if ((productId === '0002' && vendorId === '04B4') || flags.a) {
+      if (isMicaSerialDevice(productId, vendorId) || flags.a) {
         cmdReturn.push(comName);
       }
     }
@@ -90,7 +94,7 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
         nameNum = comName;
         break;
       /* Find the first cypress device */
-      } else if (productId === '0002' && vendorId === '04B4') {
+      } else if (isMicaSerialDevice(productId, vendorId)) {
         nameNum = comName;
         break;
       }
@@ -121,6 +125,14 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
   return cmdReturn;
 }
 
+/* check if a reported serialport is a MICA cube */
+export function isMicaSerialDevice(productId: ?string, vendorId: ?string): boolean {
+  return (
+    parseInt(productId, 16) === MICA_CYPRESS_PID &&
+    parseInt(vendorId, 16) === MICA_CYPRESS_VID
+  );
+}
+
 /* Open a serial port */
 async function openPort(portName: string, baudRate: number): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -132,21 +144,9 @@ async function openPort(portName: string, baudRate: number): Promise<string> {
         /* Store the reference */
         ports[portName] = port;
         const { ByteLength } = Serialport.parsers;
+        /* Send each individual byte */
         const parser = port.pipe(new ByteLength({ length: 1 }));
-        parser.on('data', (chunk) => {
-          const { complete, packet } = processMicaPacketByte(chunk);
-          if (complete && packet) {
-            /* log on verbose */
-            if (lastCmdObj.flags.v) {
-              logAsyncData(hexToString(packet));
-            }
-            const response = parseMicaResponse(packet);
-            /* Packet was valid, send data to callback */
-            if (cmdCallback && response.success && response.data) {
-              cmdCallback(response.data, lastCmdObj, lastPacketObj, packet);
-            }
-          }
-        });
+        parser.on('data', receiveSerialData);
         port.on('close', () => {
           logAsyncData(`Disconnected from ${portName}`);
         });
@@ -154,6 +154,34 @@ async function openPort(portName: string, baudRate: number): Promise<string> {
     });
   });
 }
+
+/* Receive data from the serial port */
+const receiveSerialData = (chunk) => {
+  const { complete, packet } = processMicaPacketByte(chunk);
+  if (complete && packet) {
+    /* log on verbose */
+    if (lastCmdObj.flags.v) {
+      logAsyncData(hexToString(packet));
+    }
+    const { success, error, data } = parseMicaResponse(packet);
+    /* Corrupted packet was received (packet response was not necessarily success) */
+    if (!success || data == null) {
+      console.log('Corrupted packet received:', error, packet);
+      return;
+    }
+    /* Packet was not corrupted */
+    const { status } = data;
+    /* See if a response packet, or Async data */
+    if (status >= MICA_PACKET_ASYNC_RESP) {
+      /* Async data */
+      handleAsyncData(data, packet);
+    } else if (cmdCallback) {
+      /* Packet was valid, send data to callback */
+      cmdCallback(data, lastCmdObj, lastPacketObj, packet);
+    }
+  }
+};
+
 
 /* Get the open port - simple place holder */
 function getOpenPort() {

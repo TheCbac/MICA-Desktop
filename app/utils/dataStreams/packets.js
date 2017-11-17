@@ -12,6 +12,9 @@
 ********************************************************* */
 import { SHIFT_BYTE_ONE, MASK_BYTE_ONE } from '../bitConstants';
 
+export const MICA_CYPRESS_PID = 0x0002;
+export const MICA_CYPRESS_VID = 0x04B4;
+
 export const MICA_PACKET_SYM_START = 0x01;
 export const MICA_PACKET_SYM_END = 0xAA;
 
@@ -25,10 +28,8 @@ export const MICA_PACKET_ID_MODULE_MAX = 0x05;
 
 export const MICA_PACKET_RESP_LEN_HEADER = 0x05;
 export const MICA_PACKET_RESP_LEN_FOOTER = 0x03;
-
 export const MICA_PACKET_RESP_INDEX_LEN_MSB = 0x03;
 export const MICA_PACKET_RESP_INDEX_LEN_LSB = 0x04;
-
 export const MICA_PACKET_LEN_MAX_PAYLOAD = 1000;
 
 export const PACKET_SUCCESS = 0x00;
@@ -406,4 +407,5 @@ export function resetByteParse(): void {
   byteParserObj.payloadLen = 0;
   byteParserObj.state = STATE_WAIT_FOR_START;
 }
+
 /* [] - END OF FILE */

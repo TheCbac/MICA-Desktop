@@ -29,7 +29,9 @@ let Serialport;
 try {
   Serialport = require('serialport');
 } catch (e) {
-  console.log('Serialport not imported correctly');
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('Serialport not imported correctly');
+  }
 }
 export { Noble, Serialport };
 

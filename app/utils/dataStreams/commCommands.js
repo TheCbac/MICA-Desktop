@@ -10,11 +10,9 @@
 *
 ********************************************************* */
 import {
-  createMicaPacketBinary, MICA_PACKET_ID_MODULE_COMM, getResponseStatus,
-  PACKET_REPORT_ADV
+  createMicaPacketBinary, MICA_PACKET_ID_MODULE_COMM, getResponseStatus
 } from './packets';
 import { logAsyncData, hexToString } from '../Developer/TerminalUtils';
-import { parseAdvertisementPacket } from '../BLE/bleAdvertisementPackets';
 import type { responsePacketT, micaPacketT, packetDataT } from './packets';
 import type { subCommandFuncT, subCommandT } from './commandTypes';
 import type { terminalParsedObjT } from '../../types/developerTypes';
@@ -56,36 +54,6 @@ const startStopScan = (terminalObj: terminalParsedObjT): subCommandFuncT => {
 };
 
 /* Generic function callback for communication subcommands */
-function receiveAdvertisingPacket(
-  response: responsePacketT,
-  cmdObj: terminalParsedObjT,
-  prevPacket: micaPacketT,
-  binary: packetDataT
-): void {
-  if (response.moduleId !== MICA_PACKET_ID_MODULE_COMM) {
-    logAsyncData('receiveAdvertisingPacket got wrong command module');
-    return;
-  }
-
-  if (response.status === PACKET_REPORT_ADV) {
-    /* Parse the advertisement packet */
-    const { success, error, packet } = parseAdvertisementPacket(response.payload);
-    if (!success && error) {
-      logAsyncData(`Error: ${error}`);
-      return;
-    }
-    if (packet) {
-      logAsyncData(`${packet.advPacketData.localName} ${packet.peerAddr} ${packet.rssi}`);
-    }
-  } else {
-    const status = getResponseStatus(response.status);
-    if (!status.success) {
-      logAsyncData(`Error: ${status.error}`);
-    }
-  }
-}
-
-/* Generic function callback for communication subcommands */
 function logCommunicationError(
   response: responsePacketT,
   cmdObj: terminalParsedObjT,
@@ -104,6 +72,6 @@ function logCommunicationError(
 
 export const scanCmd: subCommandT = {
   generatePacketObj: startStopScan,
-  callback: receiveAdvertisingPacket
+  callback: logCommunicationError
 };
 /* [] - END OF FILE */
