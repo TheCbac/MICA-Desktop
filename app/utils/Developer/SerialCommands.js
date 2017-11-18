@@ -15,7 +15,7 @@ import { logAsyncData, hexToString } from './TerminalUtils';
 import {
   ledCmd, bootloaderCmd
 } from '../dataStreams/controlCommands';
-import { scanCmd } from '../dataStreams/commCommands';
+import { scanCmd, connectCmd, disconnectCmd } from '../dataStreams/commCommands';
 import {
   parseMicaResponse, processMicaPacketByte, MICA_CYPRESS_PID, MICA_CYPRESS_VID
 } from '../dataStreams/packets';
@@ -28,7 +28,9 @@ const ports = {};
 const subCommands: subCommandObjT = {
   leds: ledCmd,
   boot: bootloaderCmd,
-  scan: scanCmd
+  scan: scanCmd,
+  connect: connectCmd,
+  disconnect: disconnectCmd
 };
 /* callback for when the command returns */
 let cmdCallback;
