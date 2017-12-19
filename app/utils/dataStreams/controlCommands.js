@@ -27,6 +27,7 @@ export const MICA_PACKET_CMD_CTRL_DIO = 0x02;
 export const MICA_PACKET_CMD_CTRL_AIO = 0x03;
 export const MICA_PACKET_CMD_CTRL_BOOT = 0x04;
 export const MICA_PACKET_CMD_CTRL_NAME = 0x05;
+export const MICA_PACKET_CMD_CTRL_RST = 0x06;
 
 /* Enter bootloader */
 const enterBootloaderCmd = (terminalObj: terminalParsedObjT): subCommandFuncT => {
@@ -44,11 +45,22 @@ const enterBootloaderCmd = (terminalObj: terminalParsedObjT): subCommandFuncT =>
     output
   };
 };
-/* Begin the bootloader chain */
 
-export const bootloaderCmd: subCommandT = {
-  generatePacketObj: enterBootloaderCmd,
-  callback: logControlError
+/* Enter bootloader */
+const resetDeviceCmd = (terminalObj: terminalParsedObjT): subCommandFuncT => {
+  const packetObj = {
+    moduleId: MICA_PACKET_ID_MODULE_CONTROL,
+    command: MICA_PACKET_CMD_CTRL_RST
+  };
+  /* Create the binary */
+  const { success, error, binary } = createMicaPacketBinary(packetObj);
+  const output = success ? 'Resetting device' : `Error: ${error}`;
+  /* Return the result */
+  return {
+    packetObj,
+    binary,
+    output
+  };
 };
 
 
@@ -94,9 +106,6 @@ function logControlError(
   const { success, error } = getResponseStatus(response.status);
   if (!success) {
     logAsyncData(`Error: ${error}`);
-  } else if (cmdObj.flags.v) {
-    /* Verbose - log full response */
-    logAsyncData(hexToString(binary));
   } else if (response.payload.length) {
     /* Log the Payload */
     logAsyncData(hexToString(response.payload));
@@ -105,6 +114,16 @@ function logControlError(
 
 export const ledCmd: subCommandT = {
   generatePacketObj: randomLed,
+  callback: logControlError
+};
+
+export const bootloaderCmd: subCommandT = {
+  generatePacketObj: enterBootloaderCmd,
+  callback: logControlError
+};
+
+export const resetCmd: subCommandT = {
+  generatePacketObj: resetDeviceCmd,
   callback: logControlError
 };
 

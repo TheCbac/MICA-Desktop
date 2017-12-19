@@ -13,7 +13,7 @@
 import { Serialport } from '../nativeModules';
 import { logAsyncData, hexToString } from './TerminalUtils';
 import {
-  ledCmd, bootloaderCmd
+  ledCmd, bootloaderCmd, resetCmd
 } from '../dataStreams/controlCommands';
 import { scanCmd, connectCmd, disconnectCmd } from '../dataStreams/commCommands';
 import {
@@ -30,7 +30,8 @@ const subCommands: subCommandObjT = {
   boot: bootloaderCmd,
   scan: scanCmd,
   connect: connectCmd,
-  disconnect: disconnectCmd
+  disconnect: disconnectCmd,
+  reset: resetCmd
 };
 /* callback for when the command returns */
 let cmdCallback;
