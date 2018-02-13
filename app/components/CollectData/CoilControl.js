@@ -85,9 +85,7 @@ function stochasticCallback(numTimesRemaining: number): void {
 }
 
 /* Component */
-export default class CoilControl extends Component {
-  props: propsT;
-  state: stateT;
+export default class CoilControl extends Component<propsT, stateT> {
   constructor(props: propsT): void {
     super(props);
     this.state = defaultState;

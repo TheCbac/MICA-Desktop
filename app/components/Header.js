@@ -22,9 +22,7 @@ type propsT = {
   showUserSettings: (boolean) => showUserSettingsActionT
 };
 
-export default class Header extends Component {
-  props: propsT;
-
+export default class Header extends Component<propsT> {
   developerState() {
     if (this.props.developer) {
       return (

@@ -22,11 +22,7 @@ type PropsType = {
   showUserSettings: (boolean) => showUserSettingsActionT,
   enableDeveloper: (boolean) => enableDeveloperActionT
 };
-export default class SettingsModal extends Component {
-  /* Type defs */
-  props: PropsType;
-
-
+export default class SettingsModal extends Component<PropsType> {
   render() {
     const { show, developer } = this.props;
     return (

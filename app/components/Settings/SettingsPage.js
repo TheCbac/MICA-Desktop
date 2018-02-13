@@ -59,12 +59,14 @@ type propsType = {
   ) => thunkType
 };
 
-export default class sensorSettings extends Component {
-  /* Component properties */
-  props: propsType;
-  state: {
-    open: boolean
-  };
+type stateT = {
+  open: boolean
+};
+
+export default class sensorSettings extends Component<propsType, stateT> {
+  // state = {
+  //   open: false
+  // };
   constructor(props: propsType) {
     super(props);
     /* Trigger the selected devices to occur */

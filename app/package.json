@@ -1,7 +1,7 @@
 {
   "name": "mica-desktop",
   "productName": "mica-desktop",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Desktop version of MICA",
   "main": "./main.js",
   "author": {
@@ -10,11 +10,14 @@
     "url": "mica.mit.edu"
   },
   "scripts": {
-    "postinstall": "npm rebuild --runtime=electron --target=1.8.0 --disturl=https://atom.io/download/atom-shell --build-from-source"
+    "postinstall": "npm rebuild --runtime=electron --target=1.7.9 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "license": "MIT",
   "dependencies": {
+    "serialport": "^6.0.3",
     "noble": "^1.8.1"
+  },
+  "optionalDependencies": {
   },
   "devDependencies": {
     "electron-rebuild": "^1.5.11",

@@ -22,9 +22,7 @@ type propsT = {
   showUserSettings: (boolean) => showUserSettingsActionT,
   children?: Children
 };
-export default class App extends Component {
-  props: propsT;
-
+export default class App extends Component<propsT> {
   render() {
     const { developer, showUserSettings } = this.props;
     return (

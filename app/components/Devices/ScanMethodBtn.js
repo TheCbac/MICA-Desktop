@@ -22,8 +22,7 @@ type propsType = {
   changeScanMethod: (newScanType: scanTypes) => changeScanActionType
 };
 
-export default class ScanMethodBtn extends Component {
-  props: propsType;
+export default class ScanMethodBtn extends Component<propsType> {
   /* Returns the color for the scan method button */
   getColor(name: scanTypes): scanMethodBtnStyleType {
     /* Act for the active method */

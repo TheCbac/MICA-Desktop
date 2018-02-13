@@ -23,6 +23,16 @@ try {
     on: () => {}
   };
 }
-export { Noble };
+
+/* Serialport */
+let Serialport;
+try {
+  Serialport = require('serialport');
+} catch (e) {
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('Serialport not imported correctly');
+  }
+}
+export { Noble, Serialport };
 
 /* [] - END OF FILE */

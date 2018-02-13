@@ -214,10 +214,7 @@ function constructLineCharts(
   );
 }
 
-export default class GraphComponent extends Component {
-  /* Type defs */
-  props: propsT;
-  state: stateT;
+export default class GraphComponent extends Component<propsT, stateT> {
   interval: number;
   /* Initial state */
   constructor(props: propsT) {

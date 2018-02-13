@@ -59,10 +59,7 @@ type stateType = {
   active: boolean
 };
 
-export default class Device extends Component {
-  /* Type Def */
-  props: propsType;
-  state: stateType;
+export default class Device extends Component<propsType, stateType> {
   /* Constructor */
   constructor(props: propsType) {
     super(props);

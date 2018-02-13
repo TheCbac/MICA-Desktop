@@ -10,7 +10,7 @@
 * Date: 2017.7.21
 *
 **********************************************************/
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import sinon from 'sinon';
 import HamburgerSettings from '../../app/components/HamburgerSettings';

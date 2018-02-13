@@ -10,7 +10,7 @@
 *
 **********************************************************/
 
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import { __RewireAPI__ as Rewire } from '../../app/components/Footer';
 import Footer from '../../app/components/Footer';

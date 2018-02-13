@@ -6,6 +6,7 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.10.23 CC - Abstracted out DeviceSelector component
 * 2017.10.10 CC - Document created
 *
 ********************************************************* */
@@ -14,6 +15,7 @@ import {
   Col, Row, FormGroup, ControlLabel,
   FormControl, Button, ButtonToolbar
 } from 'react-bootstrap';
+import DeviceSelector from './DeviceSelector';
 import type { devicesStateType } from '../../types/stateTypes';
 import type { idType } from '../../types/paramTypes';
 import type { thunkType } from '../../types/functionTypes';
@@ -30,9 +32,7 @@ type stateT = {
 const nameMinLen = 4;
 const nameMaxLen = 25;
 
-export default class ChangeDeviceName extends Component {
-  props: propsT;
-  state: stateT;
+export default class ChangeDeviceName extends Component<propsT, stateT> {
   /* Constructor function */
   constructor(props: propsT) {
     super(props);
@@ -42,48 +42,9 @@ export default class ChangeDeviceName extends Component {
       deviceId: ''
     };
   }
-  componentWillMount() {
-    /* Set the default device */
-    const deviceIdList = Object.keys(this.props.devices);
-    /* Iterate through all the devices */
-    for (let i = 0; i < deviceIdList.length; i++) {
-      const deviceId = deviceIdList[i];
-      const { active } = this.props.devices[deviceId];
-      /* Find the first active device */
-      if (active) {
-        this.setState({ deviceId });
-        break;
-      }
-    }
-  }
-  /* Get all of the device names and IDs */
-  getDeviceSelection() {
-    const selectionArray = [];
-    const deviceIdList = Object.keys(this.props.devices);
-    /* Iterate through all the devices */
-    for (let i = 0; i < deviceIdList.length; i++) {
-      const deviceId = deviceIdList[i];
-      const { name, active } = this.props.devices[deviceId];
-      /* Add an option for the device if it is active */
-      if (active) {
-        /* Push the object */
-        selectionArray.push(
-          <option key={selectionArray.length} value={deviceId}>{name}</option>
-        );
-      }
-    }
-    /* provide a default */
-    if (!selectionArray.length) {
-      return (<option value="noDevices">NO DEVICES</option>);
-    }
-    return selectionArray;
-  }
-  /* Handle the device selection */
-  handleSelection = ({ target }: SyntheticInputEvent): void => {
-    this.setState({ deviceId: target.value });
-  }
+
   /* Handle name and validate state */
-  handleName = ({ target }: SyntheticInputEvent): void => {
+  handleName = ({ target }: SyntheticInputEvent<>): void => {
     this.setState({ name: target.value });
   }
   nameValidation(): ?'error' {
@@ -92,9 +53,13 @@ export default class ChangeDeviceName extends Component {
       return 'error';
     }
   }
-  /* Btn State */
+  /* Is the button disabled or not (true => disabled) */
   submitDisabled(): boolean {
     const length = this.state.name.length;
+    const idExists = !!this.state.deviceId;
+    /* Ensure a valid device is selected */
+    if (!idExists) { return true; }
+    /* Ensure name length req's are met */
     if (length >= nameMinLen && length <= nameMaxLen) {
       return false;
     }
@@ -106,7 +71,10 @@ export default class ChangeDeviceName extends Component {
     console.log('change name');
     this.props.setDeviceName(deviceId, name);
   }
-
+  /* Callback for updating the state when a device is selected */
+  deviceSelected = (deviceId: string): void => {
+    this.setState({ deviceId });
+  }
   /* ** RENDER ** */
   render() {
     const nameStyle = {
@@ -125,14 +93,7 @@ export default class ChangeDeviceName extends Component {
           <h4>CHANGE DEVICE NAME</h4>
         </Col>
         <Row />
-        <Col md={8} mdOffset={2} style={{ marginTop: '5px' }}>
-          <FormGroup controlId="formDeviceName">
-            <ControlLabel>DEVICE</ControlLabel>
-            <FormControl componentClass="select" onChange={this.handleSelection}>
-              {this.getDeviceSelection()}
-            </FormControl>
-          </FormGroup>
-        </Col>
+        <DeviceSelector devices={this.props.devices} deviceSelected={this.deviceSelected} />
         <Row />
         <Col md={8} mdOffset={2}>
           <FormGroup controlId="formChangeName" validationState={this.nameValidation()}>

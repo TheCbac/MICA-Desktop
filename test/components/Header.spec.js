@@ -12,7 +12,7 @@
 * 2017.07.13 GW - Document created
 *
 ********************************************************* */
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import { spy } from 'sinon';
 import Header from '../../app/components/Header';
