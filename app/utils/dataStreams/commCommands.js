@@ -23,6 +23,8 @@ export const MICA_PACKET_CMD_COMM_CONN = 0x02;
 export const MICA_PACKET_CMD_COMM_DCON = 0x03;
 export const MICA_PACKET_CMD_COMM_WRITE = 0x04;
 export const MICA_PACKET_CMD_COMM_READ = 0x05;
+export const MICA_PACKET_CMD_COMM_LOG = 0x06;
+
 
 /* Start or stop a BLE scan on the target device */
 const startStopScan = (terminalObj: terminalParsedObjT): subCommandFuncT => {
@@ -125,6 +127,35 @@ const disconnectBleDevice = (terminalObj: terminalParsedObjT): subCommandFuncT =
     output
   };
 };
+
+/* Log Data stream */
+const logData = (terminalObj: terminalParsedObjT): subCommandFuncT => {
+  /* Packet obj */
+  const packetObj = {
+    moduleId: MICA_PACKET_ID_MODULE_COMM,
+    command: MICA_PACKET_CMD_COMM_LOG
+  };
+  /* No binary to write */
+  const binary = [];
+  const output = 'Start Logging';
+
+  return {
+    packetObj,
+    binary,
+    output
+  };
+}
+
+/* Generic function callback for communication subcommands */
+function logDataCallback(
+  response: responsePacketT,
+  cmdObj: terminalParsedObjT,
+  prevPacket: micaPacketT,
+  binary: packetDataT
+): void {
+
+}
+
 
 /* Generic function callback for communication subcommands */
 function logCommunicationError(
