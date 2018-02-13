@@ -42,7 +42,7 @@ function setup(propsObj) {
 }
 
 describe('DevicesTable.spec.js', () => {
-  it('ReactTable', () => {
+  describe('ReactTable', () => {
     const { table } = setup();
     it('Should be named correctly', () => {
       expect(table.at(0).prop('name')).toEqual('advertisingTable');

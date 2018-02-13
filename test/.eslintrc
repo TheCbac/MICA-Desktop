@@ -1,11 +1,13 @@
 {
   "env": {
-    "jest/globals": true
+    "jest/globals": true,
+    "jest": true
   },
   "plugins": [
     "jest"
   ],
   "rules": {
+    "function-paren-newline": ["error", "multiline"],
     "jest/no-disabled-tests": "warn",
     "jest/no-focused-tests": "error",
     "jest/no-identical-title": "error",

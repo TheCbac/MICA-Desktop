@@ -63,10 +63,8 @@ type stateT = {
   open: boolean
 };
 
-export default class sensorSettings extends Component<propsType, stateT> {
-  // state = {
-  //   open: false
-  // };
+export default class settingsPage extends Component<propsType, stateT> {
+
   constructor(props: propsType) {
     super(props);
     /* Trigger the selected devices to occur */
@@ -74,6 +72,9 @@ export default class sensorSettings extends Component<propsType, stateT> {
     this.state = {
       open: false
     };
+  }
+  defaultState = {
+    open: false
   }
   getDeviceBlocks(): [] {
     const deviceBlockList = [];
