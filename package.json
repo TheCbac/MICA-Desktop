@@ -162,7 +162,7 @@
     "cross-spawn": "^5.1.0",
     "css-loader": "^0.28.0",
     "devtron": "^1.4.0",
-    "electron": "1.7.9",
+    "electron": "1.8.2",
     "electron-builder": "^19.27.7",
     "electron-devtools-installer": "^2.2.0",
     "electron-rebuild": "^1.5.11",

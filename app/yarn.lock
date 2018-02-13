@@ -677,9 +677,9 @@ nan@^2.0.5, nan@^2.4.0, nan@^2.6.2:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
-noble@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/noble/-/noble-1.8.1.tgz#efe880812b7251afaaadb4fe83753c1302a673f6"
+noble@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/noble/-/noble-1.9.0.tgz#dccb9420ee2b155a051c4ec3368cff0588268962"
   dependencies:
     debug "~2.2.0"
   optionalDependencies:

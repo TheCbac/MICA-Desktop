@@ -10,15 +10,14 @@
     "url": "mica.mit.edu"
   },
   "scripts": {
-    "postinstall": "npm rebuild --runtime=electron --target=1.7.9 --disturl=https://atom.io/download/atom-shell --build-from-source"
+    "postinstall": "npm rebuild --runtime=electron --target=1.8.2 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "license": "MIT",
   "dependencies": {
-    "serialport": "^6.0.3",
-    "noble": "^1.8.1"
+    "noble": "^1.9.0",
+    "serialport": "^6.0.3"
   },
-  "optionalDependencies": {
-  },
+  "optionalDependencies": {},
   "devDependencies": {
     "electron-rebuild": "^1.5.11",
     "eslint-plugin-flowtype": "^2.32.1"
