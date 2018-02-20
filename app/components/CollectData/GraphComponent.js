@@ -16,10 +16,11 @@ import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
-  styler, Resizable, Legend, EventMarker
- } from 'react-timeseries-charts';
+  styler, Resizable, Legend
+} from 'react-timeseries-charts';
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
+import update from 'immutability-helper';
 import {
   getDataPointDecimated, getLastDataPointsDecimated, getDataSeries
 } from '../../utils/dataStreams/graphBuffer';
@@ -84,7 +85,7 @@ const defaultAxis = (
   <YAxis
     key={0}
     id="default"
-    label={''}
+    label=""
     min={-20}
     max={20}
     width="70"
@@ -108,7 +109,8 @@ type categoryT = {
 };
 /* Construct the styler */
 function constructStyles(
-  channelName: string, channelCount: number
+  channelName: string,
+  channelCount: number
 ): { style: styleT, category: categoryT } {
   return {
     style: { key: channelName, color: getColor(channelCount), width: 2 },
@@ -183,7 +185,7 @@ function constructLegend(legendSensors) {
         <span>{name}</span>
         <Legend
           key={l}
-          type={'line'}
+          type="line"
           style={styler(legend.stylesList)}
           categories={legend.categoriesList}
         />
@@ -214,8 +216,10 @@ function constructLineCharts(
   );
 }
 
+/* *** Main Class *** */
+
 export default class GraphComponent extends Component<propsT, stateT> {
-  interval: number;
+  interval: IntervalID;
   /* Initial state */
   constructor(props: propsT) {
     super(props);
@@ -260,8 +264,8 @@ export default class GraphComponent extends Component<propsT, stateT> {
     /* Simulate events */
     this.interval = setInterval(
       () => {
+        const deviceIdList = getActiveDeviceList(this.props.devices);
         if (this.props.collectionSettings.collecting) {
-          const deviceIdList = getActiveDeviceList(this.props.devices);
           /* Iterate through each device */
           for (let i = 0; i < deviceIdList.length; i++) {
             const deviceId = deviceIdList[i];
@@ -275,8 +279,37 @@ export default class GraphComponent extends Component<propsT, stateT> {
               const newEvent = this.state[deviceId].events;
               newEvent.enq(datum);
               /* Update the state */
-              this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              // this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              this.setState((prevState, props) => {
+                /* Update the endTime and Events */
+                const newState = update(prevState, {
+                  [deviceId]: {
+                    endTime: { $set: t },
+                    events: { $set: newEvent }
+                  }
+                });
+                return newState;
+              });
             }
+          }
+        } else {
+          /* Pull the high res - this really only needs to be done once */
+          for (let i = 0; i < deviceIdList.length; i++) {
+            const deviceId = deviceIdList[i];
+            const allEvents = getDataSeries(deviceId);
+            const highRes = new TimeSeries({
+              name: deviceId,
+              events: allEvents
+            });
+            /* Update the state */
+            this.setState((prevState, props) => {
+              const newState = update(prevState, {
+                [deviceId]: {
+                  highRes: { $set: highRes }
+                }
+              });
+              return newState;
+            });
           }
         }
       },
@@ -332,12 +365,18 @@ export default class GraphComponent extends Component<propsT, stateT> {
       let eventSeries;
       if (!this.props.collectionSettings.collecting) {
         eventSeries = this.state[deviceId].highRes;
+        // eventSeries = eventSeries || new TimeSeries();
+        // console.log('Not collecting', eventSeries);
+        if (!eventSeries) {
+          debugger;
+        }
       } else {
         eventSeries = new TimeSeries({
           name: device.name,
           events: events.peekN(events.size())
         });
       }
+      // console.log('getMultiDeviceChartObj', eventSeries, this.state[deviceId].highRes, events);
       // const eventSeries = new TimeSeries({
       //   name: device.name,
       //   events: events.peekN(events.size())
@@ -367,14 +406,16 @@ export default class GraphComponent extends Component<propsT, stateT> {
         }
         /* construct the Y Axes */
         const { leftAxis, rightAxis } = constructYAxis(
-          deviceId, device, sensorId, sensor, sensorCount, channelNameList, eventSeries
+          deviceId, device, sensorId, sensor,
+          sensorCount, channelNameList, eventSeries
         );
         /* Push to their lists */
         leftAxesList.push(...leftAxis);
         rightAxesList.push(...rightAxis);
         /* Construct and store the line chart */
         chartList.push(constructLineCharts(
-          i, deviceId, sensorId, eventSeries, channelNameList, stylesList
+          i, deviceId, sensorId, eventSeries,
+          channelNameList, stylesList
         ));
         /* Simple default axis */
         if (i === 0) {
