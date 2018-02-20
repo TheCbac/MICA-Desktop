@@ -33,7 +33,8 @@ const ID_NONE = 0;
 /* Wrapper function for determining which data to parse. Hopefully this
  * this can be consolidated at some point */
 export default function parseMetaData(
-  charId: string, data: Buffer
+  charId: string,
+  data: Buffer
 ): metaDataObjType {
 // ): {metadata: ?metaDataObjType, moduleName: ?moduleNameType} {
   /* Act according to the type */
@@ -337,6 +338,7 @@ function parseControlMetaData(data: Buffer): controlObjs {
       deviceNames
     };
   }
+  console.log('parseControlMetadata', controlObj);
   return controlObj;
 }
 /* [] - END OF FILE */
