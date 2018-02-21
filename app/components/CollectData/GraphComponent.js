@@ -67,24 +67,6 @@ const windowLength = 5000;
 const refreshRate = 20;
 /* Graph refresh period in ms */
 const refreshPeriod = (1 / refreshRate) * sec2ms;
-
-function getColor(idx: number): string {
-  const colorArray = [
-    '#e41a1c',
-    '#377eb8',
-    '#4daf4a',
-    '#984ea3',
-    '#ff7f00',
-    '#ffff33',
-    '#a65628',
-    '#f781bf',
-    '#999999'
-  ];
-  const len = colorArray.length;
-  const index = idx > (len - 1) ? Math.floor(Math.random() * (len - 1)) : idx;
-  return colorArray[index];
-}
-
 /* Default axis for when there aren't any active devices */
 const defaultAxis = (
   <YAxis
