@@ -338,7 +338,6 @@ function parseControlMetaData(data: Buffer): controlObjs {
       deviceNames
     };
   }
-  console.log('parseControlMetadata', controlObj);
   return controlObj;
 }
 /* [] - END OF FILE */

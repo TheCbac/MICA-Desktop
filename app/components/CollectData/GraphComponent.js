@@ -16,18 +16,23 @@ import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
-  styler, Resizable, Legend, EventMarker
- } from 'react-timeseries-charts';
+  styler, Resizable, Legend
+} from 'react-timeseries-charts';
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
+import update from 'immutability-helper';
+import { constructStyles } from './GraphStyle';
 import {
-  getDataPointDecimated, getLastDataPointsDecimated, getDataSeries
+  getDataPointDecimated,
+  getLastDataPointsDecimated,
+  getDataSeries
 } from '../../utils/dataStreams/graphBuffer';
 import {
   channelsToActiveNameList,
   getActiveDeviceList,
   getActiveSensorList
 } from '../../utils/mica/parseDataPacket';
+import type { styleT } from './GraphStyle';
 import type { idType, sensorParamType } from '../../types/paramTypes';
 import type {
   collectionStateType,
@@ -79,12 +84,13 @@ function getColor(idx: number): string {
   const index = idx > (len - 1) ? Math.floor(Math.random() * (len - 1)) : idx;
   return colorArray[index];
 }
+
 /* Default axis for when there aren't any active devices */
 const defaultAxis = (
   <YAxis
     key={0}
     id="default"
-    label={''}
+    label=""
     min={-20}
     max={20}
     width="70"
@@ -97,24 +103,6 @@ type axisLimitT = {
   max: number
 };
 
-type styleT = {
-  key: string,
-  color: string,
-  width: number
-};
-type categoryT = {
-  key: string,
-  label: string
-};
-/* Construct the styler */
-function constructStyles(
-  channelName: string, channelCount: number
-): { style: styleT, category: categoryT } {
-  return {
-    style: { key: channelName, color: getColor(channelCount), width: 2 },
-    category: { key: channelName, label: channelName }
-  };
-}
 /* Returns the limits for a sensor */
 function getChartLimits(channelNames: string[], eventSeries: TimeSeries): axisLimitT {
   const min = -15;
@@ -183,7 +171,7 @@ function constructLegend(legendSensors) {
         <span>{name}</span>
         <Legend
           key={l}
-          type={'line'}
+          type="line"
           style={styler(legend.stylesList)}
           categories={legend.categoriesList}
         />
@@ -214,8 +202,10 @@ function constructLineCharts(
   );
 }
 
+/* *** Main Class *** */
+
 export default class GraphComponent extends Component<propsT, stateT> {
-  interval: number;
+  interval: IntervalID;
   /* Initial state */
   constructor(props: propsT) {
     super(props);
@@ -260,8 +250,8 @@ export default class GraphComponent extends Component<propsT, stateT> {
     /* Simulate events */
     this.interval = setInterval(
       () => {
+        const deviceIdList = getActiveDeviceList(this.props.devices);
         if (this.props.collectionSettings.collecting) {
-          const deviceIdList = getActiveDeviceList(this.props.devices);
           /* Iterate through each device */
           for (let i = 0; i < deviceIdList.length; i++) {
             const deviceId = deviceIdList[i];
@@ -275,8 +265,37 @@ export default class GraphComponent extends Component<propsT, stateT> {
               const newEvent = this.state[deviceId].events;
               newEvent.enq(datum);
               /* Update the state */
-              this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              // this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              this.setState((prevState, props) => {
+                /* Update the endTime and Events */
+                const newState = update(prevState, {
+                  [deviceId]: {
+                    endTime: { $set: t },
+                    events: { $set: newEvent }
+                  }
+                });
+                return newState;
+              });
             }
+          }
+        } else {
+          /* Pull the high res - this really only needs to be done once */
+          for (let i = 0; i < deviceIdList.length; i++) {
+            const deviceId = deviceIdList[i];
+            const allEvents = getDataSeries(deviceId);
+            const highRes = new TimeSeries({
+              name: deviceId,
+              events: allEvents
+            });
+            /* Update the state */
+            this.setState((prevState, props) => {
+              const newState = update(prevState, {
+                [deviceId]: {
+                  highRes: { $set: highRes }
+                }
+              });
+              return newState;
+            });
           }
         }
       },
@@ -338,10 +357,6 @@ export default class GraphComponent extends Component<propsT, stateT> {
           events: events.peekN(events.size())
         });
       }
-      // const eventSeries = new TimeSeries({
-      //   name: device.name,
-      //   events: events.peekN(events.size())
-      // });
       /* Iterate through each sensor */
       const sensorsIdList = getActiveSensorList(sensors);
       for (let j = 0; j < sensorsIdList.length; j++) {
@@ -359,7 +374,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
         for (let k = 0; k < channelNameList.length; k++) {
           const channelName = channelNameList[k];
           /* Store the styles for the line and legend */
-          const { style, category } = constructStyles(channelName, channelCount);
+          const { style, category } = constructStyles(sensor.name, channelName, channelCount);
           categoriesList.push(category);
           stylesList.push(style);
           /* Increment the channel count */
@@ -367,14 +382,16 @@ export default class GraphComponent extends Component<propsT, stateT> {
         }
         /* construct the Y Axes */
         const { leftAxis, rightAxis } = constructYAxis(
-          deviceId, device, sensorId, sensor, sensorCount, channelNameList, eventSeries
+          deviceId, device, sensorId, sensor,
+          sensorCount, channelNameList, eventSeries
         );
         /* Push to their lists */
         leftAxesList.push(...leftAxis);
         rightAxesList.push(...rightAxis);
         /* Construct and store the line chart */
         chartList.push(constructLineCharts(
-          i, deviceId, sensorId, eventSeries, channelNameList, stylesList
+          i, deviceId, sensorId, eventSeries,
+          channelNameList, stylesList
         ));
         /* Simple default axis */
         if (i === 0) {
