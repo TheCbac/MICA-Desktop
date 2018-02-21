@@ -21,14 +21,18 @@ import {
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
 import update from 'immutability-helper';
+import { constructStyles } from './GraphStyle';
 import {
-  getDataPointDecimated, getLastDataPointsDecimated, getDataSeries
+  getDataPointDecimated,
+  getLastDataPointsDecimated,
+  getDataSeries
 } from '../../utils/dataStreams/graphBuffer';
 import {
   channelsToActiveNameList,
   getActiveDeviceList,
   getActiveSensorList
 } from '../../utils/mica/parseDataPacket';
+import type { styleT } from './GraphStyle';
 import type { idType, sensorParamType } from '../../types/paramTypes';
 import type {
   collectionStateType,
@@ -80,6 +84,7 @@ function getColor(idx: number): string {
   const index = idx > (len - 1) ? Math.floor(Math.random() * (len - 1)) : idx;
   return colorArray[index];
 }
+
 /* Default axis for when there aren't any active devices */
 const defaultAxis = (
   <YAxis
@@ -98,25 +103,6 @@ type axisLimitT = {
   max: number
 };
 
-type styleT = {
-  key: string,
-  color: string,
-  width: number
-};
-type categoryT = {
-  key: string,
-  label: string
-};
-/* Construct the styler */
-function constructStyles(
-  channelName: string,
-  channelCount: number
-): { style: styleT, category: categoryT } {
-  return {
-    style: { key: channelName, color: getColor(channelCount), width: 2 },
-    category: { key: channelName, label: channelName }
-  };
-}
 /* Returns the limits for a sensor */
 function getChartLimits(channelNames: string[], eventSeries: TimeSeries): axisLimitT {
   const min = -15;
@@ -365,22 +351,12 @@ export default class GraphComponent extends Component<propsT, stateT> {
       let eventSeries;
       if (!this.props.collectionSettings.collecting) {
         eventSeries = this.state[deviceId].highRes;
-        // eventSeries = eventSeries || new TimeSeries();
-        // console.log('Not collecting', eventSeries);
-        if (!eventSeries) {
-          debugger;
-        }
       } else {
         eventSeries = new TimeSeries({
           name: device.name,
           events: events.peekN(events.size())
         });
       }
-      // console.log('getMultiDeviceChartObj', eventSeries, this.state[deviceId].highRes, events);
-      // const eventSeries = new TimeSeries({
-      //   name: device.name,
-      //   events: events.peekN(events.size())
-      // });
       /* Iterate through each sensor */
       const sensorsIdList = getActiveSensorList(sensors);
       for (let j = 0; j < sensorsIdList.length; j++) {
@@ -398,7 +374,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
         for (let k = 0; k < channelNameList.length; k++) {
           const channelName = channelNameList[k];
           /* Store the styles for the line and legend */
-          const { style, category } = constructStyles(channelName, channelCount);
+          const { style, category } = constructStyles(sensor.name, channelName, channelCount);
           categoriesList.push(category);
           stylesList.push(style);
           /* Increment the channel count */
