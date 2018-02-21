@@ -23,8 +23,7 @@ type propsT = {
   ) => thunkType
 };
 
-export default class ZeroBtn extends Component {
-  props: propsT;
+export default class ZeroBtn extends Component<propsT> {
   /* Render function */
   render() {
     return (

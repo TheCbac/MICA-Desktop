@@ -31,10 +31,7 @@ type PropsType = {
   showUserSettings: (boolean) => showUserSettingsActionT,
   enableDeveloper: (boolean) => enableDeveloperActionT
 };
-export default class Modals extends Component {
-  /* Type defs */
-  props: PropsType;
-
+export default class Modals extends Component<PropsType> {
   render() {
     const { pending, version } = this.props.update;
     const { show, developer } = this.props.userSettings;

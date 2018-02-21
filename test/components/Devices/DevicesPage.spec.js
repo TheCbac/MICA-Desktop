@@ -13,7 +13,7 @@
 *
 ********************************************************* */
 import { spy } from 'sinon';
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import DevicesPage, { __RewireAPI__ as Rewire } from '../../../app/components/Devices/DevicesPage';
 /* Create the scan devices component */

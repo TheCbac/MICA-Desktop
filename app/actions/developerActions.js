@@ -17,7 +17,7 @@ import type { stateType } from '../types/stateTypes';
 import type { idType } from '../types/paramTypes';
 
 export const SET_NAME = 'SET_NAME';
-
+export const OTA_UPDATE = 'OTA_UPDATE';
 
 /* Gather the active sensor and start collecting data */
 export function setDeviceName(deviceId: idType, name: string): thunkType {
@@ -42,4 +42,12 @@ export function setDeviceName(deviceId: idType, name: string): thunkType {
   };
 }
 
+/* Initiate a Over The Air BLE application update */
+export function initiateOtaUpdate(deviceId: idType, hexPath: string): thunkType {
+  /* Return a function for redux thunk */
+  return (dispatch: () => void, getState: () => stateType): void => {
+    console.log('initiateOtaUpdate', deviceId, hexPath);
+    /* @TODO: pickup here */
+  };
+}
 /* [] - END OF FILE */

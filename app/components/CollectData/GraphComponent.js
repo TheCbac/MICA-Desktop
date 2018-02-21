@@ -6,6 +6,7 @@
 *
 * Authors: Craig Cheney
 *
+* 2017.10.10 CC - High resolution recall support
 * 2017.10.01 CC - Add multi device support
 * 2017.09.27 CC - Add dynamic single device, single sensor chart
 * 2017.09.14 CC - Document created
@@ -16,15 +17,22 @@ import { Col, Row } from 'react-bootstrap';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
   styler, Resizable, Legend
- } from 'react-timeseries-charts';
+} from 'react-timeseries-charts';
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
-import { getDataPointDecimated, getLastDataPointsDecimated } from '../../utils/dataStreams/graphBuffer';
+import update from 'immutability-helper';
+import { constructStyles } from './GraphStyle';
+import {
+  getDataPointDecimated,
+  getLastDataPointsDecimated,
+  getDataSeries
+} from '../../utils/dataStreams/graphBuffer';
 import {
   channelsToActiveNameList,
   getActiveDeviceList,
   getActiveSensorList
 } from '../../utils/mica/parseDataPacket';
+import type { styleT } from './GraphStyle';
 import type { idType, sensorParamType } from '../../types/paramTypes';
 import type {
   collectionStateType,
@@ -40,7 +48,8 @@ type propsT = {
 type deviceGraphStateT = {
   startTime: number,
   endTime: number,
-  events: RingBuffer
+  events: RingBuffer,
+  highRes: TimeSeries
 };
 
 type stateT = {
@@ -58,29 +67,12 @@ const windowLength = 5000;
 const refreshRate = 20;
 /* Graph refresh period in ms */
 const refreshPeriod = (1 / refreshRate) * sec2ms;
-
-function getColor(idx: number): string {
-  const colorArray = [
-    '#e41a1c',
-    '#377eb8',
-    '#4daf4a',
-    '#984ea3',
-    '#ff7f00',
-    '#ffff33',
-    '#a65628',
-    '#f781bf',
-    '#999999'
-  ];
-  const len = colorArray.length;
-  const index = idx > (len - 1) ? Math.floor(Math.random() * (len - 1)) : idx;
-  return colorArray[index];
-}
 /* Default axis for when there aren't any active devices */
 const defaultAxis = (
   <YAxis
     key={0}
     id="default"
-    label={''}
+    label=""
     min={-20}
     max={20}
     width="70"
@@ -93,24 +85,6 @@ type axisLimitT = {
   max: number
 };
 
-type styleT = {
-  key: string,
-  color: string,
-  width: number
-};
-type categoryT = {
-  key: string,
-  label: string
-};
-/* Construct the styler */
-function constructStyles(
-  channelName: string, channelCount: number
-): { style: styleT, category: categoryT } {
-  return {
-    style: { key: channelName, color: getColor(channelCount), width: 2 },
-    category: { key: channelName, label: channelName }
-  };
-}
 /* Returns the limits for a sensor */
 function getChartLimits(channelNames: string[], eventSeries: TimeSeries): axisLimitT {
   const min = -15;
@@ -179,7 +153,7 @@ function constructLegend(legendSensors) {
         <span>{name}</span>
         <Legend
           key={l}
-          type={'line'}
+          type="line"
           style={styler(legend.stylesList)}
           categories={legend.categoriesList}
         />
@@ -210,11 +184,10 @@ function constructLineCharts(
   );
 }
 
-export default class GraphComponent extends Component {
-  /* Type defs */
-  props: propsT;
-  state: stateT;
-  interval: number;
+/* *** Main Class *** */
+
+export default class GraphComponent extends Component<propsT, stateT> {
+  interval: IntervalID;
   /* Initial state */
   constructor(props: propsT) {
     super(props);
@@ -230,6 +203,13 @@ export default class GraphComponent extends Component {
       /* Get the last events */
       const eventBuffer = new RingBuffer(eventsSize);
       const prevEvents = getLastDataPointsDecimated(deviceId, eventsSize, sampleRate / refreshRate);
+
+      const allEvents = getDataSeries(deviceId);
+      const highRes = new TimeSeries({
+        name: deviceId,
+        events: allEvents
+      });
+
       /* Populate the buffer */
       for (let j = 0; j < prevEvents.length; j++) {
         eventBuffer.enq(prevEvents[j]);
@@ -241,7 +221,8 @@ export default class GraphComponent extends Component {
       defaultStateObj[deviceId] = {
         startTime,
         endTime,
-        events: eventBuffer
+        events: eventBuffer,
+        highRes
       };
     }
     this.state = defaultStateObj;
@@ -251,8 +232,8 @@ export default class GraphComponent extends Component {
     /* Simulate events */
     this.interval = setInterval(
       () => {
+        const deviceIdList = getActiveDeviceList(this.props.devices);
         if (this.props.collectionSettings.collecting) {
-          const deviceIdList = getActiveDeviceList(this.props.devices);
           /* Iterate through each device */
           for (let i = 0; i < deviceIdList.length; i++) {
             const deviceId = deviceIdList[i];
@@ -266,8 +247,37 @@ export default class GraphComponent extends Component {
               const newEvent = this.state[deviceId].events;
               newEvent.enq(datum);
               /* Update the state */
-              this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              // this.setState({ [deviceId]: { endTime: t, events: newEvent } });
+              this.setState((prevState, props) => {
+                /* Update the endTime and Events */
+                const newState = update(prevState, {
+                  [deviceId]: {
+                    endTime: { $set: t },
+                    events: { $set: newEvent }
+                  }
+                });
+                return newState;
+              });
             }
+          }
+        } else {
+          /* Pull the high res - this really only needs to be done once */
+          for (let i = 0; i < deviceIdList.length; i++) {
+            const deviceId = deviceIdList[i];
+            const allEvents = getDataSeries(deviceId);
+            const highRes = new TimeSeries({
+              name: deviceId,
+              events: allEvents
+            });
+            /* Update the state */
+            this.setState((prevState, props) => {
+              const newState = update(prevState, {
+                [deviceId]: {
+                  highRes: { $set: highRes }
+                }
+              });
+              return newState;
+            });
           }
         }
       },
@@ -320,10 +330,15 @@ export default class GraphComponent extends Component {
       /* Retrieve the events */
       const { events } = this.state[deviceId];
       /* Construct the time series */
-      const eventSeries = new TimeSeries({
-        name: device.name,
-        events: events.peekN(events.size())
-      });
+      let eventSeries;
+      if (!this.props.collectionSettings.collecting) {
+        eventSeries = this.state[deviceId].highRes;
+      } else {
+        eventSeries = new TimeSeries({
+          name: device.name,
+          events: events.peekN(events.size())
+        });
+      }
       /* Iterate through each sensor */
       const sensorsIdList = getActiveSensorList(sensors);
       for (let j = 0; j < sensorsIdList.length; j++) {
@@ -341,7 +356,7 @@ export default class GraphComponent extends Component {
         for (let k = 0; k < channelNameList.length; k++) {
           const channelName = channelNameList[k];
           /* Store the styles for the line and legend */
-          const { style, category } = constructStyles(channelName, channelCount);
+          const { style, category } = constructStyles(sensor.name, channelName, channelCount);
           categoriesList.push(category);
           stylesList.push(style);
           /* Increment the channel count */
@@ -349,14 +364,16 @@ export default class GraphComponent extends Component {
         }
         /* construct the Y Axes */
         const { leftAxis, rightAxis } = constructYAxis(
-          deviceId, device, sensorId, sensor, sensorCount, channelNameList, eventSeries
+          deviceId, device, sensorId, sensor,
+          sensorCount, channelNameList, eventSeries
         );
         /* Push to their lists */
         leftAxesList.push(...leftAxis);
         rightAxesList.push(...rightAxis);
         /* Construct and store the line chart */
         chartList.push(constructLineCharts(
-          i, deviceId, sensorId, eventSeries, channelNameList, stylesList
+          i, deviceId, sensorId, eventSeries,
+          channelNameList, stylesList
         ));
         /* Simple default axis */
         if (i === 0) {
@@ -401,7 +418,10 @@ export default class GraphComponent extends Component {
         <div className="row">
           <div className="col-md-12">
             <Resizable>
-              <ChartContainer timeRange={timeRange}>
+              <ChartContainer
+                timeRange={timeRange}
+                enablePanZoom
+              >
                 <ChartRow height="385">
                   {leftAxesList}
                   <Charts>

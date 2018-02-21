@@ -18,22 +18,21 @@ type PropsType = {
   pending: boolean,
   version: string
 };
-export default class UpdateModal extends Component {
-  /* Type defs */
-  props: PropsType;
-
+export default class UpdateModal extends Component<PropsType> {
   render() {
     return (
       <div>
         <Modal show={this.props.pending}>
           <Modal.Header>
-            <Modal.Title className={'text-center'}>Version {this.props.version} Available</Modal.Title>
+            <Modal.Title className="text-center">Version {this.props.version} Available</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h4 className={'text-center'}>A newer version of MICA Desktop is available. It will be
-            automatically downloaded and installed.</h4>
+            <h4 className="text-center">
+              A newer version of MICA Desktop is available. It will be
+              automatically downloaded and installed.
+            </h4>
             <p />
-            <h4 className={'text-center'}>The Application will restart shortly</h4>
+            <h4 className="text-center">The Application will restart shortly</h4>
           </Modal.Body>
         </Modal>
       </div>

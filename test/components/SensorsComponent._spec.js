@@ -8,7 +8,7 @@
 * Date: 2017.08.18
 *
 **********************************************************/
-import React from 'react';
+import * as React from 'react';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
 import SensorsComponent from '../../app/components/SensorsComponent';

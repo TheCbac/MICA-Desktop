@@ -25,9 +25,7 @@ type stateType = {
 
 type directionType = 'forward' | 'backward' | 'left' | 'right';
 
-export default class DriveBot extends Component {
-  props: propsType;
-  state: stateType;
+export default class DriveBot extends Component<propsType, stateType> {
   /* Constructor function */
   constructor(props: propsType) {
     super(props);

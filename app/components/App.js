@@ -13,18 +13,24 @@ import React, { Component } from 'react';
 import type { Children } from 'react';
 import Header from './Header';
 // import Footer from '../components/Footer';
+import type {
+  showUserSettingsActionT
+} from '../types/appWideActionTypes';
 
 type propsT = {
   developer: boolean,
+  showUserSettings: (boolean) => showUserSettingsActionT,
   children?: Children
 };
-export default class App extends Component {
-  props: propsT;
-
+export default class App extends Component<propsT> {
   render() {
+    const { developer, showUserSettings } = this.props;
     return (
       <div>
-        <Header developer={this.props.developer} />
+        <Header
+          developer={developer}
+          showUserSettings={showUserSettings}
+        />
         {this.props.children}
         {/* <Footer /> */}
       </div>

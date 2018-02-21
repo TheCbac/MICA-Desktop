@@ -59,12 +59,12 @@ type propsType = {
   ) => thunkType
 };
 
-export default class sensorSettings extends Component {
-  /* Component properties */
-  props: propsType;
-  state: {
-    open: boolean
-  };
+type stateT = {
+  open: boolean
+};
+
+export default class settingsPage extends Component<propsType, stateT> {
+
   constructor(props: propsType) {
     super(props);
     /* Trigger the selected devices to occur */
@@ -72,6 +72,9 @@ export default class sensorSettings extends Component {
     this.state = {
       open: false
     };
+  }
+  defaultState = {
+    open: false
   }
   getDeviceBlocks(): [] {
     const deviceBlockList = [];

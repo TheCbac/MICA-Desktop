@@ -20,7 +20,9 @@ import {
   logDataPoints,
   resetDataBuffer,
   getDataLength,
-  getLastDataPointsDecimated
+  getLastDataPointsDecimated,
+  getDataSeries,
+  getFullDataObj
 } from '../../../app/utils/dataStreams/graphBuffer';
 import { deviceIdFactory } from '../../factories/factories';
 import { accDataFactory } from '../../factories/dataFactories';
@@ -54,7 +56,9 @@ describe('graphBuffer.spec.js', () => {
   describe('data events', () => {
     beforeEach(() => {
       resetDataBuffer(deviceId1);
+      resetDataBuffer(deviceId2);
       resetStartTime(deviceId1);
+      resetStartTime(deviceId2);
     });
     describe('resetDataBuffer', () => {
       it('should reset the buffer length', () => {
@@ -222,7 +226,59 @@ describe('graphBuffer.spec.js', () => {
         expect(getDataPointDecimated(deviceId2, decimation)).toEqual(data2[10]);
       });
     });
+    describe('getDataSeries', () => {
+      it('should return the full data series for a device', () => {
+        /* Create the dummy data */
+        const data = [];
+        const startTime = getStartTime(deviceId1);
+        for (let i = 0; i < 11; i++) {
+          data.push(accDataFactory(['x'], startTime + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId1, data)).toEqual(11);
+        /* Retrieve the data points */
+        const dataReturned = getDataSeries(deviceId1);
+        expect(dataReturned.length).toBe(data.length);
+        /* Check that all of the points match */
+        for (let j = 0; j < data.length; j++) {
+          expect(dataReturned[j]).toEqual(data[j]);
+        }
+      });
+    });
+    describe('getFullDataObj', () => {
+      it('should return the entire data object', () => {
+        /* Create the dummy data */
+        const data1 = [];
+        const startTime1 = getStartTime(deviceId1);
+        for (let i = 0; i < 11; i++) {
+          data1.push(accDataFactory(['x'], startTime1 + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId1, data1)).toEqual(11);
+        /* Create the dummy data */
+        const data2 = [];
+        const startTime2 = getStartTime(deviceId2);
+        for (let i = 0; i < 11; i++) {
+          data2.push(accDataFactory(['x'], startTime2 + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId2, data2)).toEqual(11);
+
+        /* Retrieve the data object */
+        const dataObj = getFullDataObj();
+        const dataReturned1 = dataObj[deviceId1].data;
+        const dataReturned2 = dataObj[deviceId2].data;
+        expect(data1).toEqual(dataReturned1);
+        expect(data2).toEqual(dataReturned2);
+
+        // const dataReturned1 = getDataSeries(deviceId1);
+        // expect(dataReturned1.length).toBe(data.length);
+        // /* Check that all of the points match */
+        // for (let j = 0; j < data.length; j++) {
+        //   expect(dataReturned1[j]).toEqual(data[j]);
+        // }
+      });
+    });
   });
 });
-
 /* [] - END OF FILE */

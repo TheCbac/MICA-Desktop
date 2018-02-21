@@ -8,25 +8,25 @@
 * Author: Craig Cheney
 * Date: 2017.04.27
 *
-**********************************************************/
+********************************************************* */
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { IndexLinkContainer, LinkContainer } from 'react-router-bootstrap';
 import FontAwesome from 'react-fontawesome';
-import { showUserSettings } from '../actions/appWideActions';
-import store from '../index';
+import type {
+  showUserSettingsActionT
+} from '../types/appWideActionTypes';
 
 type propsT = {
-  developer: boolean
+  developer: boolean,
+  showUserSettings: (boolean) => showUserSettingsActionT
 };
 
-export default class Header extends Component {
-  props: propsT;
-
+export default class Header extends Component<propsT> {
   developerState() {
     if (this.props.developer) {
       return (
-        <LinkContainer to="/developer" activeClassName="active">
+        <LinkContainer to="/developer" id="developerPageLink" activeClassName="active">
           <NavItem>DEVELOPER</NavItem>
         </LinkContainer>
       );
@@ -43,13 +43,13 @@ export default class Header extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <IndexLinkContainer to="/" activeClassName="active">
+            <IndexLinkContainer to="/" id="devicesPageLink" activeClassName="active">
               <NavItem>DEVICES</NavItem>
             </IndexLinkContainer>
-            <LinkContainer to="/settings" activeClassName="active">
+            <LinkContainer to="/settings" id="settingsPageLink" activeClassName="active">
               <NavItem>SETTINGS</NavItem>
             </LinkContainer>
-            <LinkContainer to="/collectData" activeClassName="active">
+            <LinkContainer to="/collect" id="collectDataPageLink" activeClassName="active">
               <NavItem>COLLECT</NavItem>
             </LinkContainer>
             {this.developerState()}
@@ -58,7 +58,12 @@ export default class Header extends Component {
             </LinkContainer> */}
           </Nav>
           <Nav pullRight>
-            <NavItem onClick={() => { store.dispatch(showUserSettings(true)); }}><FontAwesome name="bars" size="lg" /></NavItem>
+            <NavItem
+              id="userSettingsBars"
+              onClick={() => { this.props.showUserSettings(true); }}
+            >
+              <FontAwesome name="bars" size="lg" />
+            </NavItem>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

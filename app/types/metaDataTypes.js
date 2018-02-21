@@ -159,6 +159,7 @@ export type commMetaObj = {
 /* Control Metadata type */
 export type controlMetaObj = {
   type: string,
-  channelNames: ?string[]
+  numDevices: number,
+  deviceNames: string[]
 };
 /* [] - END OF FILE */

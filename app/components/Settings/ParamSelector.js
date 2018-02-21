@@ -36,10 +36,7 @@ type stateType = {
   value: number
 };
 
-export default class ParamSelector extends Component {
-  /* Type Defs */
-  props: propsType;
-  state: stateType;
+export default class ParamSelector extends Component<propsType, stateType> {
   /* constructor function */
   constructor(props: propsType) {
     super(props);

@@ -50,10 +50,7 @@ const increment = minute;
 const eventsSize = 200;
 const percentileSize = 100;
 
-export default class GraphComponent extends Component {
-  /* Type defs */
-  props: propsType;
-  state: stateType;
+export default class GraphComponent extends Component<propsType, stateType> {
   stream: typeof Stream;
   interval: number;
   /* Initial state */

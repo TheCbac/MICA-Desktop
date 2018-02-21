@@ -11,7 +11,7 @@
 *
 ********************************************************* */
 import { spy } from 'sinon';
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
 import ScanBtn, { __Rewire__ as Rewire } from '../../../app/components/Devices/DevicesTable';
 
@@ -42,7 +42,7 @@ function setup(propsObj) {
 }
 
 describe('DevicesTable.spec.js', () => {
-  it('ReactTable', () => {
+  describe('ReactTable', () => {
     const { table } = setup();
     it('Should be named correctly', () => {
       expect(table.at(0).prop('name')).toEqual('advertisingTable');

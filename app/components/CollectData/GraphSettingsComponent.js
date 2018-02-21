@@ -1,4 +1,3 @@
-
 /* @flow */
 /* **********************************************************
 * File: components/CollectData/GraphSettingsComponent.js
@@ -17,16 +16,19 @@ import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import { remote } from 'electron';
-import { saveLastRun } from '../../utils/dataStreams/graphBuffer';
+import { getFullDataObj } from '../../utils/dataStreams/graphBuffer';
+import { saveCsv } from '../../utils/dataStreams/data2csv';
 import type { thunkType } from '../../types/functionTypes';
 import type {
   collectionStateType,
   graphSettingsType,
-  horizontalScaleType
+  horizontalScaleType,
+  devicesStateType
 } from '../../types/stateTypes';
 import type { updateGraphSettingsActionType } from '../../types/collectionActionTypes';
 
 type propsType = {
+  devices: devicesStateType,
   collectionSettings: collectionStateType,
   startCollecting: () => thunkType,
   stopCollecting: () => thunkType,
@@ -37,28 +39,24 @@ type stateType = {
   value: number
 };
 
-/* Save the latest run */
-function saveDialog(): void {
-  const options = {
-    defaultPath: 'data.csv'
-  };
-  remote.dialog.showSaveDialog(options, (filePath?: string) => {
-    if (filePath) {
-      saveLastRun(filePath);
-    }
-  });
-}
-
-export default class GraphSettings extends Component {
-  /* Type Def the props */
-  props: propsType;
-  state: stateType;
+export default class GraphSettings extends Component<propsType, stateType> {
   constructor(props: propsType) {
     super(props);
     /* Set the default */
     this.state = {
       value: props.collectionSettings.graphSettings.horizontalScale
     };
+  }
+  /* Save the latest run */
+  saveDialog(): void {
+    const options = {
+      defaultPath: 'data.csv'
+    };
+    remote.dialog.showSaveDialog(options, (filePath?: string) => {
+      if (filePath) {
+        saveCsv(filePath, this.props.devices, getFullDataObj());
+      }
+    });
   }
   /* Button for the next state */
   startStopGraphButton() {
@@ -75,7 +73,7 @@ export default class GraphSettings extends Component {
     }
     /* Return the button */
     return (
-      <Col xs={12} className={'text-center'} style={{ marginTop: '10px' }}>
+      <Col xs={12} className="text-center" style={{ marginTop: '10px' }}>
         <Button
           block
           bsStyle={btnStyle}
@@ -108,7 +106,7 @@ export default class GraphSettings extends Component {
 
     return (
       <div style={boxStyle}>
-        <div className={'text-center'} style={{ fontSize: '1.5em' }}>Graphs</div>
+        <div className="text-center" style={{ fontSize: '1.5em' }}>Graphs</div>
         <Row style={{ marginTop: '10px' }} />
         <Col md={6}>
           <span style={{ fontSize: '1.25em' }}>Horizontal Scale</span>
@@ -117,8 +115,8 @@ export default class GraphSettings extends Component {
           <ButtonToolbar>
             <ToggleButtonGroup
               bsSize="xsmall"
-              type={'radio'}
-              name={'graphScale'}
+              type="radio"
+              name="graphScale"
               value={this.state.value}
               onChange={this.onScaleChange}
             >
@@ -134,11 +132,11 @@ export default class GraphSettings extends Component {
         <Row />
         {this.startStopGraphButton()}
         <Row />
-        <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
+        <Col xs={6} className="text-center" style={{ marginTop: '10px' }}>
           <Button block bsStyle="warning">PAUSE DISPLAY</Button>
         </Col>
-        <Col xs={6} className={'text-center'} style={{ marginTop: '10px' }}>
-          <Button block bsStyle="primary" onClick={() => saveDialog()}>SAVE RUN</Button>
+        <Col xs={6} className="text-center" style={{ marginTop: '10px' }}>
+          <Button block bsStyle="primary" onClick={() => this.saveDialog()}>SAVE RUN</Button>
         </Col>
         <Row />
         <Col xs={12} style={{ position: 'absolute', bottom: '25px' }}>

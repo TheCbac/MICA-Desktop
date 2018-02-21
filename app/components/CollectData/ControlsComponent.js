@@ -19,7 +19,8 @@ import type { devicesStateType } from '../../types/stateTypes';
 function mapGeneratorIdToComponent(
   deviceId: string,
   generatorId: number | string,
-  key: number): * {
+  key: number
+): * {
   /* */
   const id = parseInt(generatorId, 10);
   switch (id) {
@@ -30,15 +31,13 @@ function mapGeneratorIdToComponent(
     default:
       console.log('mapGeneratorIdToComponent', generatorId);
       return '';
-
   }
 }
 type propsType = {
   devices: devicesStateType
 };
 
-export default class ControlsComponent extends Component {
-  props: propsType
+export default class ControlsComponent extends Component<propsType> {
   /* Return all of the components for controlling the
    * active generators */
   getGeneratorControls(): * {
@@ -82,7 +81,7 @@ export default class ControlsComponent extends Component {
     };
     return (
       <div style={boxStyle}>
-        <div className={'text-center'} style={{ fontSize: '1.5em' }}>Controls</div>
+        <div className="text-center" style={{ fontSize: '1.5em' }}>Controls</div>
         <Row />
         <div>
           {this.getGeneratorControls()}

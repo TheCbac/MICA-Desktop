@@ -17,6 +17,7 @@
     "consistent-return": "off",
     "comma-dangle": "off",
     "flowtype-errors/show-errors": "error",
+    "function-paren-newline": ["error", "multiline"],
     "generator-star-spacing": "off",
     "import/no-unresolved": "error",
     "import/no-extraneous-dependencies": "off",
@@ -26,10 +27,13 @@
       "allowForLoopAfterthoughts": true
     }],
     "no-multi-assign": "off",
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "object-curly-newline": "off",
     "promise/param-names": "error",
     "promise/always-return": "error",
     "promise/catch-or-return": "error",
     "promise/no-native": "off",
+    "quote-props": ["error", "as-needed", {"numbers": true}],
     "react/sort-comp": ["error", {
       "order": ["type-annotations", "static-methods", "lifecycle", "everything-else", "render"]
     }],

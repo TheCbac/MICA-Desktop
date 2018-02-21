@@ -24,8 +24,7 @@ type propsType = {
   startStopScan: () => thunkType
 };
 
-export default class ScanBtn extends Component {
-  props: propsType;
+export default class ScanBtn extends Component<propsType> {
   /* Determines whether or not a scan is enabled */
   getScanState(): scanBtnStyleType {
     if (this.props.scanning) {

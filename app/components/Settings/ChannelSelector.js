@@ -48,10 +48,7 @@ function channelIdsFromObj(Obj: channelsT): number[] {
   return valueArray;
 }
 
-export default class ChannelSelector extends Component {
-  /* Type Defs */
-  props: propsType;
-  state: stateType;
+export default class ChannelSelector extends Component<propsType, stateType> {
   /* Constructor function */
   constructor(props: propsType) {
     super(props);

@@ -22,9 +22,6 @@ function mapStateToProps(state) {
   return {
     devices: state.devices,
     collectionSettings: state.collection
-    // connectedDevices: state.devices.connectedDevices,
-    // deviceSettings: state.devices.deviceSettings,
-    // collectionSettings: state.collection
   };
 }
 

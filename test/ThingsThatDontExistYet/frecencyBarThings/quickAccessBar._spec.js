@@ -14,7 +14,7 @@
 import { Button, Grid } from 'react-bootstrap';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
-import React from 'react';
+import * as React from 'react';
 import { QuickAccessBar, __RewireAPI__ as Rewire } from '../../app/components/QuickAccessBar'; // does not exist yet.
 import UnpinComponentButton from '../../app/components/UnpinComponentButton'; // does not exist yet.
 

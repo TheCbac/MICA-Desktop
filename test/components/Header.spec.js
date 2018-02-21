@@ -7,45 +7,90 @@
 *
 * Authors: George Whitfield, Craig Cheney
 *
+* 2017.10.22 CC - Rewritten for developer refactor
 * 2017.09.25 CC - Update test for v0.2
 * 2017.07.13 GW - Document created
 *
 ********************************************************* */
-import React from 'react';
+import * as React from 'react';
 import { shallow } from 'enzyme';
+import { spy } from 'sinon';
 import Header from '../../app/components/Header';
 
-function setup() {
-  const component = shallow(<Header />);
+function setup(developer = false) {
+  const actions = {
+    showUserSettings: spy()
+  };
+  const component = shallow(
+    <Header
+      developer={developer}
+      showUserSettings={actions.showUserSettings}
+    />
+  );
   return {
-    component
+    component,
+    actions
   };
 }
 
-// Begin test
+/* test suite */
 describe('Header', () => {
-  const { component } = setup();
-  it('Navbar should have props inverse and collapseOnSelect', () => {
+  it('The header should have a navbar', () => {
+    const { component } = setup();
     const nav = component.find('Navbar');
-    expect(nav.at(0).prop('inverse')).not.toBeNull();
-    expect(nav.at(0).prop('collapseOnSelect')).not.toBeNull();
+    expect(nav).toBeDefined();
   });
-  describe('Index and Link containers Test', () => {
-    it('Has correct values for props', () => {
-      const index = component.find('IndexLinkContainer');
-      const link = component.find('LinkContainer');
-      expect(index.at(0).prop('activeClassName')).toEqual('active');
-      expect(link.at(0).prop('activeClassName')).toEqual('active');
-      expect(link.at(1).prop('activeClassName')).toEqual('active');
-      expect(link.at(2).prop('activeClassName')).toEqual('active');
-      expect(index.at(0).prop('to')).toEqual('/');
-      expect(link.at(0).prop('to')).toEqual('/settings');
-      expect(link.at(1).prop('to')).toEqual('/collectData');
-      expect(link.at(2).prop('to')).toEqual('/analyze');
+  describe('Link containers', () => {
+    it('has a devices page', () => {
+      const { component } = setup();
+      const linkContainer = component.find('#devicesPageLink');
+      expect(linkContainer.exists()).toBeTruthy();
+      expect(linkContainer.prop('to')).toBe('/');
+      const navItem = linkContainer.children('NavItem');
+      expect(navItem.length).toBe(1);
+      expect(navItem.children().text()).toBe('DEVICES');
+    });
+    it('has a settings page', () => {
+      const { component } = setup();
+      const linkContainer = component.find('#settingsPageLink');
+      expect(linkContainer.exists()).toBeTruthy();
+      expect(linkContainer.prop('to')).toBe('/settings');
+      const navItem = linkContainer.children('NavItem');
+      expect(navItem.length).toBe(1);
+      expect(navItem.children().text()).toBe('SETTINGS');
+    });
+    it('has a collect page', () => {
+      const { component } = setup();
+      const linkContainer = component.find('#collectDataPageLink');
+      expect(linkContainer.exists()).toBeTruthy();
+      expect(linkContainer.prop('to')).toBe('/collect');
+      const navItem = linkContainer.children('NavItem');
+      expect(navItem.length).toBe(1);
+      expect(navItem.children().text()).toBe('COLLECT');
+    });
+    it('has a developer page sometimes', () => {
+      const { component } = setup();
+      const noLink = component.find('#developerPageLink');
+      expect(noLink.exists()).toBeFalsy();
+      /* Set the prop on the component */
+      component.setProps({ developer: true });
+      const linkContainer = component.find('#developerPageLink');
+      expect(linkContainer.exists()).toBeTruthy();
+      expect(linkContainer.prop('to')).toBe('/developer');
+      const navItem = linkContainer.children('NavItem');
+      expect(navItem.length).toBe(1);
+      expect(navItem.children().text()).toBe('DEVELOPER');
     });
   });
-  it('Matches Snapshot', () => {
-    // Need to find a way to test the children of Navbar.Brand and NavItems
-    expect(component).toMatchSnapshot();
+  describe('Click hamburger', () => {
+    it('should call show user settings', () => {
+      const { component, actions } = setup();
+      const hamburger = component.find('#userSettingsBars');
+      expect(hamburger.exists()).toBeTruthy();
+      /* Click the hamburger */
+      hamburger.simulate('click');
+      expect(actions.showUserSettings.called).toBeTruthy();
+      expect(actions.showUserSettings.calledWith(true));
+    });
   });
 });

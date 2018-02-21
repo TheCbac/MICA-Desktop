@@ -10,6 +10,7 @@
 *
 ********************************************************* */
 import { spy } from 'sinon';
+// import * as React from 'react';
 import React from 'react';
 import { shallow } from 'enzyme';
 import ScanBtn from '../../../app/components/Devices/ScanBtn';
