@@ -59,23 +59,7 @@ type propsType = {
   ) => thunkType
 };
 
-type stateT = {
-  open: boolean
-};
-
-export default class settingsPage extends Component<propsType, stateT> {
-
-  constructor(props: propsType) {
-    super(props);
-    /* Trigger the selected devices to occur */
-    // props.getSelectedDevices();
-    this.state = {
-      open: false
-    };
-  }
-  defaultState = {
-    open: false
-  }
+export default class settingsPage extends Component<propsType> {
   getDeviceBlocks(): [] {
     const deviceBlockList = [];
     const deviceIdList = Object.keys(this.props.devices);
@@ -83,18 +67,29 @@ export default class settingsPage extends Component<propsType, stateT> {
     for (let i = 0; i < deviceIdList.length; i++) {
       const deviceId = deviceIdList[i];
       const device = this.props.devices[deviceId];
+      /* Only display connected devices */
+      if (device.state === 'connected') {
+        deviceBlockList.push(
+          <DeviceBlock
+            key={i}
+            id={deviceId}
+            device={device}
+            setDeviceActive={this.props.setDeviceActive}
+            setSensorActive={this.props.setSensorActive}
+            setSensorChannels={this.props.setSensorChannels}
+            setSensorParams={this.props.setSensorParams}
+            setGeneratorActive={this.props.setGeneratorActive}
+            zeroSensor={this.props.zeroSensor}
+          />
+        );
+      }
+    }
+    /* Display empty text */
+    if (deviceBlockList.length === 0) {
       deviceBlockList.push(
-        <DeviceBlock
-          key={i}
-          id={deviceId}
-          device={device}
-          setDeviceActive={this.props.setDeviceActive}
-          setSensorActive={this.props.setSensorActive}
-          setSensorChannels={this.props.setSensorChannels}
-          setSensorParams={this.props.setSensorParams}
-          setGeneratorActive={this.props.setGeneratorActive}
-          zeroSensor={this.props.zeroSensor}
-        />
+        <div>
+          No Devices connected
+        </div>
       );
     }
     /* Return the device List */

@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 * Date: 2017.07.10
 *
-**********************************************************/
+********************************************************* */
 import update from 'immutability-helper';
 import createReducer from './createReducer';
 import type { scanStateType } from '../types/stateTypes';
@@ -30,7 +30,8 @@ const scanForDeviceHandlers = {
   /* Selects the scanning method */
   CHANGE_SCAN_METHOD(
     state: scanStateType = defaultState,
-    action: changeScanActionType): scanStateType {
+    action: changeScanActionType
+  ): scanStateType {
     /* Set the scan method, enable state, and stop scanning */
     return update(state, {
       method: { $set: action.payload.method },
@@ -41,7 +42,8 @@ const scanForDeviceHandlers = {
   /* Enables or disables the ability to scan */
   ENABLE_SCAN_METHOD(
     state: scanStateType,
-    action: enableScanActionType): scanStateType {
+    action: enableScanActionType
+  ): scanStateType {
     /* Change the state if the method matches the active method */
     if (action.payload.method === state.method) {
       /* Enable or disable, stop the scan */
@@ -55,7 +57,8 @@ const scanForDeviceHandlers = {
   /* Sets whether the app is scanning or not */
   CHANGE_SCAN_STATE(
     state: scanStateType,
-    action: scanStateActionType): scanStateType {
+    action: scanStateActionType
+  ): scanStateType {
     /* Only change the active method */
     if (action.payload.method === state.method) {
       /* Set the scanning state, store the timeoutId */

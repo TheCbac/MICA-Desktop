@@ -13,7 +13,7 @@ import React, { Component } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import FA from 'react-fontawesome';
 import { bleWriteCharacteristic
- } from '../../utils/BLE/bleFunctions';
+} from '../../utils/BLE/bleFunctions';
 import { micaCharUuids } from '../../utils/mica/micaConstants';
 
 type propsType = {
@@ -144,47 +144,47 @@ export default class DriveBot extends Component<propsType, stateType> {
         <Col md={6}>
           <Col md={4} mdOffset={4}>
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               onMouseDown={() => this.onMouseDown('forward')}
               onMouseUp={() => this.onMouseUp()}
 
             >
-              <FA name={'arrow-up'} />
+              <FA name='arrow-up' />
             </Button>
           </Col>
           <Row style={{ marginBottom: '4px' }} />
           <Col md={4} mdOffset={0}>
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               onMouseDown={() => this.onMouseDown('left')}
               onMouseUp={() => this.onMouseUp()}
             >
-              <FA name={'arrow-left'} />
+              <FA name='arrow-left' />
             </Button>
           </Col>
           <Col md={4} mdOffset={0}>
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               onMouseDown={() => this.onMouseDown('backward')}
               onMouseUp={() => this.onMouseUp()}
             >
-              <FA name={'arrow-down'} />
+              <FA name='arrow-down' />
             </Button>
           </Col>
           <Col md={4} mdOffset={0}>
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               onMouseDown={() => this.onMouseDown('right')}
               onMouseUp={() => this.onMouseUp()}
             >
-              <FA name={'arrow-right'} />
+              <FA name='arrow-right' />
             </Button>
           </Col>
         </Col>
         <Col md={5}>
           <Col md={12} >
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               block
             >+ SPEED
             </Button>
@@ -192,7 +192,7 @@ export default class DriveBot extends Component<propsType, stateType> {
           <Row style={{ marginBottom: '4px' }} />
           <Col md={12} >
             <Button
-              bsStyle={'primary'}
+              bsStyle='primary'
               block
             >- SPEED
             </Button>

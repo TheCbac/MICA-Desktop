@@ -107,14 +107,14 @@ export default class ChannelSelector extends Component<propsType, stateType> {
       <div>
         <ButtonToolbar>
           <Col md={4} xs={4}>
-            <label htmlFor="dataChannels">Data Channels:</label>
+            <label htmlFor='dataChannels'>Data Channels:</label>
           </Col>
           {this.channelWarning()}
           <Row />
           <Col md={12} xs={12}>
             <ToggleButtonGroup
-              bsSize="small"
-              type="checkbox"
+              bsSize='small'
+              type='checkbox'
               value={this.state.channels}
               onChange={this.onChange}
             >

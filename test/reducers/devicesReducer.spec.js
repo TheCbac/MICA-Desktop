@@ -24,7 +24,7 @@ import {
   lostConnectionFromDeviceActionFactory,
   reportMetadataFactory,
   setChannelsFactory
- } from '../factories/actionFactories';
+} from '../factories/actionFactories';
 import type { devicesStateType, devicesStateObjType } from '../../app/types/stateTypes';
 import type {
   foundDeviceActionType,

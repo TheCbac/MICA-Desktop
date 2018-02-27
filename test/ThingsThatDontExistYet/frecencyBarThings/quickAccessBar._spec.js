@@ -10,7 +10,7 @@
 * Author: George Whitfield
 * Date: 2017.08.09
 *
-**********************************************************/
+********************************************************* */
 import { Button, Grid } from 'react-bootstrap';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
@@ -20,7 +20,7 @@ import UnpinComponentButton from '../../app/components/UnpinComponentButton'; //
 
 // componentArray = Array of objects containing information about what's being rednered in the quick access bar.
 
- /* Each item in the array has the following properties: {
+/* Each item in the array has the following properties: {
    score: boolean,
    component: React Component
  }

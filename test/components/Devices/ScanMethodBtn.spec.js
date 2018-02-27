@@ -25,13 +25,11 @@ function setup(propsObj) {
   const actions = {
     changeScanMethod: spy()
   };
-  const component = shallow(
-    <ScanMethodBtn
-      method={props.method}
-      enabled={props.enabled}
-      {...actions}
-    />
-  );
+  const component = shallow(<ScanMethodBtn
+    method={props.method}
+    enabled={props.enabled}
+    {...actions}
+  />);
   return {
     component,
     actions,

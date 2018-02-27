@@ -9,7 +9,7 @@
 * Author: George Whitfield
 * Date: 2017.08.09
 *
-**********************************************************/
+********************************************************* */
 const date = new Date();
 
 const startFakeSeconds = (date.getTime() / 1000);
@@ -75,9 +75,8 @@ function sortThings() {
       return -1;
     } else if (a.score > b.score) {
       return 1;
-    } else {
-      return 0;
     }
+    return 0;
   }
   const sortedArray = thingsArray.sort(sortScores);
   return sortedArray;

@@ -207,21 +207,21 @@ export default class Device extends Component<propsType, stateType> {
         <Row />
         <Col md={12} style={{ marginTop: '15px' }}>
           <div style={{ lineHeight: '30px' }}>
-            <span className="pull-left" style={this.nameStyle()}>
+            <span className='pull-left' style={this.nameStyle()}>
               <FontAwesome
-                className={'hoverGlow'}
-                name={'angle-right'}
-                size={'lg'}
+                className='hoverGlow'
+                name='angle-right'
+                size='lg'
                 style={this.caretStyle()}
                 onClick={() => this.toggleOpen()}
               />
               {this.props.device.name.toUpperCase()}
             </span>
-            <span style={powerToggleStyle} className={'pull-right'}>
+            <span style={powerToggleStyle} className='pull-right'>
               <FontAwesome
-                className={'hoverGlow'}
-                name={'power-off'}
-                size={'lg'}
+                className='hoverGlow'
+                name='power-off'
+                size='lg'
                 onClick={() => this.toggleSensorPower()}
                 style={this.powerBtnStyle()}
               />
@@ -234,14 +234,14 @@ export default class Device extends Component<propsType, stateType> {
             <div>
               <Well style={{ minHeight: '200px', backgroundColor: '#CCD4E9', borderColor: '#CCD4E9', overflow: 'hidden' }}>
                 <Col md={6} style={{ minHeight: '165px' }}>
-                  <Col md={12} className={'text-center'}>
+                  <Col md={12} className='text-center'>
                     <span style={{ fontSize: '1.5em' }}>SENSORS</span>
                   </Col>
                   {this.getSensors()}
                 </Col>
 
                 <Col md={6} style={{ borderLeft: '2px solid black', minHeight: '165px' }}>
-                  <Col md={12} className={'text-center'} >
+                  <Col md={12} className='text-center' >
                     <span style={{ fontSize: '1.5em' }}>GENERATORS</span>
                   </Col>
                   {this.getGenerators()}

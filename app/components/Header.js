@@ -26,7 +26,7 @@ export default class Header extends Component<propsT> {
   developerState() {
     if (this.props.developer) {
       return (
-        <LinkContainer to="/developer" id="developerPageLink" activeClassName="active">
+        <LinkContainer to='/developer' id='developerPageLink' activeClassName='active'>
           <NavItem>DEVELOPER</NavItem>
         </LinkContainer>
       );
@@ -43,13 +43,13 @@ export default class Header extends Component<propsT> {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <IndexLinkContainer to="/" id="devicesPageLink" activeClassName="active">
+            <IndexLinkContainer to='/' id='devicesPageLink' activeClassName='active'>
               <NavItem>DEVICES</NavItem>
             </IndexLinkContainer>
-            <LinkContainer to="/settings" id="settingsPageLink" activeClassName="active">
+            <LinkContainer to='/settings' id='settingsPageLink' activeClassName='active'>
               <NavItem>SETTINGS</NavItem>
             </LinkContainer>
-            <LinkContainer to="/collect" id="collectDataPageLink" activeClassName="active">
+            <LinkContainer to='/collect' id='collectDataPageLink' activeClassName='active'>
               <NavItem>COLLECT</NavItem>
             </LinkContainer>
             {this.developerState()}
@@ -59,10 +59,10 @@ export default class Header extends Component<propsT> {
           </Nav>
           <Nav pullRight>
             <NavItem
-              id="userSettingsBars"
+              id='userSettingsBars'
               onClick={() => { this.props.showUserSettings(true); }}
             >
-              <FontAwesome name="bars" size="lg" />
+              <FontAwesome name='bars' size='lg' />
             </NavItem>
           </Nav>
         </Navbar.Collapse>

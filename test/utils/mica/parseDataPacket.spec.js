@@ -91,9 +91,7 @@ describe('parseDataPacket.spec.js', () => {
       const { scalingConstant, channels, gain, sampleRate } = accSensor;
       const periodLength = 1 / sampleRate;
       const startTime = new Date().getTime();
-      const dataArray = parseDataPacket2(
-        simplePacket, channels, periodLength, scalingConstant, gain, startTime
-      );
+      const dataArray = parseDataPacket2(simplePacket, channels, periodLength, scalingConstant, gain, startTime);
       /* Evaluate */
       expect(dataArray.length).toBe(1);
       const dataPoint = dataArray[0];
@@ -123,9 +121,7 @@ describe('parseDataPacket.spec.js', () => {
       const { scalingConstant, channels, gain, sampleRate } = acc;
       const periodLength = 1 / sampleRate;
       const startTime = new Date().getTime();
-      const dataArray = parseDataPacket2(
-        simplePacket, channels, periodLength, scalingConstant, gain, startTime
-      );
+      const dataArray = parseDataPacket2(simplePacket, channels, periodLength, scalingConstant, gain, startTime);
       /* Evaluate */
       expect(dataArray.length).toBe(1);
       const dataPoint = dataArray[0];

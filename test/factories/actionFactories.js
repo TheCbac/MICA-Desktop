@@ -83,9 +83,7 @@ export function cancelConnectToDeviceActionFactory(id?: idType): cancelConnectTo
 }
 
 /* Action creator for initiating a disconnection  */
-export function disconnectingFromDeviceActionFactory(
-  id?: idType
-): disconnectingFromDeviceActionType {
+export function disconnectingFromDeviceActionFactory(id?: idType): disconnectingFromDeviceActionType {
   const deviceId = id || deviceIdFactory();
   return {
     type: 'DISCONNECTING_FROM_DEVICE',
@@ -95,9 +93,7 @@ export function disconnectingFromDeviceActionFactory(
   };
 }
 /* Action creator for successful disconnect  */
-export function disconnectedFromDeviceActionFactory(
-  id?: idType
-): disconnectedFromDeviceActionType {
+export function disconnectedFromDeviceActionFactory(id?: idType): disconnectedFromDeviceActionType {
   const deviceId = id || deviceIdFactory();
   return {
     type: 'DISCONNECTED_FROM_DEVICE',
@@ -108,9 +104,7 @@ export function disconnectedFromDeviceActionFactory(
 }
 
 /* Connection to a device was lost */
-export function lostConnectionFromDeviceActionFactory(
-  id?: idType
-): lostConnectionFromDeviceActionType {
+export function lostConnectionFromDeviceActionFactory(id?: idType): lostConnectionFromDeviceActionType {
   const deviceId = id || deviceIdFactory();
   return {
     type: 'LOST_CONNECTION_FROM_DEVICE',
