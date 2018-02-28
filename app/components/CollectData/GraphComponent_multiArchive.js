@@ -16,7 +16,7 @@ import { Col, Row } from 'react-bootstrap';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
   styler, Resizable, Legend
- } from 'react-timeseries-charts';
+} from 'react-timeseries-charts';
 import { TimeSeries, TimeRange } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
 import { getDataPointDecimated, getLastDataPointsDecimated } from '../../utils/dataStreams/graphBuffer';
@@ -75,12 +75,12 @@ function getColor(idx: number): string {
 const defaultAxis = (
   <YAxis
     key={0}
-    id="default"
-    label={''}
+    id='default'
+    label=''
     min={-20}
     max={20}
-    width="70"
-    type="linear"
+    width='70'
+    type='linear'
   />
 );
 
@@ -208,8 +208,8 @@ export default class GraphComponent extends Component<propsT, stateT> {
             label={`${sensor.name} [${sensor.units}]`}
             min={min}
             max={max}
-            width="70"
-            type="linear"
+            width='70'
+            type='linear'
             key={axisKey}
           />
         );
@@ -279,7 +279,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
           <span>{name}</span>
           <Legend
             key={l}
-            type={'line'}
+            type='line'
             style={styler(legend.styles)}
             categories={legend.categories}
           />
@@ -323,7 +323,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
             axis={`${deviceId}-${sensorId}`}
             series={eventSeries}
             columns={channelNames}
-            interpolation="curveLinear"
+            interpolation='curveLinear'
             breakLine
           />
         );
@@ -343,7 +343,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
     const { leftAxes, rightAxes } = this.getMultiDeviceYAxis();
     return (
       <ChartContainer timeRange={timeRange}>
-        <ChartRow height="385">
+        <ChartRow height='385'>
           {leftAxes}
           {this.getMultiDeviceCharts()}
           {rightAxes}
@@ -359,8 +359,8 @@ export default class GraphComponent extends Component<propsT, stateT> {
           {this.getMultiDeviceLegend()}
         </Row>
         <hr />
-        <div className="row">
-          <div className="col-md-12">
+        <div className='row'>
+          <div className='col-md-12'>
             <Resizable>
               {this.chartWrapper()}
             </Resizable>

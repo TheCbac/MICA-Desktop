@@ -237,22 +237,26 @@ export default class CoilControl extends Component<propsT, stateT> {
               disabled={this.btnDisabled('pulse')}
               bsStyle={this.btnStyle('pulse')}
               onClick={() => this.pulseCoil()}
-            >Pulse</Button>
+            >Pulse
+            </Button>
             <Button
               disabled={this.btnDisabled('step')}
               bsStyle={this.btnStyle('step')}
               onClick={() => this.stepCoil()}
-            >Step</Button>
+            >Step
+            </Button>
             <Button
               disabled={this.btnDisabled('ramp')}
               bsStyle={this.btnStyle('ramp')}
               onClick={() => this.rampCoil()}
-            >Ramp</Button>
+            >Ramp
+            </Button>
             <Button
               disabled={this.btnDisabled('stochastic')}
               bsStyle={this.btnStyle('stochastic')}
               onClick={() => this.stochasticCoil()}
-            >Stochastic</Button>
+            >Stochastic
+            </Button>
           </ButtonToolbar>
         </Col>
       </div>

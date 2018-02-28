@@ -55,8 +55,7 @@ const deviceHandlers = {
       /* Check if it is advertising */
       if (device.state === 'advertising') {
         updatedState = update(updatedState,
-          { [id]: { state: { $set: 'disconnected' } } }
-        );
+          { [id]: { state: { $set: 'disconnected' } } });
       }
     }
     return updatedState;

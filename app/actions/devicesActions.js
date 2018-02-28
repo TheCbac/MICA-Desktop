@@ -16,7 +16,7 @@ import type { idType, deviceSettingsObjType,
   generatorParamType, newDeviceObjType,
   sensorListType, generatorListType,
   deviceRangeParamT, channelsT
- } from '../types/paramTypes';
+} from '../types/paramTypes';
 import type {
   foundDeviceActionType,
   clearAdvertisingActionType,

@@ -144,7 +144,7 @@ const logData = (terminalObj: terminalParsedObjT): subCommandFuncT => {
     binary,
     output
   };
-}
+};
 
 /* Generic function callback for communication subcommands */
 function logDataCallback(

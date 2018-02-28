@@ -150,7 +150,8 @@ export default class DevicesTable extends Component<propTypes, $FlowFixMeState> 
                 onClick={() => this.performDeviceAction(row.original.id)}
                 bsStyle={color}
                 style={this.getGlowStyle(row.original.id)}
-              >{text}</Button>
+              >{text}
+              </Button>
             </div>
           );
         }
@@ -160,13 +161,13 @@ export default class DevicesTable extends Component<propTypes, $FlowFixMeState> 
     return (
       <div>
         <ReactTable
-          name={'advertisingTable'}
+          name='advertisingTable'
           data={this.devicesToArray()}
           columns={devicesTableCols}
           minRows={3}
-          noDataText={'No devices found'}
+          noDataText='No devices found'
           showPagination={false}
-          className={'-striped -highlight'}
+          className='-striped -highlight'
           style={tableStyle}
           sortable
           defaultSorted={[{

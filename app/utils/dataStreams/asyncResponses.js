@@ -48,7 +48,6 @@ export function receiveAdvertisingPacket(advResponse: responsePacketT): void {
   const { success, error, packet } = parseAdvertisementPacket(advResponse.payload);
   if (!success && error) {
     logAsyncData(`Error: ${error}`);
-    return;
   } else if (success && packet) {
     logAsyncData(`${packet.advPacketData.localName} ${packet.peerAddr} ${packet.rssi} ${packet.peerAddrType}`);
   }

@@ -27,13 +27,11 @@ function setup(propsObj) {
     cancelPendingConnection: spy(),
     disconnectFromDevice: spy()
   };
-  const component = shallow(
-    <ScanBtn
-      devices={props.devices}
-      enabled={props.enabled}
-      {...actions}
-    />
-  );
+  const component = shallow(<ScanBtn
+    devices={props.devices}
+    enabled={props.enabled}
+    {...actions}
+  />);
   return {
     component,
     actions,

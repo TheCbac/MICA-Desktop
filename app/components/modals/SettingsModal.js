@@ -27,9 +27,9 @@ export default class SettingsModal extends Component<PropsType> {
     const { show, developer } = this.props;
     return (
       <div>
-        <Modal show={show} bsSize="large">
+        <Modal show={show} bsSize='large'>
           <Modal.Header>
-            <Modal.Title className={'text-center'}>USER SETTINGS</Modal.Title>
+            <Modal.Title className='text-center'>USER SETTINGS</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <h3>OPTIONS</h3>
@@ -40,7 +40,7 @@ export default class SettingsModal extends Component<PropsType> {
                   onChange={() => this.props.enableDeveloper(!developer)}
                 >
                 Enable Developer Tools
-              </Checkbox>
+                </Checkbox>
               </FormGroup>
               <h3>ACCOUNTS</h3>
               {'MICA Accounts are not supported at this time'}
@@ -49,7 +49,7 @@ export default class SettingsModal extends Component<PropsType> {
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button bsStyle="default" onClick={() => this.props.showUserSettings(false)}>CLOSE</Button>
+            <Button bsStyle='default' onClick={() => this.props.showUserSettings(false)}>CLOSE</Button>
           </Modal.Footer>
         </Modal>
       </div>

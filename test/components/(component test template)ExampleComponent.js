@@ -1,4 +1,4 @@
-//template for React component tests
+// template for React component tests
 
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 const rewire = rewire('rewire');
 const componentName = rewire('../../app/components/componentName');
 
-//Define variables
+// Define variables
 
 const var1 = componentName.__get__('var1');
 
@@ -48,7 +48,7 @@ describe('componentName', () => {
   });
   it('method1 does not throw an error', () => {
     const { method1 } = setup();
-    expect(componentName)
+    expect(componentName);
   });
   it('Does something different when props are set differently', () => {
     const { component } = setup();

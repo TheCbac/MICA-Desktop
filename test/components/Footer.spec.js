@@ -8,13 +8,13 @@
 * Author: George Whitfield
 * Date: 2017.07.27
 *
-**********************************************************/
+********************************************************* */
 
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import { __RewireAPI__ as Rewire } from '../../app/components/Footer';
 import Footer from '../../app/components/Footer';
- // The default export from Fotoer.js needs to be imported seperately or else Jest throws an error
+// The default export from Fotoer.js needs to be imported seperately or else Jest throws an error
 
 function setup() {
   const component = shallow(<Footer />);
@@ -45,7 +45,6 @@ describe('Footer test', () => {
       const img = component.find('img');
       expect(img.at(0)).toMatchSnapshot();
       expect(img.at(1)).toMatchSnapshot();
-
     });
     it('variables test', () => {
       expect(footerStyle).toMatchSnapshot();

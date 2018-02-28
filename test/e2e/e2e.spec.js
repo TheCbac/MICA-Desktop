@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 * Date: 2017.04.26
 *
-**********************************************************/
+********************************************************* */
 import { Application } from 'spectron';
 import electronPath from 'electron';
 import path from 'path';

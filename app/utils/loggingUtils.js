@@ -7,7 +7,7 @@
 * Author: Craig Cheney
 *
 * 2017.08.29 CC - Document created
-**********************************************************/
+********************************************************* */
 
 /* Wrapper function for logging  */
 function logMsg(...args: mixed[]): void {

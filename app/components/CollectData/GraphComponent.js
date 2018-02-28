@@ -71,12 +71,12 @@ const refreshPeriod = (1 / refreshRate) * sec2ms;
 const defaultAxis = (
   <YAxis
     key={0}
-    id="default"
-    label=""
+    id='default'
+    label=''
     min={-20}
     max={20}
-    width="70"
-    type="linear"
+    width='70'
+    type='linear'
   />
 );
 
@@ -127,8 +127,8 @@ function constructYAxis(
       label={`${sensor.name} [${sensor.units}]`}
       min={min}
       max={max}
-      width="70"
-      type="linear"
+      width='70'
+      type='linear'
       key={sensorCount}
     />
   );
@@ -153,7 +153,7 @@ function constructLegend(legendSensors) {
         <span>{name}</span>
         <Legend
           key={l}
-          type="line"
+          type='line'
           style={styler(legend.stylesList)}
           categories={legend.categoriesList}
         />
@@ -177,7 +177,7 @@ function constructLineCharts(
       axis={`${deviceId}-${sensorId}`}
       series={eventSeries}
       columns={channelNames}
-      interpolation="curveLinear"
+      interpolation='curveLinear'
       breakLine
       style={styler(style)}
     />
@@ -388,7 +388,7 @@ export default class GraphComponent extends Component<propsT, stateT> {
     /* Ensure there is always an axis */
     if (sensorCount === 0) {
       leftAxesList.push(defaultAxis);
-      chartList.push(<Baseline key={0} axis="default" value={0} />);
+      chartList.push(<Baseline key={0} axis='default' value={0} />);
     }
     /* Construct the legend */
     const legend = constructLegend(legendSensors);
@@ -415,14 +415,14 @@ export default class GraphComponent extends Component<propsT, stateT> {
           {legend}
         </Row>
         <hr />
-        <div className="row">
-          <div className="col-md-12">
+        <div className='row'>
+          <div className='col-md-12'>
             <Resizable>
               <ChartContainer
                 timeRange={timeRange}
                 enablePanZoom
               >
-                <ChartRow height="385">
+                <ChartRow height='385'>
                   {leftAxesList}
                   <Charts>
                     {chartList}

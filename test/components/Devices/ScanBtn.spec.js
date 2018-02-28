@@ -26,13 +26,11 @@ function setup(propsObj) {
   const actions = {
     startStopScan: spy()
   };
-  const component = shallow(
-    <ScanBtn
-      scanning={props.scanning}
-      enabled={props.enabled}
-      {...actions}
-    />
-  );
+  const component = shallow(<ScanBtn
+    scanning={props.scanning}
+    enabled={props.enabled}
+    {...actions}
+  />);
   return {
     component,
     actions,

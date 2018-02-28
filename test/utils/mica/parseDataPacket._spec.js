@@ -29,8 +29,8 @@ describe('parseDataPacket.js test', () => {
     packetTime.lastLogged = null;
     /* Modify packetTime for microseconds */
     packetTime.addMicroseconds = function (usec) {
-      let micro = usec + this.microsecond;
-      let millisecond = Math.floor(micro/1000);
+      const micro = usec + this.microsecond;
+      const millisecond = Math.floor(micro / 1000);
       this.setTime(this.getTime() + millisecond);
       this.microsecond = (micro % 1000);
       return this.microsecond;
@@ -41,7 +41,7 @@ describe('parseDataPacket.js test', () => {
     };
     /* returns the timestamp with microseconds */
     packetTime.getTimeMicro = function () {
-      return Number(this.getTime()+ "." + this.microsecond);
+      return Number(`${this.getTime()}.${this.microsecond}`);
     };
 
     return packetTime;
@@ -52,7 +52,7 @@ describe('parseDataPacket.js test', () => {
 
   // Fake data
   const peripheralId = 6;
-      // the data array is an array of 8 bit integers
+  // the data array is an array of 8 bit integers
   const data = [110, 209, 90, 88, 130, 77, 34, 102];
   const numChannels = 5;
   const periodLength = 24;
@@ -88,7 +88,7 @@ describe('parseDataPacket.js test', () => {
 
   const parseSpy = sinon.spy(parseRewire);
   describe('Test variables', () => {
-      // Set up spy functions before the tests.
+    // Set up spy functions before the tests.
     beforeAll(() => {
       Rewire.__set__({
         getValue: getValueSpy,
@@ -146,7 +146,7 @@ describe('parseDataPacket.js test', () => {
         scalingConstant,
         gain,
         offset
-        )).not.toThrow();
+      )).not.toThrow();
     });
     it('Returns the correct values in the dataArray', () => {
       expect(returnOfParse).toEqual([{

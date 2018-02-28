@@ -89,16 +89,16 @@ export default class ChangeDeviceName extends Component<propsT, stateT> {
     };
     return (
       <Col md={6} style={nameStyle}>
-        <Col md={10} mdOffset={1} style={titleStyle} className="text-center">
+        <Col md={10} mdOffset={1} style={titleStyle} className='text-center'>
           <h4>CHANGE DEVICE NAME</h4>
         </Col>
         <Row />
         <DeviceSelector devices={this.props.devices} deviceSelected={this.deviceSelected} />
         <Row />
         <Col md={8} mdOffset={2}>
-          <FormGroup controlId="formChangeName" validationState={this.nameValidation()}>
+          <FormGroup controlId='formChangeName' validationState={this.nameValidation()}>
             <ControlLabel>NEW NAME</ControlLabel>
-            <FormControl onChange={this.handleName} componentClass="textarea" placeholder="NAME" />
+            <FormControl onChange={this.handleName} componentClass='textarea' placeholder='NAME' />
           </FormGroup>
         </Col>
         <Row />
@@ -106,9 +106,10 @@ export default class ChangeDeviceName extends Component<propsT, stateT> {
           <ButtonToolbar>
             <Button
               disabled={this.submitDisabled()}
-              bsStyle="primary"
+              bsStyle='primary'
               onClick={this.changeName}
-            >SET NAME</Button>
+            >SET NAME
+            </Button>
           </ButtonToolbar>
         </Col>
       </Col>

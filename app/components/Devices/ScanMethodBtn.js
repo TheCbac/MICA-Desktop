@@ -43,17 +43,19 @@ export default class ScanMethodBtn extends Component<propsType> {
     return (
       <ButtonGroup>
         <Button
-          name={'bleMethodBtn'}
+          name='bleMethodBtn'
           active={this.isActive('ble')}
           bsStyle={this.getColor('ble')}
           onClick={() => this.props.changeScanMethod('ble')}
-        >BLE</Button>
+        >BLE
+        </Button>
         <Button
-          name={'usbMethodBtn'}
+          name='usbMethodBtn'
           active={this.isActive('usb')}
           bsStyle={this.getColor('usb')}
           onClick={() => this.props.changeScanMethod('usb')}
-        >USB</Button>
+        >USB
+        </Button>
       </ButtonGroup>
     );
   }

@@ -15,7 +15,7 @@ import { Grid, Col, Row } from 'react-bootstrap';
 let mitImagePath = '../resources/img/mitLogo.png';
 /* Set mitImagePath to new path */
 if (process.resourcesPath !== undefined) {
-  mitImagePath = (String(process.resourcesPath) + 'resources/img/mitLogo.png');
+  mitImagePath = (`${String(process.resourcesPath)}resources/img/mitLogo.png`);
   // mitImagePath = `${process.resourcesPath}resources/img/mitLogo.png`;
 }
 
@@ -40,11 +40,11 @@ const bilabLogoStyle = {
 export default class Footer extends Component<{}> {
   render() {
     return (
-      <Grid className="Footer" style={footerStyle} fluid>
+      <Grid className='Footer' style={footerStyle} fluid>
         <Row>
-          <Col xs={4}><img src={'../resources/img/mitLogo.png' || mitImagePath} style={mitLogoStyle} alt="MICA" /></Col>
+          <Col xs={4}><img src={'../resources/img/mitLogo.png' || mitImagePath} style={mitLogoStyle} alt='MICA' /></Col>
           <Col xs={4}>The MICA Group &copy; 2017</Col>
-          <Col xs={4}><img src={'../resources/img/bilabLogo_white.png'} style={bilabLogoStyle} alt="BioInstrumentation Lab" /></Col>
+          <Col xs={4}><img src='../resources/img/bilabLogo_white.png' style={bilabLogoStyle} alt='BioInstrumentation Lab' /></Col>
         </Row>
       </Grid>
     );

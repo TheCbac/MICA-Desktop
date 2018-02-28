@@ -164,7 +164,7 @@ export default merge.smart(baseConfig, {
       'babel-polyfill',
       ...Object.keys(dependencies)
     ]
-    .filter(dependency => dependency !== 'font-awesome'),
+      .filter(dependency => dependency !== 'font-awesome'),
   },
 
   output: {

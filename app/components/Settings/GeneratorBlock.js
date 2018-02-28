@@ -157,7 +157,7 @@ export default class GeneratorBlock extends Component<PropsType, StateType> {
       <div>
         <Row />
         <Col md={5} xs={5} mdOffset={0} style={sensorStyle}>
-          <FontAwesome className={'hoverGlow'} style={this.caretStyle()} name={'angle-right'} size={'lg'} onClick={() => this.toggleOpen()} />
+          <FontAwesome className='hoverGlow' style={this.caretStyle()} name='angle-right' size='lg' onClick={() => this.toggleOpen()} />
           <span style={this.nameStyle()}> {name}</span>
           {/* <FontAwesome
           style={{ fontSize: '14px', verticalAlign: 'middle' }}
@@ -168,8 +168,8 @@ export default class GeneratorBlock extends Component<PropsType, StateType> {
           <hr style={{ borderColor: 'black', marginTop: '15px' }} />
         </Col>
         <Col md={1} xs={1} mdOffset={0} style={sensorStyle}>
-          <span className={'pull-right'} style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
-            <FontAwesome className={'pull-right hoverGlow'} onClick={() => this.toggleGeneratorPower()} style={this.powerBtnStyle()} name={'power-off'} size={'lg'} />
+          <span className='pull-right' style={{ verticalAlign: 'middle', marginTop: '.375em' }}>
+            <FontAwesome className='pull-right hoverGlow' onClick={() => this.toggleGeneratorPower()} style={this.powerBtnStyle()} name='power-off' size='lg' />
           </span>
         </Col>
         <Row />
