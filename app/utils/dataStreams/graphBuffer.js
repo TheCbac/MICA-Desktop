@@ -29,7 +29,7 @@ const dataObj: multiDeviceDataObjT = {};
 
 /* Check the data obj for a key, creates an empty device if it doesn't exist */
 export function getDeviceObj(deviceId: idType): deviceObjT {
- /* Make sure the dataArray exists */
+  /* Make sure the dataArray exists */
   if (Object.keys(dataObj).indexOf(deviceId) < 0) {
     const time = new Date().getTime();
     /* Create the object */

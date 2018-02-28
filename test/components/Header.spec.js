@@ -21,12 +21,10 @@ function setup(developer = false) {
   const actions = {
     showUserSettings: spy()
   };
-  const component = shallow(
-    <Header
-      developer={developer}
-      showUserSettings={actions.showUserSettings}
-    />
-  );
+  const component = shallow(<Header
+    developer={developer}
+    showUserSettings={actions.showUserSettings}
+  />);
   return {
     component,
     actions

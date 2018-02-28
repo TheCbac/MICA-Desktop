@@ -16,7 +16,7 @@ import React, { Component } from 'react';
 import {
   Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline,
   styler, Resizable, BarChart, ScatterChart, Legend
- } from 'react-timeseries-charts';
+} from 'react-timeseries-charts';
 import { TimeSeries, TimeEvent, TimeRange, Pipeline, percentile, EventOut, Stream } from 'pondjs';
 import RingBuffer from 'ringbufferjs';
 import type { collectionStateType } from '../../types/stateTypes';
@@ -81,17 +81,17 @@ export default class GraphComponent extends Component<propsType, stateType> {
       });
     /* Pipeline for th 90 %  */
     Pipeline()
-    .from(this.stream)
-    .windowBy('5m')
-    .emitOn('discard')
-    .aggregate({
-      value: { value: percentile(90) }
-    })
-    .to(EventOut, event => {
-      const events = this.state.percentile90Out;
-      events.enq(event);
-      this.setState({ percentile90Out: events });
-    });
+      .from(this.stream)
+      .windowBy('5m')
+      .emitOn('discard')
+      .aggregate({
+        value: { value: percentile(90) }
+      })
+      .to(EventOut, event => {
+        const events = this.state.percentile90Out;
+        events.enq(event);
+        this.setState({ percentile90Out: events });
+      });
 
     /* Simulate events */
     this.interval = setInterval(
@@ -165,18 +165,18 @@ export default class GraphComponent extends Component<propsType, stateType> {
     const charts = (
       <Charts>
         <BarChart
-          axis="y"
+          axis='y'
           series={perc90Series}
           style={fiveMinuteStyle}
           column={['value']}
         />
         <BarChart
-          axis="y"
+          axis='y'
           series={perc50Series}
           style={fiveMinuteStyle}
           column={['value']}
         />
-        <ScatterChart axis="y" series={eventSeries} style={scatterStyle} />
+        <ScatterChart axis='y' series={eventSeries} style={scatterStyle} />
       </Charts>
     );
     /* Styler */
@@ -195,10 +195,10 @@ export default class GraphComponent extends Component<propsType, stateType> {
 
     return (
       <div style={{ backgroundColor: '#E0E5E8' }}>
-        <div className="row">
-          <div className="col-md-4">
+        <div className='row'>
+          <div className='col-md-4'>
             <Legend
-              type="swatch"
+              type='swatch'
               style={style}
               categories={[
                 {
@@ -214,23 +214,23 @@ export default class GraphComponent extends Component<propsType, stateType> {
               ]}
             />
           </div>
-          <div className="col-md-8">
+          <div className='col-md-8'>
             <span style={dateStyle}>{latestTime}</span>
           </div>
         </div>
         <hr />
-        <div className="row">
-          <div className="col-md-12">
+        <div className='row'>
+          <div className='col-md-12'>
             <Resizable>
               <ChartContainer timeRange={timeRange}>
-                <ChartRow height="385">
+                <ChartRow height='385'>
                   <YAxis
-                    id="y"
-                    label="Value"
+                    id='y'
+                    label='Value'
                     min={0}
                     max={1500}
-                    width="70"
-                    type="linear"
+                    width='70'
+                    type='linear'
                   />
                   {charts}
                 </ChartRow>

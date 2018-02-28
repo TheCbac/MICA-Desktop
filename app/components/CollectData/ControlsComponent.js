@@ -81,7 +81,7 @@ export default class ControlsComponent extends Component<propsType> {
     };
     return (
       <div style={boxStyle}>
-        <div className="text-center" style={{ fontSize: '1.5em' }}>Controls</div>
+        <div className='text-center' style={{ fontSize: '1.5em' }}>Controls</div>
         <Row />
         <div>
           {this.getGeneratorControls()}

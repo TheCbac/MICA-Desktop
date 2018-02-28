@@ -209,7 +209,8 @@ function nobleReadMetadata(
     const char = metadataChars[i];
     /* Read from the device */
     const { success, error } = nobleReadCharacteristic(
-      device.id, char, readMetadataCallback);
+      device.id, char, readMetadataCallback
+    );
     if (!success) {
       result = { success, error, payload: { charUuid: char } };
     }
@@ -270,7 +271,7 @@ Noble.on('stateChange', (state: string) => {
     enabled = true;
   }
   log.verbose('Noble state:', state);
-/* Dispatch the action */
+  /* Dispatch the action */
   store.dispatch(enableScanMethod('ble', enabled));
 });
 

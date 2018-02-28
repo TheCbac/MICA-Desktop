@@ -24,11 +24,11 @@ export default () => (
     <App>
       <AppModalContainer />
       <Switch>
-        <Route path="/collect" component={CollectDataContainer} />
-        <Route path="/settings" component={SettingsContainer} />
-        <Route path="/analyze" component={AnalysisContainer} />
-        <Route path="/developer" component={DeveloperContainer} />
-        <Route path="/" component={DevicesContainer} />
+        <Route path='/collect' component={CollectDataContainer} />
+        <Route path='/settings' component={SettingsContainer} />
+        <Route path='/analyze' component={AnalysisContainer} />
+        <Route path='/developer' component={DeveloperContainer} />
+        <Route path='/' component={DevicesContainer} />
       </Switch>
     </App>
   </Router>

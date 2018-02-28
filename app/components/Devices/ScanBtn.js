@@ -35,16 +35,17 @@ export default class ScanBtn extends Component<propsType> {
   /* Render function */
   render() {
     const scanBtnStyle = { marginLeft: '20px' };
-    const spinner = this.props.scanning ? <FontAwesome name={'spinner'} pulse /> : null;
+    const spinner = this.props.scanning ? <FontAwesome name='spinner' pulse /> : null;
     return (
       <ButtonGroup >
         <Button
-          name={'scanBtn'}
+          name='scanBtn'
           style={scanBtnStyle}
           bsStyle={this.getScanState().color}
           disabled={!this.props.enabled}
           onClick={() => this.props.startStopScan()}
-        >{this.getScanState().text} Scan {spinner}</Button>
+        >{this.getScanState().text} Scan {spinner}
+        </Button>
       </ButtonGroup>
     );
   }

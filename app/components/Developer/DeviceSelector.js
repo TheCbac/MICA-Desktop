@@ -54,7 +54,7 @@ export default class DeviceSelector extends Component<propsT> {
     }
     /* provide a default */
     if (!selectionArray.length) {
-      return (<option value="noDevices">NO DEVICES</option>);
+      return (<option value='noDevices'>NO DEVICES</option>);
     }
     return selectionArray;
   }
@@ -66,9 +66,9 @@ export default class DeviceSelector extends Component<propsT> {
   render() {
     return (
       <Col md={8} mdOffset={2} style={{ marginTop: '5px' }}>
-        <FormGroup controlId="formDeviceName">
+        <FormGroup controlId='formDeviceName'>
           <ControlLabel>DEVICE</ControlLabel>
-          <FormControl componentClass="select" onChange={this.handleSelection}>
+          <FormControl componentClass='select' onChange={this.handleSelection}>
             {this.getDeviceSelection()}
           </FormControl>
         </FormGroup>

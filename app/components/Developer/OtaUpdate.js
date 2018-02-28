@@ -117,19 +117,19 @@ export default class OtaUpdate extends Component<propsT, stateT> {
 
     return (
       <Col md={6} style={nameStyle}>
-        <Col md={12} mdOffset={0} style={titleStyle} className="text-center">
+        <Col md={12} mdOffset={0} style={titleStyle} className='text-center'>
           <h4>UPDATE DEVICE FIRMWARE</h4>
         </Col>
         <Row />
         <DeviceSelector devices={this.props.devices} deviceSelected={this.deviceSelected} />
         <Row />
         <Col md={12} mdOffset={0}>
-          <FormGroup controlId="formChangeName">
+          <FormGroup controlId='formChangeName'>
             <InputGroup>
               <FormControl
-                type="text"
+                type='text'
                 style={{ fontSize: '0.9em' }}
-                placeholder="HEX.CYACD"
+                placeholder='HEX.CYACD'
                 onChange={this.handleNameInput}
                 value={this.displayShortFileName()}
                 onFocus={() => this.setState({ fileNameFocus: true })}
@@ -138,9 +138,10 @@ export default class OtaUpdate extends Component<propsT, stateT> {
               />
               <InputGroup.Button>
                 <Button
-                  id="updateFirmwareBtn"
+                  id='updateFirmwareBtn'
                   onClick={this.showSelectFileDialog}
-                >Select File</Button>
+                >Select File
+                </Button>
               </InputGroup.Button>
             </InputGroup>
           </FormGroup>
@@ -149,10 +150,11 @@ export default class OtaUpdate extends Component<propsT, stateT> {
         <Col md={4} mdOffset={2}>
           <ButtonToolbar>
             <Button
-              bsStyle="primary"
+              bsStyle='primary'
               onClick={this.updateFirmware}
               disabled={this.updateBtnDisableState()}
-            >UPDATE FIRMWARE</Button>
+            >UPDATE FIRMWARE
+            </Button>
           </ButtonToolbar>
         </Col>
       </Col>

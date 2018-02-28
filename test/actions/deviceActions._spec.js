@@ -1,5 +1,5 @@
 // @flow
-/* eslint no-unused-vars: ["error", { "args": "none" }]*/
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
 /* **********************************************************
 * File: test/reducers/deviceActions.spec.js
 *
@@ -7,7 +7,7 @@
 * Author: George Whitfield
 * Date: 2017.07.25
 *
-**********************************************************/
+********************************************************* */
 
 import { foundAdvertisingDevice, clearAdvertisingList } from '../../app/actions/devicesActions';
 import noblePeripheralType from '../../app/types/paramTypes';

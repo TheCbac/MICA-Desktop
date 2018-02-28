@@ -10,7 +10,7 @@
 * Author: George Whitfield
 * Date: 2017.08.09
 *
-**********************************************************/
+********************************************************* */
 import sinon from 'sinon';
 import { __RewireAPI__ as Rewire } from './frecencyBarAlgorithm';
 import * as frecencyAlgorithm from './frecencyBarAlgorithm';
@@ -33,16 +33,16 @@ Rewire.__set__('formatArray', formatArraySpy);
 Rewire.__set__('sortThings', sortThingsSpy);
 describe('Frecency bar algorithm', () => {
   // const thingsArray = Rewire.__get__('thingsArray');
-  
+
   function getNewThingsArray() {
     /* Generate the array of scoreObjects */
     frecencyAlgorithm.formatArray();
     /* Simulate clicks on each object and update scores */
-    
+
     const arrayOfNewScores = [];
     let i;
     let q;
-    
+
     for (i = 0; i < thingsArray.length; i++) { // iterate through every object in thingsArray
       for (q = 0; q < arrayOfClicks[i]; q++) {
         // call the updateScore number of times indicated at arrayOfClicks at i
@@ -62,7 +62,7 @@ describe('Frecency bar algorithm', () => {
     expect(currentScoreSpy.callCount).toBe(10);
     let i;
     for (i = 0; i < namesArray.length; i++) {
-      expect(frecencyAlgorithm.thingsArray[i].name).toBe('thing' + (i + 1));
+      expect(frecencyAlgorithm.thingsArray[i].name).toBe(`thing${i + 1}`);
       expect(frecencyAlgorithm.thingsArray[i].name).toEqual(namesArray[i]);
     }
   });

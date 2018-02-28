@@ -30,13 +30,13 @@ export default class ZeroBtn extends Component<propsT> {
       <div>
         <ButtonToolbar>
           <Col md={4} xs={4}>
-            <label htmlFor="zeroBtn">Zero:</label>
+            <label htmlFor='zeroBtn'>Zero:</label>
           </Col>
           <Row />
           <Col md={12} xs={12}>
             <ButtonGroup
-              id="zeroBtn"
-              bsSize="small"
+              id='zeroBtn'
+              bsSize='small'
               onClick={() => this.props.zeroSensor(this.props.deviceId, this.props.sensorId)}
             >
               <Button>Zero</Button>

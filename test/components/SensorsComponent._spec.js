@@ -7,7 +7,7 @@
 * Author: George Whitfield
 * Date: 2017.08.18
 *
-**********************************************************/
+********************************************************* */
 import * as React from 'react';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';

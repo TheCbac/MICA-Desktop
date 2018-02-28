@@ -83,12 +83,12 @@ export default class ParamSelector extends Component<propsType, stateType> {
       <div>
         <ButtonToolbar>
           <Col md={12} xs={12}>
-            <label htmlFor="settings">{this.getParam('display')}:</label>
+            <label htmlFor='settings'>{this.getParam('display')}:</label>
           </Col>
           <Row />
           <Col md={12} xs={12}>
             <ToggleButtonGroup
-              bsSize="small"
+              bsSize='small'
               type={this.getParam('btnType')}
               name={this.props.paramName}
               value={this.state.value}

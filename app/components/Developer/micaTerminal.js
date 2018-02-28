@@ -127,9 +127,9 @@ export default class MicaTerminal extends Component<propsT, terminalStateT> {
       width: '100%',
     };
     return (
-      <div id="micaTerminal" style={terminalDivStyle}>
+      <div id='micaTerminal' style={terminalDivStyle}>
         <textarea
-          id="terminalId"
+          id='terminalId'
           ref={(input) => { this.textInput = input; }}
           onMouseDown={this.handleClick}
           style={terminalStyle}
