@@ -86,9 +86,16 @@ export default class settingsPage extends Component<propsType> {
     }
     /* Display empty text */
     if (deviceBlockList.length === 0) {
+      const style = {
+        backgroundColor: '#D1CAC8',
+        borderRadius: '5px',
+        marginTop: '10px',
+        minHeight: '75px',
+        textAlign: 'center'
+      };
       deviceBlockList.push(
-        <div>
-          No Devices connected
+        <div style={style}>
+          <i >NO DEVICES CONNECTED</i>
         </div>
       );
     }
