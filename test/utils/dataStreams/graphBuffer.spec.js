@@ -22,7 +22,8 @@ import {
   getDataLength,
   getLastDataPointsDecimated,
   getDataSeries,
-  getFullDataObj
+  getFullDataObj,
+  getDataObjById
 } from '../../../app/utils/dataStreams/graphBuffer';
 import { deviceIdFactory } from '../../factories/factories';
 import { accDataFactory } from '../../factories/dataFactories';
@@ -31,6 +32,8 @@ import type { deviceObjT } from '../../../app/utils/dataStreams/graphBuffer';
 /* Global IDs of devices */
 const deviceId1 = deviceIdFactory();
 const deviceId2 = deviceIdFactory();
+const deviceId3 = deviceIdFactory();
+
 /* Test Suite */
 describe('graphBuffer.spec.js', () => {
   describe('getDeviceObj', () => {
@@ -277,6 +280,43 @@ describe('graphBuffer.spec.js', () => {
         // for (let j = 0; j < data.length; j++) {
         //   expect(dataReturned1[j]).toEqual(data[j]);
         // }
+      });
+    });
+    describe('getDataObjById', () => {
+      it('should return dataObjs for only the ids request', () => {
+        /* Create the dummy data */
+        const data1 = [];
+        const startTime1 = getStartTime(deviceId1);
+        for (let i = 0; i < 11; i++) {
+          data1.push(accDataFactory(['x'], startTime1 + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId1, data1)).toEqual(11);
+        /* Create the dummy data */
+        const data2 = [];
+        const startTime2 = getStartTime(deviceId2);
+        for (let i = 0; i < 11; i++) {
+          data2.push(accDataFactory(['x'], startTime2 + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId2, data2)).toEqual(11);
+        /* Create the dummy data 3 */
+        const data3 = [];
+        const startTime3 = getStartTime(deviceId3);
+        for (let i = 0; i < 11; i++) {
+          data3.push(accDataFactory(['x'], startTime3 + i));
+        }
+        /* Log the dummy data */
+        expect(logDataPoints(deviceId3, data3)).toEqual(11);
+
+        /* Retrieve part of the data */
+        const reqIds = [deviceId2, deviceId3];
+        const dataById = getDataObjById(reqIds);
+        /* Expect to get back keys for those requested */
+        expect(Object.keys(dataById)).toEqual(reqIds);
+        /* Check that the object match */
+        expect(dataById[deviceId2].data).toEqual(data2);
+        expect(dataById[deviceId3].data).toEqual(data3);
       });
     });
   });

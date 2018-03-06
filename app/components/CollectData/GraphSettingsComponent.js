@@ -16,7 +16,7 @@ import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import { remote } from 'electron';
-import { getFullDataObj } from '../../utils/dataStreams/graphBuffer';
+import { getDataObjById } from '../../utils/dataStreams/graphBuffer';
 import { saveCsv } from '../../utils/dataStreams/data2csv';
 import type { thunkType } from '../../types/functionTypes';
 import type {
@@ -54,7 +54,9 @@ export default class GraphSettings extends Component<propsType, stateType> {
     };
     remote.dialog.showSaveDialog(options, (filePath?: string) => {
       if (filePath) {
-        saveCsv(filePath, this.props.devices, getFullDataObj());
+        const { devices } = this.props;
+        const runDataObj = getDataObjById(Object.keys(devices));
+        saveCsv(filePath, devices, runDataObj);
       }
     });
   }
