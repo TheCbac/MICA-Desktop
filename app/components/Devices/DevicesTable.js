@@ -36,7 +36,7 @@ type connectBtnStyleType = {
   color: string
 };
 
-export default class DevicesTable extends Component<propTypes, $FlowFixMeState> {
+export default class DevicesTable extends Component<propTypes> {
   /* Convert the Devices to an array */
   devicesToArray() {
     const deviceList = [];
