@@ -19,8 +19,20 @@ import {
 } from '../actions/collectionActions';
 
 function mapStateToProps(state) {
+  const devices = {};
+  if (state.devices) {
+    const deviceIds = Object.keys(state.devices);
+    /* Only use active and connected devices */
+    for (let i = 0; i < deviceIds.length; i++) {
+      const id = deviceIds[i];
+      if (state.devices[id].state === 'connected' && state.devices[id].active) {
+        devices[id] = state.devices[id];
+      }
+    }
+  }
   return {
-    devices: state.devices,
+    // devices: state.devices,
+    devices,
     collectionSettings: state.collection
   };
 }

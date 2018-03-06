@@ -147,7 +147,7 @@ export function getLastDataPointsDecimated(
   const decimate = decimation || 1;
   const returnArray = [];
   const dataArray = deviceObj.data;
-  const length = dataArray.length;
+  const { length } = dataArray;
   if (length) {
     /* Determine max number of elements able to return */
     const maxNum = (Math.ceil(length / decimate));
@@ -174,6 +174,18 @@ export function getDataSeries(id: idType): TimeEvent[] {
 /* Returns the entire data object - useful when saving data */
 export function getFullDataObj(): multiDeviceDataObjT {
   return dataObj;
+}
+
+/* Returns the data object for the Ids passed in */
+export function getDataObjById(ids: idType[]): multiDeviceDataObjT {
+  const dataByIdObj = {};
+  /* Get all of the data objects passed in */
+  for (let i = 0; i < ids.length; i++) {
+    const deviceId = ids[i];
+    dataByIdObj[deviceId] = dataObj[deviceId];
+  }
+  /* Return the data obj for ids requested */
+  return dataByIdObj;
 }
 // /* Saves the current list of events in the buffer to the specified location */
 // export function saveLastRun(path: string): void {

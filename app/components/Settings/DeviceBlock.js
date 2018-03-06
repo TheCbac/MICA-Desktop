@@ -55,8 +55,7 @@ type propsType = {
 };
 
 type stateType = {
-  open: boolean,
-  active: boolean
+  open: boolean
 };
 
 export default class Device extends Component<propsType, stateType> {
@@ -65,8 +64,7 @@ export default class Device extends Component<propsType, stateType> {
     super(props);
     /* Set the default state */
     this.state = {
-      open: true,
-      active: true
+      open: props.device.active,
     };
   }
   /* Get the Settings for the devices */
@@ -145,7 +143,7 @@ export default class Device extends Component<propsType, stateType> {
       color: 'black',
       textShadow: ''
     };
-    if (this.state.active) {
+    if (this.props.device.active) {
       style.transform = '';
       style.textShadow = 'white 0 0 20px';
       style.color = 'white';
@@ -160,7 +158,7 @@ export default class Device extends Component<propsType, stateType> {
       color: 'Black',
       textShadow: ''
     };
-    if (this.state.active) {
+    if (this.props.device.active) {
       style.color = 'white';
       style.textShadow = 'white 0 0 20px';
     }
@@ -168,13 +166,13 @@ export default class Device extends Component<propsType, stateType> {
   }
   /* Toggle sensor power */
   toggleSensorPower() {
-    const newActive = !this.state.active;
+    const newActive = !this.props.device.active;
     this.props.setDeviceActive(
       this.props.id,
       newActive
     );
     /* Toggle the state of the component and open/close the settings list */
-    this.setState({ active: newActive, open: newActive });
+    this.setState({ open: newActive });
   }
   /* Style of the background box */
   deviceBoxStyle() {

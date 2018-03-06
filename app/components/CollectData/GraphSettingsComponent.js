@@ -16,7 +16,7 @@ import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 import ToggleButtonGroup from 'react-bootstrap/lib/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/lib/ToggleButton';
 import { remote } from 'electron';
-import { getFullDataObj } from '../../utils/dataStreams/graphBuffer';
+import { getDataObjById } from '../../utils/dataStreams/graphBuffer';
 import { saveCsv } from '../../utils/dataStreams/data2csv';
 import type { thunkType } from '../../types/functionTypes';
 import type {
@@ -54,7 +54,9 @@ export default class GraphSettings extends Component<propsType, stateType> {
     };
     remote.dialog.showSaveDialog(options, (filePath?: string) => {
       if (filePath) {
-        saveCsv(filePath, this.props.devices, getFullDataObj());
+        const { devices } = this.props;
+        const runDataObj = getDataObjById(Object.keys(devices));
+        saveCsv(filePath, devices, runDataObj);
       }
     });
   }
@@ -65,11 +67,14 @@ export default class GraphSettings extends Component<propsType, stateType> {
     let nextState = 'STOP';
     let btnStyle = 'danger';
     let clickHandler = this.props.stopCollecting;
+    let disabled = false;
     /* If not running */
     if (!collecting) {
       nextState = 'START';
       btnStyle = 'success';
       clickHandler = this.props.startCollecting;
+      /* Ensure there are active devices */
+      disabled = !Object.keys(this.props.devices).length;
     }
     /* Return the button */
     return (
@@ -77,6 +82,7 @@ export default class GraphSettings extends Component<propsType, stateType> {
         <Button
           block
           bsStyle={btnStyle}
+          disabled={disabled}
           onClick={() => clickHandler()}
         >
           {nextState} COLLECTING
@@ -133,15 +139,17 @@ export default class GraphSettings extends Component<propsType, stateType> {
         {this.startStopGraphButton()}
         <Row />
         <Col xs={6} className='text-center' style={{ marginTop: '10px' }}>
-          <Button block bsStyle='warning'>PAUSE DISPLAY</Button>
+          <Button disabled block bsStyle='warning'>PAUSE DISPLAY</Button>
         </Col>
         <Col xs={6} className='text-center' style={{ marginTop: '10px' }}>
           <Button block bsStyle='primary' onClick={() => this.saveDialog()}>SAVE RUN</Button>
         </Col>
         <Row />
+        {/*
         <Col xs={12} style={{ position: 'absolute', bottom: '25px' }}>
           Last run saved: /tmp/mica/2017.8.24-1359.csv
         </Col>
+        */}
       </div>
     );
   }
