@@ -15,7 +15,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DevicesPage from '../components/Devices/DevicesPage';
 import {
-  changeScanMethod,
+  changeScanMethodAsync,
   startStopScan,
   connectToDevice,
   cancelPendingConnection,
@@ -34,7 +34,7 @@ function mapStateToProps(state: stateType) {
 }
 /* Action creators to be used in the component */
 const mapDispatchToProps = (dispatcher: *) => bindActionCreators({
-  changeScanMethod,
+  changeScanMethod: changeScanMethodAsync,
   startStopScan,
   connectToDevice,
   cancelPendingConnection,

@@ -15,7 +15,7 @@ import type {
   changeScanActionType,
   scanStateActionType,
 } from '../types/actionTypes';
-import { Noble } from '../utils/nativeModules';
+import { Noble, Serialport } from '../utils/nativeModules';
 import log from '../utils/loggingUtils';
 import store from '../index';
 import {
@@ -30,24 +30,40 @@ import {
 import { bleStartScan, bleStopScan, bleConnect,
   bleCancelPending, bleDisconnect, bleInitializeDevice } from '../utils/BLE/bleFunctions';
 import type { thunkType } from '../types/functionTypes';
-
+import { isMicaSerialDevice } from '../utils/Developer/SerialCommands';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
 log.debug('ScanForDevicesActions.js logging level set to:', log.debugLevel);
+
+// Store the open USB 
+let openPort = null;
 
 /* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
 
+export function changeScanMethodAsync(method: scanTypes): thunkType {
+    /* Return a function for redux thunk */
+    return async (dispatch: () => void, getState: () => stateType): void => {
+        /* Check the state on switch */
+      let enable = false;
+      if (method === 'ble') {
+        enable = Noble.state === 'poweredOn';
+        /* Close any open ports */
+        closeMicaPort();
+        /* See if there is a valid MICA USB port */
+      } else if (method === 'usb'){
+        const err = await getMicaUsb();
+        enable = err;
+      }
+      dispatch(changeScanMethod(method, enable));
+    }
+}
+
 /* Action method for changing active method */
-export function changeScanMethod(method: scanTypes): changeScanActionType {
-  /* Check the state on switch */
-  let enable = false;
-  if (method === 'ble') {
-    enable = Noble.state === 'poweredOn';
-  }
+export function changeScanMethod(method: scanTypes, enable: boolean): changeScanActionType {
   return {
     type: CHANGE_SCAN_METHOD,
     payload: {
@@ -56,6 +72,58 @@ export function changeScanMethod(method: scanTypes): changeScanActionType {
     }
   };
 }
+
+
+/* List all of the device */
+async function getMicaUsb(): Promise<boolean> {
+  const serialList = await Serialport.list();
+  let i;
+  let err = true;
+  console.log(serialList);
+  for(i = 0; i<serialList.length; i++){
+    const portInstance = serialList[i];
+    const { comName, productId, vendorId } = portInstance;
+    if(isMicaSerialDevice(productId, vendorId)){
+      const baudRate = 115200;
+      err = await openMicaPort(comName, baudRate);
+      break;
+    }
+  }
+  return new Promise((resolve, reject) => {
+    if(err){
+      resolve(false);
+    }
+    resolve(true)
+  })
+}
+
+/* Open a serial port */
+async function openMicaPort(portName: string, baudRate: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const port = new Serialport(portName, { baudRate }, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        openPort = port;
+        // resolve(`Successfully opened ${portName}`);
+        resolve('');
+      }
+    });
+  });
+}
+
+function closeMicaPort(){
+  if(openPort){
+    openPort.close((err)=> {
+      if(err){
+        console.log("Error closing port");
+      } else {
+        openPort = null;
+      }
+    })
+  }
+}
+
 /* Enable the currently selected scanning method */
 export function enableScanMethod(method: scanTypes, enable: boolean): enableScanActionType {
   return {
