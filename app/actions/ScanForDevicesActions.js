@@ -107,7 +107,7 @@ async function getMicaUsb(dispatch: ()=> void, getState: () => stateType): void{
   }
 }
 
-
+/* Close the cached usb device */
 function closeMicaPort(){
   if(openPort){
     openPort.close((err)=> {
@@ -154,7 +154,11 @@ export function startStopScan(): thunkType {
       if (!scanning) {
         const startResult = bleStartScan(method);
         /* Clear the advertising list */
-        if (startResult.success) { dispatch(clearAdvertisingList()); }
+        if (startResult.success) {
+          dispatch(clearAdvertisingList());
+        } else {
+          console.log(startResult.error)
+        }
         /* Callbacks determine when the scan state itself is changed */
       } else {
         /* Stop the scan */

@@ -9,6 +9,7 @@
 *
 * 2017.09.25 CC - Document created
 ********************************************************* */
+import type { bleApiResultType } from '../../types/bleTypes';
 
 /* Placeholder until usb functions are written */
 export function usbPlaceholder(): bleApiResultType {
