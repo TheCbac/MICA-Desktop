@@ -31,34 +31,35 @@ import { bleStartScan, bleStopScan, bleConnect,
   bleCancelPending, bleDisconnect, bleInitializeDevice } from '../utils/BLE/bleFunctions';
 import type { thunkType } from '../types/functionTypes';
 import { isMicaSerialDevice } from '../utils/Developer/SerialCommands';
+import { setPort, removePort, getPort } from 'micaUsb';
+// import { setPort, removePort, getPort } from '../node_modules/micaUsb/src/micaUsb';
+
 
 /* Set the file debug level */
 // log.debugLevel = 5;
 log.debug('ScanForDevicesActions.js logging level set to:', log.debugLevel);
-
-// Store the open USB 
-let openPort = null;
 
 /* Action names */
 export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
 
+
 export function changeScanMethodAsync(method: scanTypes): thunkType {
-    /* Return a function for redux thunk */
-    return async (dispatch: () => void, getState: () => stateType): void => {
-        /* Check the state on switch */
-      let enable = false;
-      if (method === 'ble') {
-        enable = Noble.state === 'poweredOn';
-        /* Close any open ports */
-        closeMicaPort();
-        /* See if there is a valid MICA USB port */
-      } else if (method === 'usb'){
-        getMicaUsb(dispatch, getState);
-      }
-      dispatch(changeScanMethod(method, enable));
+  /* Return a function for redux thunk */
+  return async (dispatch: () => void, getState: () => stateType): void => {
+    /* Check the state on switch */
+    let enable = false;
+    if (method === 'ble') {
+      enable = Noble.state === 'poweredOn';
+      /* Close any open ports */
+      closeMicaPort();
+      /* See if there is a valid MICA USB port */
+    } else if (method === 'usb') {
+      getMicaUsb(dispatch, getState);
     }
+    dispatch(changeScanMethod(method, enable));
+  };
 }
 
 /* Action method for changing active method */
@@ -74,30 +75,29 @@ export function changeScanMethod(method: scanTypes, enable: boolean): changeScan
 
 
 /* List all of the device */
-async function getMicaUsb(dispatch: ()=> void, getState: () => stateType): void{
+async function getMicaUsb(dispatch: ()=> void, getState: () => stateType): void {
   const serialList = await Serialport.list();
   let i;
-  let err = true;
-  for(i = 0; i<serialList.length; i++){
+  for (i = 0; i < serialList.length; i++) {
     const portInstance = serialList[i];
     const { comName, productId, vendorId } = portInstance;
-    if(isMicaSerialDevice(productId, vendorId)){
+    if (isMicaSerialDevice(productId, vendorId)) {
       const baudRate = 115200;
       /* Open the USB port if it isn't already open */
-      if(!portInstance.isOpen) {
-        const newPort = new Serialport(comName, { baudRate }, (err) =>{
-          if(!err){
-            openPort = newPort;
+      if (!portInstance.isOpen) {
+        const newPort = new Serialport(comName, { baudRate }, (err) => {
+          if (!err) {
+            setPort(newPort);
             const { scanForDevices: { method } } = getState();
-            if(method === 'usb'){
+            if (method === 'usb') {
               /* On successful open, enable the USB device */
               dispatch(changeScanMethod('usb', true));
             }
           }
         });
-        newPort.on('close', ()=>{
+        newPort.on('close', () => {
           const { scanForDevices: { method } } = getState();
-          if(method === 'usb'){
+          if (method === 'usb') {
             dispatch(changeScanMethod('usb', false));
           }
         });
@@ -108,15 +108,16 @@ async function getMicaUsb(dispatch: ()=> void, getState: () => stateType): void{
 }
 
 /* Close the cached usb device */
-function closeMicaPort(){
-  if(openPort){
-    openPort.close((err)=> {
-      if(err){
-        console.log("Error closing port");
+function closeMicaPort() {
+  const port = getPort();
+  if (port && port.isOpen) {
+    port.close((err) => {
+      if (err) {
+        console.log('Error closing port');
       } else {
-        openPort = null;
+        removePort();
       }
-    })
+    });
   }
 }
 
@@ -157,7 +158,7 @@ export function startStopScan(): thunkType {
         if (startResult.success) {
           dispatch(clearAdvertisingList());
         } else {
-          console.log(startResult.error)
+          console.log(startResult.error);
         }
         /* Callbacks determine when the scan state itself is changed */
       } else {

@@ -13,7 +13,7 @@
 import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
   nobleInitializeDevice, nobleWriteCharacteristic, nobleReadCharacteristic
 } from './bleNoble';
-import { usbPlaceholder } from './bleUsb';
+import { usbPlaceholder, usbStartScan } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
 import type { bleApiResultType, bleWrapperObjType } from '../../types/bleTypes';
 
@@ -22,7 +22,7 @@ export function bleStartScan(method: scanTypes): bleApiResultType {
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleStartScan,
-    usbMethod: usbPlaceholder
+    usbMethod: usbStartScan
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj);
