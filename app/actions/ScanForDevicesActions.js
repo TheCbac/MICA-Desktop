@@ -55,8 +55,7 @@ export function changeScanMethodAsync(method: scanTypes): thunkType {
         closeMicaPort();
         /* See if there is a valid MICA USB port */
       } else if (method === 'usb'){
-        const err = await getMicaUsb();
-        enable = err;
+        getMicaUsb(dispatch, getState);
       }
       dispatch(changeScanMethod(method, enable));
     }
@@ -75,42 +74,39 @@ export function changeScanMethod(method: scanTypes, enable: boolean): changeScan
 
 
 /* List all of the device */
-async function getMicaUsb(): Promise<boolean> {
+async function getMicaUsb(dispatch: ()=> void, getState: () => stateType): void{
   const serialList = await Serialport.list();
   let i;
   let err = true;
-  console.log(serialList);
   for(i = 0; i<serialList.length; i++){
     const portInstance = serialList[i];
     const { comName, productId, vendorId } = portInstance;
     if(isMicaSerialDevice(productId, vendorId)){
       const baudRate = 115200;
-      err = await openMicaPort(comName, baudRate);
+      /* Open the USB port if it isn't already open */
+      if(!portInstance.isOpen) {
+        const newPort = new Serialport(comName, { baudRate }, (err) =>{
+          if(!err){
+            openPort = newPort;
+            const { scanForDevices: { method } } = getState();
+            if(method === 'usb'){
+              /* On successful open, enable the USB device */
+              dispatch(changeScanMethod('usb', true));
+            }
+          }
+        });
+        newPort.on('close', ()=>{
+          const { scanForDevices: { method } } = getState();
+          if(method === 'usb'){
+            dispatch(changeScanMethod('usb', false));
+          }
+        });
+      }
       break;
     }
   }
-  return new Promise((resolve, reject) => {
-    if(err){
-      resolve(false);
-    }
-    resolve(true)
-  })
 }
 
-/* Open a serial port */
-async function openMicaPort(portName: string, baudRate: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const port = new Serialport(portName, { baudRate }, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        openPort = port;
-        // resolve(`Successfully opened ${portName}`);
-        resolve('');
-      }
-    });
-  });
-}
 
 function closeMicaPort(){
   if(openPort){
