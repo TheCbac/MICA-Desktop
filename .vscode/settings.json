@@ -3,7 +3,8 @@
   "flow.useNPMPackagedFlow": true,
   "search.exclude": {
     ".git": true,
-    "node_modules": true,
+    // "node_modules": true,
+    "node_modules": false,
     "flow-typed": true,
     "__snapshots__": true,
     "bower_components": true

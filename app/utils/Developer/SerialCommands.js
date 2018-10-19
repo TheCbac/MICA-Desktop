@@ -31,7 +31,7 @@ const subCommands: subCommandObjT = {
   scan: scanCmd,
   connect: connectCmd,
   disconnect: disconnectCmd,
-  reset: resetCmd
+  reset: resetCmd,
 };
 /* callback for when the command returns */
 let cmdCallback;
@@ -66,6 +66,10 @@ export default async function serial(cmdObj: terminalParsedObjT): Promise<string
       }
       /* Write the command */
       port.write(binary);
+    } else if(args[0] == 'id'){
+      /* debug new MICA protocols*/
+      console.log("ID command");
+      port.write([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xAA]);
     }
   } else if (flags.l || flags.a) {
     /* List all devices */
