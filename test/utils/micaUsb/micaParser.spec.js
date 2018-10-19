@@ -15,7 +15,7 @@ import {
   constructPacket,
   getTxBuffer,
   parseRxPacket
-} from './micaParser';
+} from '../../../app/utils/micaUsb/micaParser';
 
 describe('Command to module', () => {
   test('Control command', () => {

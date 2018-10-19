@@ -8,7 +8,7 @@
 ********************************************************* */
 import {
   setPort, removePort, isPortOpen, getPort
-} from './micaUsb';
+} from '../../../app/utils/micaUsb/micaUsb';
 
 test('No Default port', () => {
   expect(isPortOpen()).toBeFalsy();
