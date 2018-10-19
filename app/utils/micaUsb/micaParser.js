@@ -18,6 +18,7 @@ import type {
   parsePacketResponse_T
 } from './micaParser.types';
 import * as packets from './micaConstants';
+import { handleCmd, handleResponse } from './commandHandler';
 
 const rxBuffer: rxBufferObj_T = {
   buffer: [],
@@ -70,12 +71,12 @@ export function commandToModule(cmd: number): moduleName_T {
 
 /* Construct a packet from the command and payload */
 export function constructPacket(inPacket: packetObj_T): constructResponse_T {
-  const result = {
+  const result: constructResponse_T = {
     success: true,
     err: '',
     packet: null
   };
-  const buffer = [];
+  const buffer: number[] = [];
   /* Ensure payload size is valid */
   if (inPacket.payload.length >= packets.LEN_MAX_PAYLOAD) {
     result.success = false;
@@ -117,12 +118,6 @@ export function resetRxBuffer(): void {
   rxBuffer.payloadLen = 0;
 }
 
-// /* Get the packed data from the tx buffer, and then clear the buffer */
-// export function getTxBuffer(): number[] {
-//   const packetData = txBuffer.buffer.slice();
-//   resetTxBuffer();
-//   return packetData;
-// }
 
 /* Process one byte of the received packet */
 export function processRxByte(byte: number): bufferResponse_T {
@@ -195,6 +190,34 @@ export function processRxByte(byte: number): bufferResponse_T {
   }
 
   return result;
+}
+
+/* Process data received over the RX buffer */
+export function processRxBuffer(data: packetData_T): void {
+  for (let i = 0; i < data.length; i++) {
+    /* Process the individual byte */  
+    const { complete, err, success } = processRxByte(data[i]);
+      if (success) {
+        /* Check for completeness */
+        if(complete) {
+          const { err, success, packet } = parseRxPacket(rxBuffer.buffer);
+          if(success) {
+            // console.log('Received packet:', packet);
+            if (packet.flags & packets.FLAG_ACK){
+              /* Handle the response packet */
+              handleResponse(packet);
+            } else {
+              /* Handle the cmd/async packet */
+              handleCmd(packet);
+            }
+          } else {
+            console.log(`Error parsing packet: ${err}`);
+          }
+        }
+      } else {
+        console.log(`ProcessRxBuffer err: ${err}`);
+      }
+  }
 }
 
 

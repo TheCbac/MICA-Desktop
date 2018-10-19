@@ -12,7 +12,8 @@
 export type usbPort = {
     path: string,
     isOpen: boolean,
-    close: () => void
+    close: (mixed) => void,
+    write: (mixed) => mixed
 }
 
 let openPort: ?usbPort = null;

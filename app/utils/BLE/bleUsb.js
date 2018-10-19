@@ -11,9 +11,9 @@
 ********************************************************* */
 import {
   getPort,
-  constructPacket
-} from 'micaUsb';
-
+  
+} from '../micaUsb/micaUsb';
+import {constructPacket} from '../micaUsb/micaParser';
 import type { bleApiResultType } from '../../types/bleTypes';
 
 
