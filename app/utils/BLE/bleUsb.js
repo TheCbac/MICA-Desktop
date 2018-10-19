@@ -9,8 +9,12 @@
 *
 * 2017.09.25 CC - Document created
 ********************************************************* */
+import {
+  getPort,
+  constructPacket
+} from 'micaUsb';
+
 import type { bleApiResultType } from '../../types/bleTypes';
-import { setPort, removePort, getPort } from 'micaUsb';
 
 
 /* Placeholder until usb functions are written */
@@ -22,8 +26,18 @@ export function usbPlaceholder(): bleApiResultType {
 export function usbStartScan(): bleApiResultType {
   const port = getPort();
   if (port && port.isOpen) {
-    return { success: true, error: 'Found port' };
+    const idCommand = {
+      module: 'control',
+      cmd: 0x00,
+      payload: [],
+      flags: 0x00
+    };
+    const { success, err, packet } = constructPacket(idCommand);
+    if (success) {
+      port.write(packet);
+    return { success: false, error: err };
+    }
   }
-  return { success: false, error: 'Scan start failed' };
+  return { success: false, error: 'Port not found' };
 }
 /* [] - END OF FILE */

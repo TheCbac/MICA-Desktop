@@ -4380,9 +4380,9 @@ flexbox-react@^4.3.3:
     "@types/react" "^15.0.21"
     "@types/react-dom" "^0.14.23"
 
-flow-bin@0.x:
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.66.0.tgz#a96dde7015dc3343fd552a7b4963c02be705ca26"
+flow-bin@^0.83.0:
+  version "0.83.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.83.0.tgz#fd26f5f95758d7701264b3f9a1e1a3d4cbcab1a9"
 
 flow-config-parser@^0.3.0:
   version "0.3.0"

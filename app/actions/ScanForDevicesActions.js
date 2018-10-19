@@ -32,7 +32,6 @@ import { bleStartScan, bleStopScan, bleConnect,
 import type { thunkType } from '../types/functionTypes';
 import { isMicaSerialDevice } from '../utils/Developer/SerialCommands';
 import { setPort, removePort, getPort } from 'micaUsb';
-// import { setPort, removePort, getPort } from '../node_modules/micaUsb/src/micaUsb';
 
 
 /* Set the file debug level */
