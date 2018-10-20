@@ -78,6 +78,7 @@ export const ERR_UNKNOWN = (1 << ERR_SHIFT_UNKNOWN); /** < An unknown error occu
 
 
 /* **** PACKET FLAGS **** */
+export const FLAG_NONE = (0x00); /** < No flags to be sent */
 export const FLAG_SHIFT_ACK = (0); /** < This packet is acknowledging the previous command */
 export const FLAG_SHIFT_NO_ACK = (1); /** < The target device is not required to ACK the command */
 export const FLAG_SHIFT_INVALID_CMD = (2); /** < The passed command was invalid */
@@ -98,7 +99,27 @@ export const CMD_SENSING_MAX = (0x5F); /** < End of the host sensing command spa
 export const CMD_ENERGY_MIN = (0x60); /** < Start of the host energy command space */
 export const CMD_ENERGY_MAX = (0x7F); /** < End of the host energy command space */
 
-export const CMD_ID = (0x00); /** < Request the ID of a device */
+/* **** CONTROL COMMANDS **** */
+export const CMD_ID                     = (0x00); /**< Request the ID of a device */
+export const CMD_MODE                   = (0x01); /**< Change the operating mode (active app) */
+export const CMD_SCAN_START             = (0x02); /**< Start a BLE Scan */
+export const CMD_SCAN_STOP              = (0x03); /**< Stop a BLE Scan */
+export const CMD_CONNECT                = (0x04); /**< Connect to a remote device */
+export const CMD_DISCONNECT             = (0x05); /**< Disconnect from a remote device */
+export const CMD_RELAY_ENTER            = (0x06); /**< Enter Relay mode */
+export const CMD_RELAY_EXIT             = (0x07); /**< Exit Relay mode */
+export const CMD_NAME                   = (0x08); /**< Change the name of the device */
+export const CMD_RESET                  = (0x09); /**< Perform a software reset of the device */
+export const CMD_CHAR_WRITE             = (0x0A); /**< Write to a BLE characteristic */
+export const CMD_CHAR_READ              = (0x0B); /**< Read from a BLE characteristic */
+
+/* **** ACTUATION COMMANDS **** */
+
+/* **** SENSING COMMANDS **** */
+export const CMD_SENSORS_START          = (0x40); /**< Start the desired sensors */
+export const CMD_SENSORS_STOP           = (0x41); /**< Stop the desired sensors */
+
+/* **** ENERGY COMMANDS **** */
 
 /* **** RESPONSE SPACE **** */
 export const RSP_MIN = (0x80); /** < Start of the response command space */
@@ -115,5 +136,18 @@ export const RSP_ENERGY_MAX = (0xFF); /** < End of the host energy command space
 export const RSP_BIT_SHIFT = 7; /** < Shift of the bit that indicates the packet contains a response */
 export const RSP_BIT = (1 << RSP_BIT_SHIFT); /** < Bit that indicates the packet contains a response */
 
+/* **** CONTROL RESPONSES **** */
+export const RSP_DEVICE_FOUND           = (0x80); /**< A remote device was found*/
+export const RSP_SCAN_STOPPED           = (0x81); /**< The current scan was stopped */
+export const RSP_CONNECTED              = (0x82); /**< Successfully conencted to the remote device*/
+export const RSP_DISCONNECTED           = (0x83); /**< The BLE connection was lost */
+export const RSP_RELAY_EXIT             = (0x84); /**< The device was forced out of relay mode */
+
+/* **** ACTUATION RESPONSES **** */
+/* **** SENSING RESPONSES **** */
+export const RSP_DATA                   = (0xC0); /**< Data reported by the sensors */
+export const RSP_SENSORS_STOPPED        = (0xC1); /**< The running sensors were halted */
+
+/* **** ENERGY RESPONSES **** */
 
 /* [] - END OF FILE */

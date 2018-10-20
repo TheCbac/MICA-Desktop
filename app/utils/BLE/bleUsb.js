@@ -9,35 +9,49 @@
 *
 * 2017.09.25 CC - Document created
 ********************************************************* */
-import {
-  getPort,
-  
-} from '../micaUsb/micaUsb';
+import { getPort } from '../micaUsb/micaUsb';
 import {constructPacket} from '../micaUsb/micaParser';
+import * as packets from '../micaUsb/micaConstants';
 import type { bleApiResultType } from '../../types/bleTypes';
-
+import type { packetObj_T } from '../micaUsb/micaParser.types';
 
 /* Placeholder until usb functions are written */
 export function usbPlaceholder(): bleApiResultType {
   return { success: false, error: 'USB Dongle is not implemented yet' };
 }
 
-/* Start the USB scan */
-export function usbStartScan(): bleApiResultType {
+/* Wrapper for writing out a command */
+export function writeCommand(command: packetObj_T): bleApiResultType {
   const port = getPort();
   if (port && port.isOpen) {
-    const idCommand = {
-      module: 'control',
-      cmd: 0x00,
-      payload: [],
-      flags: 0x00
-    };
-    const { success, err, packet } = constructPacket(idCommand);
+    const { success, err, packet } = constructPacket(command);
     if (success) {
       port.write(packet);
     return { success: false, error: err };
     }
   }
   return { success: false, error: 'Port not found' };
+}
+
+/* Start the USB scan */
+export function usbStartScan(): bleApiResultType {
+  const idCommand = {
+    module: 'control',
+    cmd: packets.CMD_SCAN_START,
+    payload: [],
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(idCommand);
+}
+
+/* Stop the USB scan */
+export function usbStartStop(): bleApiResultType {
+  const idCommand = {
+    module: 'control',
+    cmd: packets.CMD_SCAN_STOP,
+    payload: [],
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(idCommand);
 }
 /* [] - END OF FILE */

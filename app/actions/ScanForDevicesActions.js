@@ -87,17 +87,13 @@ async function getMicaUsb(dispatch: (mixed)=> void, getState: () => stateType): 
         const newPort = new Serialport(comName, { baudRate }, (err) => {
           if (!err) {
             setPort(newPort);
-            const { scanForDevices: { method } } = getState();
-            // if (method === 'usb') {
-            //   /* On successful open, enable the USB device */
-            //   dispatch(changeScanMethod('usb', true));
-            // }
           }
         });
         newPort.on('close', () => {
           const { scanForDevices: { method } } = getState();
           if (method === 'usb') {
             dispatch(changeScanMethod('usb', false));
+            /* Callbacks determine when the scan state itself is changed */
           }
         });
         /* Process mica data as it's received */
@@ -107,7 +103,7 @@ async function getMicaUsb(dispatch: (mixed)=> void, getState: () => stateType): 
         });
         console.log(`opened port ${comName}`);
 
-        /* Testing - send the request for ID */
+        /* Testing - send the request for ID - this needs to live somewhere else */
         const requestIdPacket = {
           module: 'control',
           cmd: 0x00,

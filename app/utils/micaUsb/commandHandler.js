@@ -9,7 +9,10 @@
 * 2018.10.19 CC - Document created
 ********************************************************* */
 import store from '../../index';
-import { changeScanMethod } from '../../actions/ScanForDevicesActions';
+import {
+    changeScanMethod,
+    changeScanState
+ } from '../../actions/ScanForDevicesActions';
 import type {
     packetObj_T
 } from './micaParser.types';
@@ -39,8 +42,27 @@ export function handleResponse(packet: packetObj_T) {
             
             break;
         }
+        /* The scan was successfully started */
+        case packets.CMD_SCAN_START: {
+            const timeoutId = setTimeout(() => {
+                /* The PSoC will timeout automatically, but could implement this */
+              }, 15000);
+            store.dispatch(changeScanState('usb', true, timeoutId));
+            console.log('Scan successfully started');
+            break;
+        }
+        /* The scan was successfully stopped */
+        case packets.CMD_SCAN_STOP: {
+            store.dispatch(changeScanState('usb', false));
+            console.log('Scan successfully stopped');
+            break;
+        }
+        case packet.RSP_DEVICE_FOUND: {
+
+            break;
+        }
         default: {
-            console.log(`Unknown response: ${cmd}`)
+            console.log(`Unknown response: ${cmd}`, payload)
         }
     }
 }
