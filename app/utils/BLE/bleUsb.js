@@ -67,7 +67,29 @@ export function usbConnect(
     cmd: packets.CMD_CONNECT,
     payload: deviceId.split(',').map(Number), 
     flags: packets.FLAG_NONE
-  }
+  };
   return writeCommand(connectCmd);
+}
+
+/* Cancel a pending connection */
+export function usbCancelPending(deviceId): bleApiResultType {
+  const cancelPendingCmd = {
+    module: 'control',
+    cmd: packets.CMD_CONNECT_CANCEL,
+    payload: deviceId.split(',').map(Number), 
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(cancelPendingCmd);
+}
+
+/* Disconnect from a remote device */
+export function usbDisconnect(deviceId): bleApiResultType {
+  const disconnectCmd = {
+    module: 'control',
+    cmd: packets.CMD_DISCONNECT,
+    payload: deviceId.split(',').map(Number), 
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(disconnectCmd);
 }
 /* [] - END OF FILE */

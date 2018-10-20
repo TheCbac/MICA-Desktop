@@ -18,7 +18,7 @@ import type {
   parsePacketResponse_T
 } from './micaParser.types';
 import * as packets from './micaConstants';
-import { handleCmd, handleResponse } from './commandHandler';
+import { handleResponse, handleAcknowledgement } from './commandHandler';
 
 const rxBuffer: rxBufferObj_T = {
   buffer: [],
@@ -205,10 +205,10 @@ export function processRxBuffer(data: packetData_T): void {
             // console.log('Received packet:', packet);
             if (packet.flags & packets.FLAG_ACK){
               /* Handle the response packet */
-              handleResponse(packet);
+              handleAcknowledgement(packet);
             } else {
               /* Handle the cmd/async packet */
-              handleCmd(packet);
+              handleResponse(packet);
             }
           } else {
             console.log(`Error parsing packet: ${err}`);

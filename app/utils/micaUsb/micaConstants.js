@@ -146,9 +146,10 @@ export const RSP_BIT = (1 << RSP_BIT_SHIFT); /** < Bit that indicates the packet
 /* **** CONTROL RESPONSES **** */
 export const RSP_DEVICE_FOUND           = (0x80); /**< A remote device was found*/
 export const RSP_SCAN_STOPPED           = (0x81); /**< The current scan was stopped */
-export const RSP_CONNECTED              = (0x82); /**< Successfully conencted to the remote device*/
-export const RSP_DISCONNECTED           = (0x83); /**< The BLE connection was lost */
-export const RSP_RELAY_EXIT             = (0x84); /**< The device was forced out of relay mode */
+export const RSP_CONNECTED              = (0x82); /**< Successfully connected to the remote device*/
+export const RSP_DISCONNECTED           = (0x83); /**< The BLE device was successfully disconnected */
+export const RSP_CONNECTION_LOST        = (0x84); /**< The BLE connection was lost */
+export const RSP_RELAY_EXIT             = (0x85); /**< The device was forced out of relay mode */
 
 /* **** ACTUATION RESPONSES **** */
 /* **** SENSING RESPONSES **** */

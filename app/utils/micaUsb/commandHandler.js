@@ -11,9 +11,17 @@
 import store from '../../index';
 import {
     changeScanMethod,
-    changeScanState
+    changeScanState,
+    
  } from '../../actions/ScanForDevicesActions';
-import { foundAdvertisingDevice } from '../../actions/devicesActions';
+import {
+    foundAdvertisingDevice,
+    cancelConnectToDevice,
+    connectedToDevice,
+    disconnectingFromDevice,
+    disconnectedFromDevice,
+    lostConnectionFromDevice
+} from '../../actions/devicesActions';
 import { parseAdvertisementPacket } from '../BLE/bleAdvertisementPackets';
 import type {
     packetObj_T
@@ -21,8 +29,8 @@ import type {
 import type { newDeviceObjType } from '../../types/paramTypes';
 import * as packets from './micaConstants';
 
-/* Handle a command or async data received */
-export function handleCmd(packet: packetObj_T) {
+/* Handle a response packet */
+export function handleResponse(packet: packetObj_T) {
     const { module, cmd, payload, flags } = packet;
     switch(cmd) {
         /* A device was found */
@@ -42,8 +50,7 @@ export function handleCmd(packet: packetObj_T) {
                     name,
                     rssi
                 } ;
-                console.log('Found BLE device');
-                console.log(newDeviceObj);
+                console.log('Found MICA BLE device');
                 store.dispatch(foundAdvertisingDevice(newDeviceObj));
             }
             break;
@@ -54,14 +61,35 @@ export function handleCmd(packet: packetObj_T) {
             store.dispatch(changeScanState('usb', false));
             break;
         }
+        /* A device was successfully connected */
+        case packets.RSP_CONNECTED: {
+            const deviceId = payload.toString();
+            console.log(`Connected to ${deviceId}`);
+            store.dispatch(connectedToDevice(deviceId));
+            break;
+        }
+        /* The device successfully disconnected */
+        case packets.RSP_DISCONNECTED: {
+            const deviceId = payload.toString();
+            console.log(`Disconnected from ${deviceId}`);
+            store.dispatch(disconnectedFromDevice(deviceId));
+            break;
+        }
+        /* The device connection was lost */
+        case packets.RSP_CONNECTION_LOST: {
+            const deviceId = payload.toString();
+            console.log(`Connection to ${deviceId} was lost`);
+            store.dispatch(lostConnectionFromDevice(deviceId));
+            break;
+        }
         default: {
             console.log(`Unknown async command: ${cmd}`, payload)
         }
     }
 }
 
-/* Handle the response for to a command */
-export function handleResponse(packet: packetObj_T) {
+/* Handle the Ack for to a command */
+export function handleAcknowledgement(packet: packetObj_T) {
     const { module, cmd, payload, flags } = packet;
     switch(cmd) {
         case packets.CMD_ID: {
@@ -94,13 +122,43 @@ export function handleResponse(packet: packetObj_T) {
             console.log('Scan successfully stopped');
             break;
         }
+        /* The device was not connected, just the ack to the connect command */
         case packets.CMD_CONNECT: {
             /* Check for errors */
             if(flags ^ packets.FLAG_ACK){
-                console.log(`Connect failed with flags ${flags}`);
+                console.log(`Connect cmd failed with flags ${flags}`);
+                /* Indicate to user that connection failed */
+                const deviceId = payload.toString();
+                store.dispatch(cancelConnectToDevice(deviceId));
             } else {
-                console.log('Connect successful');
-                /* Pick up here */
+                console.log('Connection initiated');
+                /* connectingToDevice is handled optimistically, no need to 
+                 * dispatch event 'connectingToDevice'. See ScanForDevicesActions  */
+            }
+            break;
+        }
+        /* The cancel pending command was ack'd */
+        case packets.CMD_CONNECT_CANCEL: {
+            /* Check for errors */
+            if(flags ^ packets.FLAG_ACK){
+                console.log(`Cancel connect cmd failed with flags ${flags}`);
+            } else {
+                console.log('Cancel connect initiated');
+                const deviceId = payload.toString();
+                store.dispatch(cancelConnectToDevice(deviceId));
+            }
+            break;
+        }
+        /* The disconnect command was ack'd, begin disconnect */
+        case packets.CMD_DISCONNECT: {
+            /* Check for errors */
+            if(flags ^ packets.FLAG_ACK){
+                console.log(`Disconnect cmd failed with flags ${flags}`);
+
+            } else {
+                console.log('Disconnect initiated');
+                const deviceId = payload.toString();
+                store.dispatch(disconnectingFromDevice(deviceId));
             }
             break;
         }
