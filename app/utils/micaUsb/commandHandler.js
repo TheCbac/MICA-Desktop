@@ -100,6 +100,7 @@ export function handleResponse(packet: packetObj_T) {
                 console.log(`Connect failed with flags ${flags}`);
             } else {
                 console.log('Connect successful');
+                /* Pick up here */
             }
             break;
         }

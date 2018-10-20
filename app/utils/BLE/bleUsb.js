@@ -62,7 +62,6 @@ export function usbConnect(
   connectCallback,
   disconnectCallback
 ): bleApiResultType {
-  console.log(deviceId);
   const connectCmd = {
     module: 'control',
     cmd: packets.CMD_CONNECT,
