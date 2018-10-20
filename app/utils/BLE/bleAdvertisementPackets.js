@@ -214,6 +214,8 @@ export function advGetPeerAddr(peerAddrArray: packetDataT): peerAddrObjT {
   const peerAddrObj: peerAddrObjT = {
     success: false,
   };
+  /* Peer address is reported in opposite order - need to reverse */
+  peerAddrArray.reverse();
   /* Ensure address is 6 octets */
   const addrLen = peerAddrArray.length;
   if (addrLen !== ADV_PEER_ADDR_LEN) {

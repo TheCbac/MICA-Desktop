@@ -47,6 +47,8 @@ export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
 export function changeScanMethodAsync(method: scanTypes): thunkType {
   /* Return a function for redux thunk */
   return async (dispatch: (mixed) => void, getState: () => stateType): any => {
+    /* Do nothing if the new state is the active state */
+    if (method === getState().scanForDevices.method) { return; }
     /* Check the state on switch */
     let enable = false;
     if (method === 'ble') {

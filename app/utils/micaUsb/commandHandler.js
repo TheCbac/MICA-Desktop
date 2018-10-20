@@ -1,4 +1,4 @@
-// @flow
+/* @flow */
 /* **********************************************************
 * File: utils/micaUsb/commandHandler.js
 *
@@ -13,14 +13,39 @@ import {
     changeScanMethod,
     changeScanState
  } from '../../actions/ScanForDevicesActions';
+import { foundAdvertisingDevice } from '../../actions/devicesActions';
+import { parseAdvertisementPacket } from '../BLE/bleAdvertisementPackets';
 import type {
     packetObj_T
 } from './micaParser.types';
+import type { newDeviceObjType } from '../../types/paramTypes';
 import * as packets from './micaConstants';
 
 /* Handle a command or async data received */
 export function handleCmd(packet: packetObj_T) {
-
+    const { module, cmd, payload, flags } = packet;
+    switch(cmd) {
+        case packets.RSP_DEVICE_FOUND: {
+            const {success, error, packet } = parseAdvertisementPacket(payload);
+            const { rssi, peerAddr: address, advPacketData: {localName: name} } = packet;
+            /* Only accept MICA devices */
+            if(address.slice(0, 5) === 'CB:AC') {
+                const newDeviceObj: newDeviceObjType = {
+                    deviceId: address,
+                    address,
+                    name,
+                    rssi
+                } ;
+                console.log('Found BLE device');
+                console.log(newDeviceObj);
+                store.dispatch(foundAdvertisingDevice(newDeviceObj));
+            }
+            break;
+        }
+        default: {
+            console.log(`Unknown async command: ${cmd}`, payload)
+        }
+    }
 }
 
 /* Handle the response for to a command */
@@ -57,12 +82,9 @@ export function handleResponse(packet: packetObj_T) {
             console.log('Scan successfully stopped');
             break;
         }
-        case packet.RSP_DEVICE_FOUND: {
-
-            break;
-        }
         default: {
-            console.log(`Unknown response: ${cmd}`, payload)
+            console.log(`Unknown response to command: ${cmd}, flags: ${flags}`, payload)
+            break;
         }
     }
 }

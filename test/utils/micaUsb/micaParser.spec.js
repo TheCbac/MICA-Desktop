@@ -5,6 +5,8 @@
 * Author: Craig Cheney
 * Date: 2018.10.18
 *
+* This fails to run when importing 'store' (via commandHandler).
+* Not sure how to work around at this point. 
 ********************************************************* */
 import {
   commandToModule,
@@ -127,7 +129,11 @@ describe('processRxByte', () => {
     /* Process last byte */
     expect(processRxByte(arr[i])).toEqual({ complete: true, success: true, err: '' });
     /* Process additional byte */
-    expect(processRxByte(0x01)).toEqual({ complete: true, success: false, err: 'Completed packet has not been handled yet' });
+    expect(processRxByte(0x01)).toEqual({
+      complete: true,
+      success: false,
+      err: 'Completed packet has not been handled yet'
+    });
   });
 });
 

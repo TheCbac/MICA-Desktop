@@ -201,7 +201,7 @@ export function processRxBuffer(data: packetData_T): void {
         /* Check for completeness */
         if(complete) {
           const { err, success, packet } = parseRxPacket(rxBuffer.buffer);
-          if(success) {
+          if(success && packet) {
             // console.log('Received packet:', packet);
             if (packet.flags & packets.FLAG_ACK){
               /* Handle the response packet */
