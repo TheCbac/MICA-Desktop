@@ -94,12 +94,12 @@ export function usbDisconnect(deviceId): bleApiResultType {
   return writeCommand(disconnectCmd);
 }
 
-
-export function usbWriteChar(deviceId, charUuid, payload) {
+  // const uuidArray = charUuid.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+/* Write to a BLE characteristic */
+export function usbWriteChar(deviceId, charUuid, payload): bleApiResultType {
   /* Convert the deviceId to a array of numbers */
   const deviceIdArray = deviceId.split(',').map(Number);
   /* Convert the charUuid to an array of numbers */
-  // const uuidArray = charUuid.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
   const charHandle = getMicaHandleFromUuid(charUuid);
   /* Write the command */
   const writeCmd = {
@@ -110,5 +110,28 @@ export function usbWriteChar(deviceId, charUuid, payload) {
   };
   return writeCommand(writeCmd);
 
+}
+
+/* Read from a BLE characteristic */
+export function usbReadChar(deviceId, charUuid): bleApiResultType {
+  /* Convert the deviceId to a array of numbers */
+  const deviceIdArray = deviceId.split(',').map(Number);
+  /* Convert the charUuid to an array of numbers */
+  const charHandle = getMicaHandleFromUuid(charUuid);
+  /* Read command */
+  const readCmd = {
+    module: 'control',
+    cmd: packets.CMD_CHAR_READ,
+    payload: [...deviceIdArray, charHandle],
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(readCmd);
+}
+
+/* Prepare the device for initialization */
+export function usbInitDevice(deviceId): bleApiResultType {
+  console.log(`Init device ${deviceId}`);
+  /* Pick up here */
+  return { success: true };
 }
 /* [] - END OF FILE */

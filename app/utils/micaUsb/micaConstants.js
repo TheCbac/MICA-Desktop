@@ -134,19 +134,19 @@ export const CMD_SENSORS_STOP           = (0x41); /**< Stop the desired sensors 
 /* **** ENERGY COMMANDS **** */
 
 /* **** RESPONSE SPACE **** */
-export const RSP_MIN = (0x80); /** < Start of the response command space */
-export const RSP_MAX = (0xFF); /** < End of the response command space */
-export const RSP_CONTROL_MIN = (0x80); /** < Start of the host control command space */
-export const RSP_CONTROL_MAX = (0x9F); /** < End of the host control command space */
-export const RSP_ACTUATION_MIN = (0xA0); /** < Start of the host actuation command space */
-export const RSP_ACTUATION_MAX = (0xBF); /** < End of the host actuation command space */
-export const RSP_SENSING_MIN = (0xC0); /** < Start of the host sensing command space */
-export const RSP_SENSING_MAX = (0xDF); /** < End of the host sensing command space */
-export const RSP_ENERGY_MIN = (0xE0); /** < Start of the host energy command space */
-export const RSP_ENERGY_MAX = (0xFF); /** < End of the host energy command space */
+export const RSP_MIN                    = (0x80); /** < Start of the response command space */
+export const RSP_MAX                    = (0xFF); /** < End of the response command space */
+export const RSP_CONTROL_MIN            = (0x80); /** < Start of the host control command space */
+export const RSP_CONTROL_MAX            = (0x9F); /** < End of the host control command space */
+export const RSP_ACTUATION_MIN          = (0xA0); /** < Start of the host actuation command space */
+export const RSP_ACTUATION_MAX          = (0xBF); /** < End of the host actuation command space */
+export const RSP_SENSING_MIN            = (0xC0); /** < Start of the host sensing command space */
+export const RSP_SENSING_MAX            = (0xDF); /** < End of the host sensing command space */
+export const RSP_ENERGY_MIN             = (0xE0); /** < Start of the host energy command space */
+export const RSP_ENERGY_MAX             = (0xFF); /** < End of the host energy command space */
 
-export const RSP_BIT_SHIFT = 7; /** < Shift of the bit that indicates the packet contains a response */
-export const RSP_BIT = (1 << RSP_BIT_SHIFT); /** < Bit that indicates the packet contains a response */
+export const RSP_BIT_SHIFT              = 7; /** < Shift of the bit that indicates the packet contains a response */
+export const RSP_BIT                    = (1 << RSP_BIT_SHIFT); /** < Bit that indicates the packet contains a response */
 
 /* **** CONTROL RESPONSES **** */
 export const RSP_DEVICE_FOUND           = (0x80); /**< A remote device was found*/
@@ -155,6 +155,8 @@ export const RSP_CONNECTED              = (0x82); /**< Successfully connected to
 export const RSP_DISCONNECTED           = (0x83); /**< The BLE device was successfully disconnected */
 export const RSP_CONNECTION_LOST        = (0x84); /**< The BLE connection was lost */
 export const RSP_RELAY_EXIT             = (0x85); /**< The device was forced out of relay mode */
+export const RSP_READ                   = (0x86); /**< Data returned from a read operation */
+
 
 /* **** ACTUATION RESPONSES **** */
 /* **** SENSING RESPONSES **** */

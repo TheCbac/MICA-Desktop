@@ -60,6 +60,8 @@ export function changeScanMethodAsync(method: scanTypes): thunkType {
       getMicaUsb(dispatch, getState);
     }
     dispatch(changeScanMethod(method, enable));
+    /* Clear the advertising list */
+    dispatch(clearAdvertisingList());
   };
 }
 

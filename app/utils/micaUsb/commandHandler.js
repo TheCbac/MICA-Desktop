@@ -29,6 +29,7 @@ import type {
 import type { newDeviceObjType } from '../../types/paramTypes';
 import * as packets from './micaConstants';
 import { hexToString } from '../../utils/Developer/TerminalUtils';
+import { bleInitializeDevice } from '../../utils/BLE/bleFunctions';
 
 /* Handle a response packet */
 export function handleResponse(packet: packetObj_T) {
@@ -67,6 +68,8 @@ export function handleResponse(packet: packetObj_T) {
             const deviceId = payload.toString();
             console.log(`Connected to ${deviceId}`);
             store.dispatch(connectedToDevice(deviceId));
+            /* Initiate discovery */
+            bleInitializeDevice('usb', deviceId);
             break;
         }
         /* The device successfully disconnected */
@@ -83,7 +86,19 @@ export function handleResponse(packet: packetObj_T) {
             store.dispatch(lostConnectionFromDevice(deviceId));
             break;
         }
-
+        /* Read response data */
+        case packets.RSP_READ: {
+            const deviceAddr = payload.slice(0,6);
+            const charHandle = payload[6];
+            const dataLen = payload[7] << 8 | payload[8];
+            const data = payload.slice(9)
+            if(!flags) {
+                console.log(`Read RSP failed with flags 0x${hexToString(flags)}: char 0x${hexToString(charHandle)}`);
+            } else {
+                console.log('Read RSP:', deviceAddr, charHandle, data);
+            }
+            break;
+        }
         default: {
             console.log(`Unknown async command: ${cmd}`, payload)
         }
@@ -178,12 +193,23 @@ export function handleAcknowledgement(packet: packetObj_T) {
                 const deviceId = payload.slice(0,6).toString();
                 const charHandle = payload[6]
                 console.log(`Write initiated to device ${deviceId}, and characteristic handle ${charHandle}`);
-
-                // store.dispatch(disconnectingFromDevice(deviceId));
-
             }
             break;
         }
+        /* Read was Ack'd */
+        case packets.CMD_CHAR_READ: {
+            /* Check for errors */
+            const errFlag = flags ^ packets.FLAG_ACK;
+            if(errFlag){
+                console.log(`Read cmd failed with flags 0x${hexToString(errFlag)}`);
+
+            } else {
+                const deviceId = payload.slice(0,6).toString();
+                const charHandle = payload[6]
+                console.log(`Read initiated to device ${deviceId}, and char handle ${charHandle}`);
+            }
+            break;
+        }        
         default: {
             console.log(`Unknown response to command: ${cmd}, flags: 0x${hexToString(errFlag)}`, payload)
             break;
