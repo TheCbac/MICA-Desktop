@@ -13,7 +13,9 @@
 import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
   nobleInitializeDevice, nobleWriteCharacteristic, nobleReadCharacteristic
 } from './bleNoble';
-import { usbPlaceholder, usbStartScan, usbStartStop } from './bleUsb';
+import {
+  usbPlaceholder, usbStartScan, usbStopScan, usbConnect
+ } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
 import type { bleApiResultType, bleWrapperObjType } from '../../types/bleTypes';
 
@@ -33,7 +35,7 @@ export function bleStopScan(method: scanTypes): bleApiResultType {
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleStopScan,
-    usbMethod: usbStartStop
+    usbMethod: usbStopScan
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj);
@@ -48,7 +50,7 @@ export function bleConnect(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleConnect,
-    usbMethod: usbPlaceholder
+    usbMethod: usbConnect
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id, connectCallback, disconnectCallback);

@@ -272,6 +272,7 @@ describe('bleAdvertisementPackets.spec.js', () => {
       eventType: BLE_GAPC_CONN_UNDIRECTED,
       peerAddrType: BLE_GAP_ADDR_TYPE_PUBLIC,
       peerAddr: 'CB:AC:00:D1:5B:0E',
+      deviceId: [0x0E, 0x5B, 0xD1, 0x00, 0xAC, 0xCB].toString(),
       advPacketData: {
         localName: 'Craig 003',
         serviceUuids: [],

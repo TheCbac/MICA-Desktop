@@ -25,13 +25,19 @@ import * as packets from './micaConstants';
 export function handleCmd(packet: packetObj_T) {
     const { module, cmd, payload, flags } = packet;
     switch(cmd) {
+        /* A device was found */
         case packets.RSP_DEVICE_FOUND: {
             const {success, error, packet } = parseAdvertisementPacket(payload);
-            const { rssi, peerAddr: address, advPacketData: {localName: name} } = packet;
+            const {
+                rssi,
+                peerAddr: address,
+                advPacketData: {localName: name},
+                deviceId
+            } = packet;
             /* Only accept MICA devices */
             if(address.slice(0, 5) === 'CB:AC') {
                 const newDeviceObj: newDeviceObjType = {
-                    deviceId: address,
+                    deviceId,
                     address,
                     name,
                     rssi
@@ -40,6 +46,12 @@ export function handleCmd(packet: packetObj_T) {
                 console.log(newDeviceObj);
                 store.dispatch(foundAdvertisingDevice(newDeviceObj));
             }
+            break;
+        }
+        /* The scan timed out */
+        case packets.RSP_SCAN_STOPPED: {
+            console.log('Scan timed out');
+            store.dispatch(changeScanState('usb', false));
             break;
         }
         default: {
@@ -80,6 +92,15 @@ export function handleResponse(packet: packetObj_T) {
         case packets.CMD_SCAN_STOP: {
             store.dispatch(changeScanState('usb', false));
             console.log('Scan successfully stopped');
+            break;
+        }
+        case packets.CMD_CONNECT: {
+            /* Check for errors */
+            if(flags ^ packets.FLAG_ACK){
+                console.log(`Connect failed with flags ${flags}`);
+            } else {
+                console.log('Connect successful');
+            }
             break;
         }
         default: {

@@ -78,14 +78,20 @@ export const ERR_UNKNOWN = (1 << ERR_SHIFT_UNKNOWN); /** < An unknown error occu
 
 
 /* **** PACKET FLAGS **** */
-export const FLAG_NONE = (0x00); /** < No flags to be sent */
-export const FLAG_SHIFT_ACK = (0); /** < This packet is acknowledging the previous command */
-export const FLAG_SHIFT_NO_ACK = (1); /** < The target device is not required to ACK the command */
-export const FLAG_SHIFT_INVALID_CMD = (2); /** < The passed command was invalid */
+export const FLAG_NONE                  = (0x00); /** < No flags to be sent */
+export const FLAG_SHIFT_ACK             = (0); /** < This packet is acknowledging the previous command */
+export const FLAG_SHIFT_NO_ACK          = (1); /** < The target device is not required to ACK the command */
+export const FLAG_SHIFT_INVALID_CMD     = (2); /** < The passed command was invalid */
+export const FLAG_SHIFT_INVALID_STATE   = (3); /**< The device was in an invalid state to execute the command */
+export const FLAG_SHIFT_INVALID_ARGS    = (4); /**< The arguments passed in with the command were not valid*/
 
-export const FLAG_ACK = (1 << FLAG_SHIFT_ACK); /** < This packet is acknowledging the previous command */
-export const FLAG_NO_ACK = (1 << FLAG_SHIFT_NO_ACK); /** < The target device is not required to ACK the command  */
-export const FLAG_INVALID_CMD = (1 << FLAG_SHIFT_INVALID_CMD); /** < The passed command was invalid  */
+
+export const FLAG_ACK               = (1 << FLAG_SHIFT_ACK); /** < This packet is acknowledging the previous command */
+export const FLAG_NO_ACK            = (1 << FLAG_SHIFT_NO_ACK); /** < The target device is not required to ACK the command  */
+export const FLAG_INVALID_CMD       = (1 << FLAG_SHIFT_INVALID_CMD); /** < The passed command was invalid  */
+export const FLAG_INVALID_STATE     = (1 << FLAG_SHIFT_INVALID_STATE); /**< The device was in an invalid state to execute the command  */
+export const FLAG_INVALID_ARGS      = (1 << FLAG_SHIFT_INVALID_ARGS); /**< The arguments passed in with the command were not valid  */
+
 
 /* **** COMMAND SPACE **** */
 export const CMD_MIN = (0x00); /** < Start of the host command space */
@@ -106,12 +112,13 @@ export const CMD_SCAN_START             = (0x02); /**< Start a BLE Scan */
 export const CMD_SCAN_STOP              = (0x03); /**< Stop a BLE Scan */
 export const CMD_CONNECT                = (0x04); /**< Connect to a remote device */
 export const CMD_DISCONNECT             = (0x05); /**< Disconnect from a remote device */
-export const CMD_RELAY_ENTER            = (0x06); /**< Enter Relay mode */
-export const CMD_RELAY_EXIT             = (0x07); /**< Exit Relay mode */
-export const CMD_NAME                   = (0x08); /**< Change the name of the device */
-export const CMD_RESET                  = (0x09); /**< Perform a software reset of the device */
-export const CMD_CHAR_WRITE             = (0x0A); /**< Write to a BLE characteristic */
-export const CMD_CHAR_READ              = (0x0B); /**< Read from a BLE characteristic */
+export const CMD_CONNECT_CANCEL         = (0x06); /**< Cancel a pending connection */
+export const CMD_RELAY_ENTER            = (0x07); /**< Enter Relay mode */
+export const CMD_RELAY_EXIT             = (0x08); /**< Exit Relay mode */
+export const CMD_NAME                   = (0x09); /**< Change the name of the device */
+export const CMD_RESET                  = (0x0A); /**< Perform a software reset of the device */
+export const CMD_CHAR_WRITE             = (0x0B); /**< Write to a BLE characteristic */
+export const CMD_CHAR_READ              = (0x0C); /**< Read from a BLE characteristic */
 
 /* **** ACTUATION COMMANDS **** */
 

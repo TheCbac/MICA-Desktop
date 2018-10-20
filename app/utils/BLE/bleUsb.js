@@ -25,10 +25,11 @@ export function writeCommand(command: packetObj_T): bleApiResultType {
   const port = getPort();
   if (port && port.isOpen) {
     const { success, err, packet } = constructPacket(command);
-    if (success) {
+    if (success && packet) {
       port.write(packet);
-    return { success: false, error: err };
+      return { success: true };
     }
+    return { success: false, error: err };
   }
   return { success: false, error: 'Port not found' };
 }
@@ -45,7 +46,7 @@ export function usbStartScan(): bleApiResultType {
 }
 
 /* Stop the USB scan */
-export function usbStartStop(): bleApiResultType {
+export function usbStopScan(): bleApiResultType {
   const idCommand = {
     module: 'control',
     cmd: packets.CMD_SCAN_STOP,
@@ -53,5 +54,21 @@ export function usbStartStop(): bleApiResultType {
     flags: packets.FLAG_NONE
   };
   return writeCommand(idCommand);
+}
+
+/* Connect to a remote device */
+export function usbConnect(
+  deviceId,
+  connectCallback,
+  disconnectCallback
+): bleApiResultType {
+  console.log(deviceId);
+  const connectCmd = {
+    module: 'control',
+    cmd: packets.CMD_CONNECT,
+    payload: deviceId.split(',').map(Number), 
+    flags: packets.FLAG_NONE
+  }
+  return writeCommand(connectCmd);
 }
 /* [] - END OF FILE */
