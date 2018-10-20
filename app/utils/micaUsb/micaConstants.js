@@ -84,13 +84,18 @@ export const FLAG_SHIFT_NO_ACK          = (1); /** < The target device is not re
 export const FLAG_SHIFT_INVALID_CMD     = (2); /** < The passed command was invalid */
 export const FLAG_SHIFT_INVALID_STATE   = (3); /**< The device was in an invalid state to execute the command */
 export const FLAG_SHIFT_INVALID_ARGS    = (4); /**< The arguments passed in with the command were not valid*/
-
+export const FLAG_SHIFT_MEMORY         = (5); /**< Ran out of memory */
+export const FLAG_SHIFT_ILLEGAL_OPERATION=(6); /**< Illegal operation occurred */
+export const FLAG_SHIFT_UNKNOWN_ERR     = (15); /**< An unknown error occurred */
 
 export const FLAG_ACK               = (1 << FLAG_SHIFT_ACK); /** < This packet is acknowledging the previous command */
 export const FLAG_NO_ACK            = (1 << FLAG_SHIFT_NO_ACK); /** < The target device is not required to ACK the command  */
 export const FLAG_INVALID_CMD       = (1 << FLAG_SHIFT_INVALID_CMD); /** < The passed command was invalid  */
 export const FLAG_INVALID_STATE     = (1 << FLAG_SHIFT_INVALID_STATE); /**< The device was in an invalid state to execute the command  */
 export const FLAG_INVALID_ARGS      = (1 << FLAG_SHIFT_INVALID_ARGS); /**< The arguments passed in with the command were not valid  */
+export const FLAG_MEMORY          = (1 << FLAG_SHIFT_MEMORY) /**< Ran out of memory  */
+export const FLAG_ILLEGAL_OPERATION = (1 << FLAG_SHIFT_ILLEGAL_OPERATION) /**< Illegal operation occurred  */
+export const FLAG_UNKNOWN_ERR       = (1 << FLAG_SHIFT_UNKNOWN_ERR) /**< An unknown error occurred  */
 
 
 /* **** COMMAND SPACE **** */

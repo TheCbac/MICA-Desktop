@@ -14,6 +14,7 @@ import {constructPacket} from '../micaUsb/micaParser';
 import * as packets from '../micaUsb/micaConstants';
 import type { bleApiResultType } from '../../types/bleTypes';
 import type { packetObj_T } from '../micaUsb/micaParser.types';
+import { getMicaHandleFromUuid } from '../mica/micaConstants';
 
 /* Placeholder until usb functions are written */
 export function usbPlaceholder(): bleApiResultType {
@@ -91,5 +92,23 @@ export function usbDisconnect(deviceId): bleApiResultType {
     flags: packets.FLAG_NONE
   };
   return writeCommand(disconnectCmd);
+}
+
+
+export function usbWriteChar(deviceId, charUuid, payload) {
+  /* Convert the deviceId to a array of numbers */
+  const deviceIdArray = deviceId.split(',').map(Number);
+  /* Convert the charUuid to an array of numbers */
+  // const uuidArray = charUuid.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+  const charHandle = getMicaHandleFromUuid(charUuid);
+  /* Write the command */
+  const writeCmd = {
+    module: 'control',
+    cmd: packets.CMD_CHAR_WRITE,
+    payload: [...deviceIdArray, charHandle, ...payload],
+    flags: packets.FLAG_NONE
+  };
+  return writeCommand(writeCmd);
+
 }
 /* [] - END OF FILE */

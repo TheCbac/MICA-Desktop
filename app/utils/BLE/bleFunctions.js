@@ -15,7 +15,7 @@ import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
 } from './bleNoble';
 import {
   usbPlaceholder, usbStartScan, usbStopScan, usbConnect, usbDisconnect,
-  usbCancelPending
+  usbCancelPending, usbWriteChar
  } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
 import type { bleApiResultType, bleWrapperObjType } from '../../types/bleTypes';
@@ -111,7 +111,7 @@ export function bleWriteCharacteristic(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleWriteCharacteristic,
-    usbMethod: usbPlaceholder
+    usbMethod: usbWriteChar
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id, charUuid, payload, callback, noResponse);

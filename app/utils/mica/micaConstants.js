@@ -38,6 +38,29 @@ export const micaCharUuids: charUuidObjType = {
   controlCommands: 'cbac07a4b054467db95f773fa6bbb796'
 };
 
+/* MICA Characteristic Handles. Defined from IMU creator project (CyBle_custom.) */
+export const micaCharHandles = {
+  'cbac0bf6341e3a0705183cdac0f21000': (0x1B),
+  'cbac90446ee6405a90e66a12315bca84': (0x1E),
+  'cbacd02a74bf45c7b1bb994527009bc0': (0x22),
+  'cbac8a297be1448693ff0af3024f4cb8': (0x25),
+  'cbac72b80b594e78aaff3a4c13961f5f': (0x29),
+  'cbacf750391348179b2ba9034e354575': (0x2C),
+  'cbac66cc91cc45f292c0a51bc9174b63': (0x30),
+  'cbac45aee7854102bc22ec68961b4aad': (0x33),
+  'cbac4e78c2da49008b93f4aef1ca246a': (0x37),
+  'cbace2dcca234801a5513a3ce9eb7a6a': (0x3A),
+  'cbac64fd37f84f788e4b86689b59dbc3': (0x3E),
+  'cbac07a4b054467db95f773fa6bbb796': (0x41),
+}
+/* Get the Character handle from a uuid */
+export function getMicaHandleFromUuid(uuid: string): number {
+  if(uuid in micaCharHandles){
+    return micaCharHandles[uuid];
+  }
+  return (0x00);
+}
+
 export const moduleNames = ['energy', 'actuation', 'power', 'sensing', 'communication', 'control'];
 
 

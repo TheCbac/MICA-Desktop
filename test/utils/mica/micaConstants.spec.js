@@ -11,7 +11,8 @@
 *
 ********************************************************* */
 import { micaServiceUuid, micaCharUuids,
-  moduleToName, nameToId, CMD_START, CMD_STOP, DATA_CLOCK_FREQ
+  moduleToName, nameToId, CMD_START, CMD_STOP, DATA_CLOCK_FREQ,
+  getMicaHandleFromUuid
 } from '../../../app/utils/mica/micaConstants';
 
 /* Test suite */
@@ -61,6 +62,24 @@ describe('MicaConstants', () => {
     });
     it('Clock frequency should be 100 kHz', () => {
       expect(DATA_CLOCK_FREQ).toEqual(100000);
+    });
+  });
+  describe('getMicaHandleFromUuid', () => {
+    test('values match', () => {
+      expect(getMicaHandleFromUuid(micaCharUuids.energyMetadata)).toBe(0x1B);
+      expect(getMicaHandleFromUuid(micaCharUuids.energyCommands)).toBe(0x1E);
+      expect(getMicaHandleFromUuid(micaCharUuids.actuationMetadata)).toBe(0x22);
+      expect(getMicaHandleFromUuid(micaCharUuids.actuationCommands)).toBe(0x25);
+      expect(getMicaHandleFromUuid(micaCharUuids.powerMetadata)).toBe(0x29);
+      expect(getMicaHandleFromUuid(micaCharUuids.powerCommands)).toBe(0x2C);
+      expect(getMicaHandleFromUuid(micaCharUuids.sensorMetadata)).toBe(0x30);
+      expect(getMicaHandleFromUuid(micaCharUuids.sensorCommands)).toBe(0x33);
+      expect(getMicaHandleFromUuid(micaCharUuids.communicationMetadata)).toBe(0x37);
+      expect(getMicaHandleFromUuid(micaCharUuids.communicationCommands)).toBe(0x3A);
+      expect(getMicaHandleFromUuid(micaCharUuids.controlMetadata)).toBe(0x3E);
+      expect(getMicaHandleFromUuid(micaCharUuids.controlCommands)).toBe(0x41);
+      expect(getMicaHandleFromUuid('unknown')).toBe(0);
+      expect(getMicaHandleFromUuid('')).toBe(0);
     });
   });
 });
