@@ -72,7 +72,8 @@ export type bleAdvPacketT = {
   peerAddrType: peerAddrTypeT,
   peerAddr: string,
   advPacketData: advPacketDataT,
-  rssi: number
+  rssi: number,
+  deviceId: string
 };
 
 export type bleAdvPacketObjT = {
@@ -105,6 +106,8 @@ export function parseAdvertisementPacket(advPacket: packetDataT): bleAdvPacketOb
   }
   /* Get the peer address value */
   const peerAddrArray = advPacket.slice(ADV_PEER_ADDR_INDEX_START, ADV_PEER_ADDR_INDEX_END);
+  /* Copy the (reversed) address into the device ID */
+  packet.deviceId = peerAddrArray.slice(0, peerAddrArray.length).toString();
   const peerAddrObj = advGetPeerAddr(peerAddrArray);
   if (peerAddrObj.success && peerAddrObj.address) {
     packet.peerAddr = peerAddrObj.address;
@@ -214,6 +217,8 @@ export function advGetPeerAddr(peerAddrArray: packetDataT): peerAddrObjT {
   const peerAddrObj: peerAddrObjT = {
     success: false,
   };
+  /* Peer address is reported in opposite order - need to reverse */
+  peerAddrArray.reverse();
   /* Ensure address is 6 octets */
   const addrLen = peerAddrArray.length;
   if (addrLen !== ADV_PEER_ADDR_LEN) {

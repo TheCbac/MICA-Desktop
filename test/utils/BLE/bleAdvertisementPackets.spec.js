@@ -130,13 +130,13 @@ describe('bleAdvertisementPackets.spec.js', () => {
       expect(address).toBeUndefined();
     });
     it('Should format valid addresses', () => {
-      let addrArray = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06];
+      let addrArray = [0x06, 0x05, 0x04, 0x03, 0x02, 0x01];
       let { success, error, address } = advGetPeerAddr(addrArray);
       expect(success).toBeTruthy();
       expect(error).toBeUndefined();
       expect(address).toBe('01:02:03:04:05:06');
 
-      addrArray = [0xCB, 0xAC, 0x05, 0x00, 0x00, 0x00];
+      addrArray = [0x00, 0x00, 0x00, 0x05, 0xAC, 0xCB];
       ({ success, error, address } = advGetPeerAddr(addrArray));
       expect(success).toBeTruthy();
       expect(error).toBeUndefined();
@@ -259,7 +259,7 @@ describe('bleAdvertisementPackets.spec.js', () => {
   });
   describe('parseAdvertisementPacket', () => {
     const advPacket = [
-      0x00, 0x00, 0xCB, 0xAC, 0x00, 0xD1, 0x5B, 0x0E, 0x1F,
+      0x00, 0x00, 0x0E, 0x5B, 0xD1, 0x00, 0xAC, 0xCB, 0x1F,
       0x02, 0x01, 0x06, 0x1B, 0x09, 0x43, 0x72, 0x61, 0x69,
       0x67, 0x20, 0x30, 0x30, 0x33, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -272,6 +272,7 @@ describe('bleAdvertisementPackets.spec.js', () => {
       eventType: BLE_GAPC_CONN_UNDIRECTED,
       peerAddrType: BLE_GAP_ADDR_TYPE_PUBLIC,
       peerAddr: 'CB:AC:00:D1:5B:0E',
+      deviceId: [0x0E, 0x5B, 0xD1, 0x00, 0xAC, 0xCB].toString(),
       advPacketData: {
         localName: 'Craig 003',
         serviceUuids: [],

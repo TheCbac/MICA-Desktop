@@ -13,7 +13,10 @@
 import { nobleStartScan, nobleStopScan, nobleConnect, nobleDisconnect,
   nobleInitializeDevice, nobleWriteCharacteristic, nobleReadCharacteristic
 } from './bleNoble';
-import { usbPlaceholder } from './bleUsb';
+import {
+  usbStartScan, usbStopScan, usbConnect, usbDisconnect,
+  usbCancelPending, usbWriteChar, usbReadChar, usbInitDevice
+ } from './bleUsb';
 import type { scanTypes, idType } from '../../types/paramTypes';
 import type { bleApiResultType, bleWrapperObjType } from '../../types/bleTypes';
 
@@ -22,7 +25,7 @@ export function bleStartScan(method: scanTypes): bleApiResultType {
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleStartScan,
-    usbMethod: usbPlaceholder
+    usbMethod: usbStartScan
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj);
@@ -33,7 +36,7 @@ export function bleStopScan(method: scanTypes): bleApiResultType {
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleStopScan,
-    usbMethod: usbPlaceholder
+    usbMethod: usbStopScan
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj);
@@ -48,7 +51,7 @@ export function bleConnect(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleConnect,
-    usbMethod: usbPlaceholder
+    usbMethod: usbConnect
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id, connectCallback, disconnectCallback);
@@ -62,7 +65,7 @@ export function bleCancelPending(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleDisconnect,
-    usbMethod: usbPlaceholder
+    usbMethod: usbCancelPending
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id);
@@ -76,7 +79,7 @@ export function bleDisconnect(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleDisconnect,
-    usbMethod: usbPlaceholder
+    usbMethod: usbDisconnect
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id);
@@ -90,7 +93,7 @@ export function bleInitializeDevice(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleInitializeDevice,
-    usbMethod: usbPlaceholder
+    usbMethod: usbInitDevice
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id);
@@ -108,7 +111,7 @@ export function bleWriteCharacteristic(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleWriteCharacteristic,
-    usbMethod: usbPlaceholder
+    usbMethod: usbWriteChar
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id, charUuid, payload, callback, noResponse);
@@ -123,7 +126,7 @@ export function bleReadCharacteristic(
   const bleWrapperObj: bleWrapperObjType = {
     method,
     bleMethod: nobleReadCharacteristic,
-    usbMethod: usbPlaceholder
+    usbMethod: usbReadChar
   };
   /* Wrap the function */
   return wrapBle(bleWrapperObj, id, charUuid, callback);

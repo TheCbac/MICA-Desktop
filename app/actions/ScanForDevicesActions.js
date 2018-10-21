@@ -15,7 +15,7 @@ import type {
   changeScanActionType,
   scanStateActionType,
 } from '../types/actionTypes';
-import { Noble } from '../utils/nativeModules';
+import { Noble, Serialport } from '../utils/nativeModules';
 import log from '../utils/loggingUtils';
 import store from '../index';
 import {
@@ -30,7 +30,9 @@ import {
 import { bleStartScan, bleStopScan, bleConnect,
   bleCancelPending, bleDisconnect, bleInitializeDevice } from '../utils/BLE/bleFunctions';
 import type { thunkType } from '../types/functionTypes';
-
+import { isMicaSerialDevice } from '../utils/Developer/SerialCommands';
+import { setPort, removePort, getPort } from '../utils/micaUsb/micaUsb';
+import { processRxBuffer, constructPacket } from '../utils/micaUsb/micaParser';
 
 /* Set the file debug level */
 // log.debugLevel = 5;
@@ -41,13 +43,30 @@ export const CHANGE_SCAN_METHOD = 'CHANGE_SCAN_METHOD';
 export const ENABLE_SCAN_METHOD = 'ENABLE_SCAN_METHOD';
 export const CHANGE_SCAN_STATE = 'CHANGE_SCAN_STATE';
 
+
+export function changeScanMethodAsync(method: scanTypes): thunkType {
+  /* Return a function for redux thunk */
+  return async (dispatch: (mixed) => void, getState: () => stateType): any => {
+    /* Do nothing if the new state is the active state */
+    if (method === getState().scanForDevices.method) { return; }
+    /* Check the state on switch */
+    let enable = false;
+    if (method === 'ble') {
+      enable = Noble.state === 'poweredOn';
+      /* Close any open ports */
+      closeMicaPort();
+      /* See if there is a valid MICA USB port */
+    } else if (method === 'usb') {
+      getMicaUsb(dispatch, getState);
+    }
+    dispatch(changeScanMethod(method, enable));
+    /* Clear the advertising list */
+    dispatch(clearAdvertisingList());
+  };
+}
+
 /* Action method for changing active method */
-export function changeScanMethod(method: scanTypes): changeScanActionType {
-  /* Check the state on switch */
-  let enable = false;
-  if (method === 'ble') {
-    enable = Noble.state === 'poweredOn';
-  }
+export function changeScanMethod(method: scanTypes, enable: boolean): changeScanActionType {
   return {
     type: CHANGE_SCAN_METHOD,
     payload: {
@@ -56,6 +75,73 @@ export function changeScanMethod(method: scanTypes): changeScanActionType {
     }
   };
 }
+
+
+/* List all of the device */
+async function getMicaUsb(dispatch: (mixed)=> void, getState: () => stateType): Promise<any> {
+  const serialList = await Serialport.list();
+  let i;
+  for (i = 0; i < serialList.length; i++) {
+    const portInstance = serialList[i];
+    const { comName, productId, vendorId } = portInstance;
+    if (isMicaSerialDevice(productId, vendorId)) {
+      const baudRate = 115200;
+      /* Open the USB port if it isn't already open */
+      if (!portInstance.isOpen) {
+        const newPort = new Serialport(comName, { baudRate }, (err) => {
+          if (!err) {
+            setPort(newPort);
+          }
+        });
+        newPort.on('close', () => {
+          const { scanForDevices: { method } } = getState();
+          if (method === 'usb') {
+            dispatch(changeScanMethod('usb', false));
+            /* Callbacks determine when the scan state itself is changed */
+          }
+        });
+        /* Process mica data as it's received */
+        newPort.on('data', (data) => {
+          // console.log(data);
+          processRxBuffer(data);
+        });
+        console.log(`opened port ${comName}`);
+
+        /* Testing - send the request for ID - this needs to live somewhere else */
+        const requestIdPacket = {
+          module: 'control',
+          cmd: 0x00,
+          payload: [],
+          flags: 0x00
+        };
+        const { err, success, packet } = constructPacket(requestIdPacket);
+        if(success){
+          newPort.write(packet);
+        } else {
+          console.log(`Err constructing: ${err}`);
+        }
+
+      }
+      break;
+    }
+  }
+}
+
+/* Close the cached usb device */
+function closeMicaPort() {
+  const port = getPort();
+  if (port && port.isOpen) {
+    port.close((err) => {
+      if (err) {
+        console.log('Error closing port');
+      } else {
+        removePort();
+        console.log(`Closed port ${port.path}`);
+      }
+    });
+  }
+}
+
 /* Enable the currently selected scanning method */
 export function enableScanMethod(method: scanTypes, enable: boolean): enableScanActionType {
   return {
@@ -81,7 +167,7 @@ export function changeScanState(method: scanTypes,
 }
 /* Starts and stops the scanning events - dispatches events based on results */
 export function startStopScan(): thunkType {
-  return (dispatch: () => void, getState: () => stateType): void => {
+  return (dispatch: (mixed) => void, getState: () => stateType): void => {
     /* Get the current state */
     const { method, scanning, enabled } = getState().scanForDevices;
     /* Only scan if the current method is enabled */
@@ -90,7 +176,11 @@ export function startStopScan(): thunkType {
       if (!scanning) {
         const startResult = bleStartScan(method);
         /* Clear the advertising list */
-        if (startResult.success) { dispatch(clearAdvertisingList()); }
+        if (startResult.success) {
+          dispatch(clearAdvertisingList());
+        } else {
+          console.log(startResult.error);
+        }
         /* Callbacks determine when the scan state itself is changed */
       } else {
         /* Stop the scan */
@@ -104,7 +194,7 @@ export function startStopScan(): thunkType {
 /* Connect to a device */
 export function connectToDevice(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
+  return (dispatch: (mixed) => void, getState: () => stateType): void => {
     /* get the current state */
     const { method } = getState().scanForDevices;
     /* Move to advertising list */
@@ -134,7 +224,7 @@ function connectCallBack(id: idType, method: scanTypes, error: ?string): void {
 /* Cancel an attempt to connect */
 export function cancelPendingConnection(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
+  return (dispatch: (mixed) => void, getState: () => stateType): void => {
     /* get the state */
     const state = getState();
     const { method } = state.scanForDevices;
@@ -151,7 +241,7 @@ export function cancelPendingConnection(deviceId: idType): thunkType {
 /* Disconnect from a device */
 export function disconnectFromDevice(deviceId: idType): thunkType {
   /* Return a function for redux thunk */
-  return (dispatch: () => void, getState: () => stateType): void => {
+  return (dispatch: (mixed) => void, getState: () => stateType): void => {
     /* get the current state */
     const { method } = getState().scanForDevices;
     /* Update the store */

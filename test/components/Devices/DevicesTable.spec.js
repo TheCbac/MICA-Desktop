@@ -44,7 +44,7 @@ function setup(propsObj) {
 describe('DevicesTable.spec.js', () => {
   describe('ReactTable', () => {
     const { component } = setup();
-    let table = component.find('ReactTable').at(0);
+    const table = component.find('ReactTable').at(0);
     it('Should be named correctly', () => {
       expect(table.prop('name')).toEqual('advertisingTable');
     });
