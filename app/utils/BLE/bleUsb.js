@@ -14,7 +14,7 @@ import {constructPacket} from '../micaUsb/micaParser';
 import * as packets from '../micaUsb/micaConstants';
 import type { bleApiResultType } from '../../types/bleTypes';
 import type { packetObj_T } from '../micaUsb/micaParser.types';
-import { getMicaHandleFromUuid } from '../mica/micaConstants';
+import { getMicaHandleFromUuid, micaCharUuids } from '../mica/micaConstants';
 
 /* Placeholder until usb functions are written */
 export function usbPlaceholder(): bleApiResultType {
@@ -131,7 +131,27 @@ export function usbReadChar(deviceId, charUuid): bleApiResultType {
 /* Prepare the device for initialization */
 export function usbInitDevice(deviceId): bleApiResultType {
   console.log(`Init device ${deviceId}`);
-  /* Pick up here */
+  /* Convert the deviceId to a array of numbers */
+  const deviceIdArray = deviceId.split(',').map(Number);
+
+  const {
+    energyMetadata, actuationMetadata, powerMetadata,
+    sensorMetadata, communicationMetadata, controlMetadata
+  } = micaCharUuids;
+
+
+  const charHandle = getMicaHandleFromUuid(sensorMetadata);
+
+  /* Read command */
+  const readCmd = {
+    module: 'control',
+    cmd: packets.CMD_CHAR_READ,
+    payload: [...deviceIdArray, charHandle],
+    flags: packets.FLAG_NONE
+  };
+  writeCommand(readCmd);
+  
+  /* Read the metadata */
   return { success: true };
 }
 /* [] - END OF FILE */

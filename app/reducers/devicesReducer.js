@@ -168,16 +168,16 @@ const deviceHandlers = {
       active: { $set: false }
     } });
   },
-  /* Device was abruptly lost, remove from connected list */
+  /* Device was abruptly lost, remove from connected list, no matter the state */
   LOST_CONNECTION_FROM_DEVICE(
     state: devicesStateType,
     action: lostConnectionFromDeviceActionType
   ): devicesStateType {
     const id = action.payload.deviceId;
     /* Control state flow */
-    if (state[id].state !== 'connected') {
-      return state;
-    }
+    // if (state[id].state !== 'connected') {
+    //   return state;
+    // }
     return update(state, { [id]: {
       state: { $set: 'advertising' },
       active: { $set: false }

@@ -156,7 +156,8 @@ export const RSP_DISCONNECTED           = (0x83); /**< The BLE device was succes
 export const RSP_CONNECTION_LOST        = (0x84); /**< The BLE connection was lost */
 export const RSP_RELAY_EXIT             = (0x85); /**< The device was forced out of relay mode */
 export const RSP_READ                   = (0x86); /**< Data returned from a read operation */
-
+export const RSP_NOTIFY                 = (0x87); /**< Data returned from a notify operation */
+export const RSP_LOG                    = (0x88); /**< Log data */
 
 /* **** ACTUATION RESPONSES **** */
 /* **** SENSING RESPONSES **** */

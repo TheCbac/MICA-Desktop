@@ -20,7 +20,8 @@ import {
     connectedToDevice,
     disconnectingFromDevice,
     disconnectedFromDevice,
-    lostConnectionFromDevice
+    lostConnectionFromDevice,
+    metaDataReadComplete
 } from '../../actions/devicesActions';
 import { parseAdvertisementPacket } from '../BLE/bleAdvertisementPackets';
 import type {
@@ -30,7 +31,10 @@ import type { newDeviceObjType } from '../../types/paramTypes';
 import * as packets from './micaConstants';
 import { hexToString } from '../../utils/Developer/TerminalUtils';
 import { bleInitializeDevice } from '../../utils/BLE/bleFunctions';
-
+import parseMetaData from '../mica/metaDataParsers';
+import { micaCharUuids } from '../mica/micaConstants';
+import { parseDataPacket2, getSensorSettingsFromState } from '../mica/parseDataPacket';
+import { logDataPoints, getLastTime } from '../dataStreams/graphBuffer';
 /* Handle a response packet */
 export function handleResponse(packet: packetObj_T) {
     const { module, cmd, payload, flags } = packet;
@@ -88,15 +92,46 @@ export function handleResponse(packet: packetObj_T) {
         }
         /* Read response data */
         case packets.RSP_READ: {
-            const deviceAddr = payload.slice(0,6);
+            const deviceAddr = payload.slice(0,6).toString();
             const charHandle = payload[6];
             const dataLen = payload[7] << 8 | payload[8];
-            const data = payload.slice(9)
-            if(!flags) {
+            const data = payload.slice(9);
+            if(flags) {
                 console.log(`Read RSP failed with flags 0x${hexToString(flags)}: char 0x${hexToString(charHandle)}`);
             } else {
-                console.log('Read RSP:', deviceAddr, charHandle, data);
+                const metadata = parseMetaData(micaCharUuids.sensorMetadata, Buffer.from(data));
+                store.dispatch(metaDataReadComplete(deviceAddr, metadata));
+                
             }
+            break;
+        }
+        /* Notification */
+        case packets.RSP_NOTIFY: {
+            const deviceId = packet.payload.slice(0,6).toString();
+            // const charHandle = payload[6];
+            // const dataLen = payload[7] << 8 | payload[8];
+            const data = packet.payload.slice(9);
+            /* Get the settings */
+            const { devices } = store.getState();
+            const device = devices[deviceId];
+            const { sensors } = device.settings;
+            const result = getSensorSettingsFromState(sensors);
+            if (result.success) {
+                const { channels, periodLength, scalingConstant, gain } = result.payload;
+                const parsed = parseDataPacket2(
+                    Buffer.from(data), channels, periodLength, scalingConstant, gain, getLastTime(deviceId)
+                );
+                logDataPoints(deviceId, parsed);
+            } else {
+                console.log(`Graph point failed: ${result.error}`);
+            }
+            /* Store the data for retrieval by the graph component */
+            break;
+        }
+        /* Log data */
+        case packets.RSP_LOG: {
+            const logString = String.fromCharCode(...payload)
+            console.log(`Packet LOG: ${logString}`);
             break;
         }
         default: {
@@ -209,7 +244,7 @@ export function handleAcknowledgement(packet: packetObj_T) {
                 console.log(`Read initiated to device ${deviceId}, and char handle ${charHandle}`);
             }
             break;
-        }        
+        }       
         default: {
             console.log(`Unknown response to command: ${cmd}, flags: 0x${hexToString(errFlag)}`, payload)
             break;
