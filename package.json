@@ -215,7 +215,6 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
-    "about-window": "^1.12.1",
     "await-timeout": "^0.3.0",
     "bootstrap": "^3.3.7",
     "dist": "^0.1.2",
