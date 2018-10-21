@@ -42,7 +42,7 @@
   "build": {
     "productName": "MICA Desktop",
     "appId": "edu.mit.mica",
-    "copyright": "Copyright © 2017 The MICA Group",
+    "copyright": "Copyright © 2018 The MICA Group",
     "publish": [
       {
         "provider": "github",
