@@ -10,6 +10,8 @@
 *
 ********************************************************* */
 import { app, Menu, shell, BrowserWindow } from 'electron';
+import openAboutWindow from 'about-window';
+import { join } from 'path';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -140,6 +142,17 @@ export default class MenuBuilder {
         click: () => {
           this.mainWindow.close();
         }
+      }, {
+        label: 'About this App',
+        click: () => 
+          openAboutWindow({
+            icon_path: join( __dirname, 'micaLogo_1024x1024.png'),
+            use_version_info: true,
+            bug_report_url: 'email:ccheney@mit.edu',
+            bug_link_text: 'Please report any issues to ccheney@mit.edu',
+            open_devtools: true,
+            description: 'MICA Desktop v0.8.1',
+          }),
       }]
     }, {
       label: '&View',
