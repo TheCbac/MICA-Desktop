@@ -102,6 +102,13 @@ export default class GraphSettings extends Component<propsType, stateType> {
     /* Change the state */
     this.setState({ value });
   }
+  /* Stop data collection if page is changed */
+  componentWillUnmount() {
+    const { collecting } = this.props.collectionSettings;
+    if (collecting) {
+      this.props.stopCollecting();
+    }
+  }
   render() {
     const boxStyle = {
       marginBottom: '20px',
